@@ -1,0 +1,22 @@
+import 'package:flash_cards/src/screens/home/home_page.dart';
+import 'package:flutter/material.dart';
+
+void main() {
+  runApp(const StudyCards());
+}
+
+class StudyCards extends StatelessWidget {
+  const StudyCards({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Study Cards',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade900),
+        useMaterial3: true,
+      ),
+      home: const HomePage(),
+    );
+  }
+}
