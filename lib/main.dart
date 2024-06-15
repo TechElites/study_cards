@@ -1,4 +1,4 @@
-import 'package:flash_cards/src/screens/home/home_page.dart';
+import 'package:flash_cards/src/screens/home/decks_page.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -16,7 +16,7 @@ class StudyCards extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade900),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const DecksPage(),
     );
   }
 }
