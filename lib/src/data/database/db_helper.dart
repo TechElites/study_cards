@@ -1,3 +1,5 @@
+import 'package:flash_cards/src/data/model/deck.dart';
+import 'package:flash_cards/src/data/model/card.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -44,24 +46,26 @@ class DatabaseHelper {
     );
   }
 
-  Future<int> insertDeck(Map<String, dynamic> deck) async {
+  Future<int> insertDeck(Deck deck) async {
     Database db = await database;
-    return await db.insert('decks', deck);
+    return await db.insert('decks', deck.toMap());
   }
 
-  Future<int> insertCard(Map<String, dynamic> card) async {
+  Future<int> insertCard(StudyCard card) async {
     Database db = await database;
-    return await db.insert('cards', card);
+    return await db.insert('cards', card.toMap());
   }
 
-  Future<List<Map<String, dynamic>>> getDecks() async {
+  Future<List<Deck>> getDecks() async {
     Database db = await database;
-    return await db.query('decks');
+    List<Map<String, Object?>> rawDecks = await db.query('decks');
+    return rawDecks.map((deck) => Deck.fromMap(deck)).toList();
   }
 
-  Future<List<Map<String, dynamic>>> getCards(int deckId) async {
+  Future<List<StudyCard>> getCards(int deckId) async {
     Database db = await database;
-    return await db.query('cards', where: 'deckId = ?', whereArgs: [deckId]);
+    List<Map<String, Object?>> rawCards = await db.query('cards', where: 'deckId = ?', whereArgs: [deckId]);
+    return rawCards.map((card) => StudyCard.fromMap(card)).toList();
   }
 
   Future<void> deleteDeck(int deckId) async {

@@ -1,4 +1,5 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
+import 'package:flash_cards/src/data/model/deck.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _DecksPageState extends State<DecksPage> {
         title: const Text('Decks'),
         centerTitle: true,
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
+      body: FutureBuilder<List<Deck>>(
         future: _dbHelper.getDecks(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -38,12 +39,12 @@ class _DecksPageState extends State<DecksPage> {
                       Card(
                         margin: const EdgeInsets.all(8.0),
                         child: ListTile(
-                          title: Text(deck['name']),
+                          title: Text(deck.name),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Cards: ${deck['cards']}'),
-                              Text('Creation date: ${deck['creation'].toString().substring(0,10)}'),
+                              Text('Cards: ${deck.cards}'),
+                              Text('Creation date: ${deck.creation.toString().substring(0,10)}'),
                             ],
                           ),
                           onTap: () {
@@ -51,7 +52,7 @@ class _DecksPageState extends State<DecksPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
-                                    CardsPage(deckId: deck['id']),
+                                    CardsPage(deck: deck),
                               ),
                             );
                           },
@@ -60,7 +61,7 @@ class _DecksPageState extends State<DecksPage> {
                     ),
                     IconButton(
                       onPressed: () {
-                        _dbHelper.deleteDeck(deck['id']).then((_) {
+                        _dbHelper.deleteDeck(deck.id).then((_) {
                           setState(() {});
                         });
                       },
@@ -72,13 +73,16 @@ class _DecksPageState extends State<DecksPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final newDeck = await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const AddDeck(),
             ),
           );
+          if (newDeck != null) {
+            setState(() {});
+          }
         },
         tooltip: 'Add Deck',
         child: const Icon(Icons.add),
