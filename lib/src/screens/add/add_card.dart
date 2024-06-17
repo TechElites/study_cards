@@ -1,5 +1,6 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card.dart';
+import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flutter/material.dart';
 
 class AddCard extends StatefulWidget {
@@ -56,7 +57,7 @@ class _AddCardState extends State<AddCard> {
       deckId: widget.deckId,
       question: _questionController.text,
       answer: _answerController.text,
-      rating: "New",
+      rating: Rating.none,
       lastReviewed: 'Never',
     );
 

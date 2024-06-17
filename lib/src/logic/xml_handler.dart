@@ -1,8 +1,6 @@
 import 'package:flash_cards/src/data/model/card.dart';
+import 'package:flash_cards/src/logic/file_downloader_helper.dart';
 import 'package:xml/xml.dart' as xml;
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class XmlHandler {
   static List<Map<String, String>> parseXml(String xmlString) {
@@ -16,8 +14,8 @@ class XmlHandler {
     parsedData.add({'deck': deckName, 'cards': cards.length.toString()});
 
     for (var card in cards) {
-      final front = card.children.last.firstChild?.value ?? '';
-      final back = card.children.first.firstChild?.value ?? '';
+      final front = card.children.first.firstChild?.value ?? '';
+      final back = card.children.last.firstChild?.value ?? '';
       parsedData.add({'question': front, 'answer': back});
     }
 
@@ -50,19 +48,6 @@ class XmlHandler {
   }
 
   static Future<void> saveXmlToFile(String xmlString, String fileName) async {
-    Directory? directory;
-
-    if (Platform.isAndroid) {
-      if (await Permission.storage.request().isGranted) {
-        directory = await getApplicationDocumentsDirectory();
-      }
-    } else if (Platform.isIOS) {
-      directory = await getApplicationDocumentsDirectory();
-    }
-
-    if (directory != null) {
-      final file = File('${directory.path}/$fileName');
-      await file.writeAsString(xmlString);
-    }
+    FileDownloaderHelper.saveFileOnDevice(fileName, xmlString);
   }
 }

@@ -15,6 +15,7 @@ class AddDeck extends StatefulWidget {
 
 class _AddDeckState extends State<AddDeck> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
+  final TextEditingController _nameController = TextEditingController();
   List<Map<String, String>> questionsAndAnswers = [];
 
   Future<void> _pickFile() async {
@@ -28,6 +29,7 @@ class _AddDeckState extends State<AddDeck> {
       String fileContent = await file.readAsString();
       setState(() {
         questionsAndAnswers = XmlHandler.parseXml(fileContent);
+        _nameController.text = questionsAndAnswers[0]['deck']!;
       });
     }
   }
@@ -43,6 +45,13 @@ class _AddDeckState extends State<AddDeck> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Deck name',
+              ),
+            ),
+            const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _pickFile,
               child: const Text('Pick XML File'),
@@ -78,8 +87,8 @@ class _AddDeckState extends State<AddDeck> {
 
   void _addDeck() {
     final Deck newDeck = Deck(
-      name: questionsAndAnswers[0]['deck']!,
-      cards: questionsAndAnswers.length - 1,
+      name: _nameController.text,
+      cards: questionsAndAnswers.length - 1 > 0 ? questionsAndAnswers.length - 1 : 0,
       creation: DateTime.now(),
     );
     _dbHelper.insertDeck(newDeck).then((deckId) {

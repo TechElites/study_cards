@@ -35,30 +35,6 @@ class _DecksPageState extends State<DecksPage> {
               return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(children: [
-                    Expanded(child:
-                      Card(
-                        margin: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          title: Text(deck.name),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Cards: ${deck.cards}'),
-                              Text('Creation date: ${deck.creation.toString().substring(0,10)}'),
-                            ],
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    CardsPage(deck: deck),
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                    ),
                     IconButton(
                       onPressed: () {
                         _dbHelper.deleteDeck(deck.id).then((_) {
@@ -66,7 +42,30 @@ class _DecksPageState extends State<DecksPage> {
                         });
                       },
                       icon: const Icon(Icons.delete),
-                    )
+                    ),
+                    Expanded(
+                        child: Card(
+                      margin: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        title: Text(deck.name),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Cards: ${deck.cards}'),
+                            Text(
+                                'Creation date: ${deck.creation.toString().substring(0, 10)}'),
+                          ],
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CardsPage(deck: deck),
+                            ),
+                          );
+                        },
+                      ),
+                    ))
                   ]));
             },
           );
