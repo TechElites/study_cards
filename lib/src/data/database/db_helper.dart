@@ -73,6 +73,14 @@ class DatabaseHelper {
     return rawCards.map((card) => StudyCard.fromMap(card)).toList();
   }
 
+  Future<void> updateCardRating(int cardId, String rating) async {
+    Database db = await database;
+    await db.update('cards', {
+      'rating': rating,
+      'lastReviewed': DateTime.now().toIso8601String(),
+    }, where: 'id = ?', whereArgs: [cardId]);
+  }
+
   Future<void> deleteDeck(int deckId) async {
     Database db = await database;
     await db.delete('decks', where: 'id = ?', whereArgs: [deckId]);
