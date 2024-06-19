@@ -28,47 +28,51 @@ class _DecksPageState extends State<DecksPage> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          return ListView.builder(
-            itemCount: snapshot.data!.length,
-            itemBuilder: (context, index) {
-              final deck = snapshot.data![index];
-              return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(children: [
-                    IconButton(
-                      onPressed: () {
-                        _dbHelper.deleteDeck(deck.id).then((_) {
-                          setState(() {});
-                        });
-                      },
-                      icon: const Icon(Icons.delete),
-                    ),
-                    Expanded(
-                        child: Card(
-                      margin: const EdgeInsets.all(8.0),
-                      child: ListTile(
-                        title: Text(deck.name),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Cards: ${deck.cards}'),
-                            Text(
-                                'Creation date: ${deck.creation.toString().substring(0, 10)}'),
-                          ],
+          return RefreshIndicator(
+              onRefresh: () async {
+                setState(() {});
+              },
+              child: ListView.builder(
+                itemCount: snapshot.data!.length,
+                itemBuilder: (context, index) {
+                  final deck = snapshot.data![index];
+                  return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(children: [
+                        IconButton(
+                          onPressed: () {
+                            _dbHelper.deleteDeck(deck.id).then((_) {
+                              setState(() {});
+                            });
+                          },
+                          icon: const Icon(Icons.delete),
                         ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => CardsPage(deck: deck),
+                        Expanded(
+                            child: Card(
+                          margin: const EdgeInsets.all(8.0),
+                          child: ListTile(
+                            title: Text(deck.name),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Cards: ${deck.cards}'),
+                                Text(
+                                    'Creation date: ${deck.creation.toString().substring(0, 10)}'),
+                              ],
                             ),
-                          );
-                        },
-                      ),
-                    ))
-                  ]));
-            },
-          );
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => CardsPage(deck: deck),
+                                ),
+                              );
+                            },
+                          ),
+                        ))
+                      ]));
+                },
+              ));
         },
       ),
       floatingActionButton: FloatingActionButton(
