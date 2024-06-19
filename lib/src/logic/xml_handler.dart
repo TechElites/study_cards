@@ -1,22 +1,23 @@
-import 'package:flash_cards/src/data/model/card.dart';
+import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/logic/file_downloader_helper.dart';
 import 'package:xml/xml.dart' as xml;
 
 class XmlHandler {
-  static List<Map<String, String>> parseXml(String xmlString) {
+  static List<StudyCard> parseXml(String xmlString) {
     final document = xml.XmlDocument.parse(xmlString);
     final cards = document.findAllElements('card');
 
-    List<Map<String, String>> parsedData = [];
+    List<StudyCard> parsedData = [];
 
     final deckName =
         document.findAllElements('deck').first.attributes.first.value;
-    parsedData.add({'deck': deckName, 'cards': cards.length.toString()});
+    parsedData
+        .add(StudyCard(question: deckName, answer: cards.length.toString()));
 
     for (var card in cards) {
-      final front = card.children.first.firstChild?.value ?? '';
-      final back = card.children.last.firstChild?.value ?? '';
-      parsedData.add({'question': front, 'answer': back});
+      final front = card.childElements.first.firstChild?.value ?? '';
+      final back = card.childElements.last.firstChild?.value ?? '';
+      parsedData.add(StudyCard(question: front, answer: back));
     }
 
     return parsedData;

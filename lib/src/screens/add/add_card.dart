@@ -1,5 +1,5 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card.dart';
+import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flutter/material.dart';
 

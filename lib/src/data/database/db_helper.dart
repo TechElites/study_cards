@@ -1,5 +1,5 @@
 import 'package:flash_cards/src/data/model/deck.dart';
-import 'package:flash_cards/src/data/model/card.dart';
+import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -53,7 +53,12 @@ class DatabaseHelper {
 
   Future<int> insertCard(StudyCard card) async {
     Database db = await database;
-    return await db.insert('cards', card.toMap());
+    await db.insert('cards', card.toMap());
+    return await db.rawUpdate('''
+      UPDATE decks
+      SET cards = cards + 1
+      WHERE id = ?
+    ''', [card.deckId]);
   }
 
   Future<List<Deck>> getDecks() async {
@@ -76,6 +81,15 @@ class DatabaseHelper {
 
   Future<void> deleteCard(int cardId) async {
     Database db = await database;
+    await db.rawUpdate('''
+      UPDATE decks
+      SET cards = cards - 1
+      WHERE id = (
+        SELECT deckId
+        FROM cards
+        WHERE id = ?
+      )
+    ''', [cardId]);
     await db.delete('cards', where: 'id = ?', whereArgs: [cardId]);
   }
 }

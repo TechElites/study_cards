@@ -72,16 +72,13 @@ class _DecksPageState extends State<DecksPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final newDeck = await Navigator.push(
+        onPressed: () {
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const AddDeck(),
             ),
-          );
-          if (newDeck != null) {
-            setState(() {});
-          }
+          ).then((value) => setState(() {}));
         },
         tooltip: 'Add Deck',
         child: const Icon(Icons.add),

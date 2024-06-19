@@ -1,5 +1,5 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card.dart';
+import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/data/model/deck.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
@@ -74,14 +74,17 @@ class _CardsPageState extends State<CardsPage> {
           children: [
             SpeedDialChild(
               child: const Icon(Icons.download),
-              label: 'Download',
-              onTap: () async {
-                final List<StudyCard> cards =
-                    await _dbHelper.getCards(widget.deck.id);
-                final String deckXml =
-                    XmlHandler.createXml(cards, widget.deck.name);
-                await XmlHandler.saveXmlToFile(
-                    deckXml, '${widget.deck.name}.xml');
+              label: 'Export',
+              onTap: () {
+                _exportDeck().then((value) => 
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Deck saved to Downloads folder'))
+                  ),
+                  onError: (e) => 
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Error saving deck'))
+                    )
+                );
               },
             ),
             SpeedDialChild(
@@ -104,5 +107,11 @@ class _CardsPageState extends State<CardsPage> {
             )
           ],
         ));
+  }
+
+  Future<void> _exportDeck() async {
+    final List<StudyCard> cards = await _dbHelper.getCards(widget.deck.id);
+    final String deckXml = XmlHandler.createXml(cards, widget.deck.name);
+    await XmlHandler.saveXmlToFile(deckXml, '${widget.deck.name}.xml');
   }
 }

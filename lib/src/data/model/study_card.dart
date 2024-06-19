@@ -8,11 +8,11 @@ class StudyCard {
 
   StudyCard({
     this.id = -1,
-    required this.deckId,
+    this.deckId = -1,
     required this.question,
     required this.answer,
-    required this.rating,
-    required this.lastReviewed,
+    this.rating = '',
+    this.lastReviewed = '',
   });
 
   Map<String, dynamic> toMap() {

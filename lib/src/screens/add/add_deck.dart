@@ -1,5 +1,5 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card.dart';
+import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/data/model/deck.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ class AddDeck extends StatefulWidget {
 class _AddDeckState extends State<AddDeck> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _nameController = TextEditingController();
-  List<Map<String, String>> questionsAndAnswers = [];
+  List<StudyCard> questionsAndAnswers = [StudyCard(question: '', answer: '')];
 
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -29,7 +29,7 @@ class _AddDeckState extends State<AddDeck> {
       String fileContent = await file.readAsString();
       setState(() {
         questionsAndAnswers = XmlHandler.parseXml(fileContent);
-        _nameController.text = questionsAndAnswers[0]['deck']!;
+        _nameController.text = questionsAndAnswers[0].question;
       });
     }
   }
@@ -62,16 +62,19 @@ class _AddDeckState extends State<AddDeck> {
                 itemCount: questionsAndAnswers.length,
                 itemBuilder: (context, index) {
                   final item = questionsAndAnswers[index];
-                  if (index == 0) {
+                  if (item.question != '') {
+                    var first = 'Question:';
+                    var second = 'Answer:';
+                    if (index == 0) {
+                      first = 'Deck Name:';
+                      second = 'Number of Cards:';
+                    }
                     return ListTile(
-                      title: Text('Deck: ${item['deck']}'),
-                      subtitle: Text('Cards: ${item['cards']}'),
+                      title: Text('$first ${item.question}'),
+                      subtitle: Text('$second ${item.answer}'),
                     );
                   }
-                  return ListTile(
-                    title: Text('Question: ${item['question']}'),
-                    subtitle: Text('Answer: ${item['answer']}'),
-                  );
+                  return const SizedBox.shrink();
                 },
               ),
             ),
@@ -79,7 +82,11 @@ class _AddDeckState extends State<AddDeck> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _addDeck,
+        onPressed: () {
+          if (_nameController.text != '') {
+            _addDeck();
+          }
+        },
         child: const Icon(Icons.save),
       ),
     );
@@ -88,13 +95,21 @@ class _AddDeckState extends State<AddDeck> {
   void _addDeck() {
     final Deck newDeck = Deck(
       name: _nameController.text,
-      cards: questionsAndAnswers.length - 1 > 0 ? questionsAndAnswers.length - 1 : 0,
+      cards: questionsAndAnswers.length - 1,
       creation: DateTime.now(),
     );
     _dbHelper.insertDeck(newDeck).then((deckId) {
-      for (var card in questionsAndAnswers.sublist(1)) {
-        _addCard(deckId, card['question'], card['answer']);
+      if (questionsAndAnswers.length > 1) {
+        for (var card in questionsAndAnswers.sublist(1)) {
+          _addCard(deckId, card.question, card.answer);
+        }
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Deck added successfully'),
+          duration: Duration(seconds: 1),
+        ),
+      );
       Navigator.pop(context, newDeck);
     });
   }
