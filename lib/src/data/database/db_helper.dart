@@ -19,6 +19,10 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'decks.db');
+
+    // Uncomment first time when upgrading db
+    // await deleteDatabase(path);
+
     return await openDatabase(
       path,
       version: 3,

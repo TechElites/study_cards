@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 class Rating {
   static Map<String, Color> colors = {
     'None': Colors.transparent,
-    'Easy': Colors.green,
-    'Good': Colors.yellow,
-    'Hard': Colors.orange,
     'Fail': Colors.red,
+    'Hard': Colors.orange,
+    'Good': Colors.yellow,
+    'Easy': Colors.green,
   };
 
   static String none = "None";

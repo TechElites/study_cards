@@ -31,45 +31,47 @@ class _CardsReviewState extends State<ReviewPage> {
             });
           },
           child: Center(
-            child: !_reveal
+            child: _index < widget.cards.length
                 ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        _index < widget.cards.length
-                            ? widget.cards[_index].front
-                            : 'No more cards',
-                        style: const TextStyle(fontSize: 24),
+                      Column(
+                        children: [
+                          const SizedBox(height: 100),
+                          Text(
+                            widget.cards[_index].front,
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                          const SizedBox(height: 30),
+                          if (_reveal)
+                            Text(
+                              widget.cards[_index].back,
+                              style: const TextStyle(fontSize: 24),
+                            )
+                          else
+                            const Text('Tap to reveal answer'),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      const Text('Tap to reveal answer'),
+                      if (_reveal)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              bottom: 20.0), // Add some space at the bottom
+                          child: ButtonBar(
+                            alignment: MainAxisAlignment.center,
+                            children: _createRatingButtons(),
+                          ),
+                        ),
                     ],
                   )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.cards[_index].front,
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        widget.cards[_index].back,
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                      const SizedBox(height: 16),
-                      ButtonBar(
-                        alignment: MainAxisAlignment.center,
-                        children: _createRatingButtons()),
-                    ],
-                  ),
+                : const Text('No more cards'),
           ),
         ));
   }
 
   List<Widget> _createRatingButtons() {
     return [
-      for (var rating in Rating.colors.entries.where((e) => e.key != Rating.none))
+      for (var rating
+          in Rating.colors.entries.where((e) => e.key != Rating.none))
         ElevatedButton(
           onPressed: () {
             _dbHelper.updateCardRating(widget.cards[_index].id, rating.key);
@@ -82,6 +84,7 @@ class _CardsReviewState extends State<ReviewPage> {
             });
           },
           style: ButtonStyle(
+            foregroundColor: MaterialStateProperty.all(Colors.black),
             backgroundColor: MaterialStateProperty.all(rating.value),
           ),
           child: Text(rating.key),

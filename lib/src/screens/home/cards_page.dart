@@ -67,7 +67,7 @@ class _CardsPageState extends State<CardsPage> {
                                       ? Text(
                                           'Last Reviewed: ${card.lastReviewed}')
                                       : Text(
-                                          'Last Reviewed: ${card.lastReviewed.split('T').first} ${card.lastReviewed.split('T').last.substring(0, 7)}'),
+                                          'Last Reviewed: ${card.lastReviewed.replaceFirst('T', ' ').substring(0, 16)}'),
                                 ],
                               ),
                             ),
