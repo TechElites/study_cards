@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
@@ -42,11 +44,37 @@ class _CardsReviewState extends State<ReviewPage> {
                             widget.cards[_index].front,
                             style: const TextStyle(fontSize: 24),
                           ),
+                          if (widget.cards[_index].frontImage != '')
+                          //Text( widget.cards[_index].frontImage),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              child: Image.file(
+                                File(widget.cards[_index].frontImage),
+                                height: 200.0,
+                                width: 200.0,
+                                fit: BoxFit.cover,
+                                alignment: Alignment.center,
+                              ),
+                            ),
                           const SizedBox(height: 30),
                           if (_reveal)
                             Text(
                               widget.cards[_index].back,
                               style: const TextStyle(fontSize: 24),
+                            ),
+                            if (widget.cards[_index].backImage != '')
+                            //Text( widget.cards[_index].frontImage),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 16.0),
+                              child: Image.file(
+                                File(widget.cards[_index].backImage),
+                                height: 200.0,
+                                width: 200.0,
+                                fit: BoxFit.cover,
+                                alignment: Alignment.center,
+                              ),
                             )
                           else
                             const Text('Tap to reveal answer'),

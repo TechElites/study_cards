@@ -19,8 +19,8 @@ class AddCard extends StatefulWidget {
 
 class _AddCardState extends State<AddCard> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
-  final TextEditingController _questionController = TextEditingController();
-  final TextEditingController _answerController = TextEditingController();
+  final TextEditingController _frontController = TextEditingController();
+  final TextEditingController _backController = TextEditingController();
   File? _selectedFrontImage;
   File? _selectedBackImage;
 
@@ -37,7 +37,7 @@ class _AddCardState extends State<AddCard> {
           child: Column(
             children: [
               TextField(
-                  controller: _questionController,
+                  controller: _frontController,
                   decoration: InputDecoration(
                       labelText: 'Question',
                       suffixIcon: InkWell(
@@ -57,7 +57,7 @@ class _AddCardState extends State<AddCard> {
                 ),
               const SizedBox(height: 16.0),
               TextField(
-                  controller: _answerController,
+                  controller: _backController,
                   decoration: InputDecoration(
                       labelText: 'Answer',
                       suffixIcon: InkWell(
@@ -92,8 +92,8 @@ class _AddCardState extends State<AddCard> {
       back: _backController.text,
       rating: Rating.none,
       lastReviewed: 'Never',
-      /*frontImage: _selectedFrontImage?.path,
-      backImage: _selectedBackImage?.path,*/
+      frontImage: _selectedFrontImage?.path ?? '',
+      backImage: _selectedBackImage?.path ?? '',
     );
 
     _dbHelper.insertCard(newCard).then((id) {
@@ -104,8 +104,8 @@ class _AddCardState extends State<AddCard> {
         ),
       );
       setState(() {
-        _questionController.clear();
-        _answerController.clear();
+        _frontController.clear();
+        _backController.clear();
         _selectedFrontImage = null;
         _selectedBackImage = null;
       });
