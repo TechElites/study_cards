@@ -21,7 +21,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'decks.db');
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE decks (
@@ -35,8 +35,8 @@ class DatabaseHelper {
           CREATE TABLE cards (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             deckId INTEGER,
-            question TEXT,
-            answer TEXT,
+            front TEXT,
+            back TEXT,
             rating TEXT,
             lastReviewed TEXT,
             FOREIGN KEY (deckId) REFERENCES decks (id)

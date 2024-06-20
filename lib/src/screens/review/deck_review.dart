@@ -37,7 +37,7 @@ class _CardsReviewState extends State<ReviewPage> {
                     children: [
                       Text(
                         _index < widget.cards.length
-                            ? widget.cards[_index].question
+                            ? widget.cards[_index].front
                             : 'No more cards',
                         style: const TextStyle(fontSize: 24),
                       ),
@@ -49,12 +49,12 @@ class _CardsReviewState extends State<ReviewPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        widget.cards[_index].question,
+                        widget.cards[_index].front,
                         style: const TextStyle(fontSize: 24),
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        widget.cards[_index].answer,
+                        widget.cards[_index].back,
                         style: const TextStyle(fontSize: 24),
                       ),
                       const SizedBox(height: 16),

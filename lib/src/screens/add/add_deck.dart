@@ -16,7 +16,7 @@ class AddDeck extends StatefulWidget {
 class _AddDeckState extends State<AddDeck> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _nameController = TextEditingController();
-  List<StudyCard> questionsAndAnswers = [StudyCard(question: '', answer: '')];
+  List<StudyCard> frontsAndBacks = [StudyCard(front: '', back: '')];
 
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -28,8 +28,8 @@ class _AddDeckState extends State<AddDeck> {
       File file = File(result.files.single.path!);
       String fileContent = await file.readAsString();
       setState(() {
-        questionsAndAnswers = XmlHandler.parseXml(fileContent);
-        _nameController.text = questionsAndAnswers[0].question;
+        frontsAndBacks = XmlHandler.parseXml(fileContent);
+        _nameController.text = frontsAndBacks[0].front;
       });
     }
   }
@@ -59,10 +59,10 @@ class _AddDeckState extends State<AddDeck> {
             const SizedBox(height: 16.0),
             Expanded(
               child: ListView.builder(
-                itemCount: questionsAndAnswers.length,
+                itemCount: frontsAndBacks.length,
                 itemBuilder: (context, index) {
-                  final item = questionsAndAnswers[index];
-                  if (item.question != '') {
+                  final item = frontsAndBacks[index];
+                  if (item.front != '') {
                     var first = 'Question:';
                     var second = 'Answer:';
                     if (index == 0) {
@@ -70,8 +70,8 @@ class _AddDeckState extends State<AddDeck> {
                       second = 'Number of Cards:';
                     }
                     return ListTile(
-                      title: Text('$first ${item.question}'),
-                      subtitle: Text('$second ${item.answer}'),
+                      title: Text('$first ${item.front}'),
+                      subtitle: Text('$second ${item.back}'),
                     );
                   }
                   return const SizedBox.shrink();
@@ -95,13 +95,13 @@ class _AddDeckState extends State<AddDeck> {
   void _addDeck() {
     final Deck newDeck = Deck(
       name: _nameController.text,
-      cards: questionsAndAnswers.length - 1,
+      cards: frontsAndBacks.length - 1,
       creation: DateTime.now(),
     );
     _dbHelper.insertDeck(newDeck).then((deckId) {
-      if (questionsAndAnswers.length > 1) {
-        for (var card in questionsAndAnswers.sublist(1)) {
-          _addCard(deckId, card.question, card.answer);
+      if (frontsAndBacks.length > 1) {
+        for (var card in frontsAndBacks.sublist(1)) {
+          _addCard(deckId, card.front, card.back);
         }
       }
       ScaffoldMessenger.of(context).showSnackBar(
@@ -114,11 +114,11 @@ class _AddDeckState extends State<AddDeck> {
     });
   }
 
-  void _addCard(deckId, question, answer) {
+  void _addCard(deckId, front, back) {
     final StudyCard newCard = StudyCard(
       deckId: deckId,
-      question: question,
-      answer: answer,
+      front: front,
+      back: back,
       rating: 'New',
       lastReviewed: 'Never',
     );

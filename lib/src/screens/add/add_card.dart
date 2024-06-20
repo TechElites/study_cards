@@ -14,8 +14,8 @@ class AddCard extends StatefulWidget {
 
 class _AddCardState extends State<AddCard> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
-  final TextEditingController _questionController = TextEditingController();
-  final TextEditingController _answerController = TextEditingController();
+  final TextEditingController _frontController = TextEditingController();
+  final TextEditingController _backController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +29,14 @@ class _AddCardState extends State<AddCard> {
         child: Column(
           children: [
             TextField(
-              controller: _questionController,
+              controller: _frontController,
               decoration: const InputDecoration(
                 labelText: 'Question',
               ),
             ),
             const SizedBox(height: 16.0),
             TextField(
-              controller: _answerController,
+              controller: _backController,
               decoration: const InputDecoration(
                 labelText: 'Answer',
               ),
@@ -55,8 +55,8 @@ class _AddCardState extends State<AddCard> {
   void _addCard() {
     final StudyCard newCard = StudyCard(
       deckId: widget.deckId,
-      question: _questionController.text,
-      answer: _answerController.text,
+      front: _frontController.text,
+      back: _backController.text,
       rating: Rating.none,
       lastReviewed: 'Never',
     );
@@ -70,8 +70,8 @@ class _AddCardState extends State<AddCard> {
         ),
       );
       setState(() {
-        _questionController.clear();
-        _answerController.clear();
+        _frontController.clear();
+        _backController.clear();
       });
     });
   }
