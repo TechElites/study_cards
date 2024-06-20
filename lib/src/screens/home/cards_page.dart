@@ -58,7 +58,7 @@ class _CardsPageState extends State<CardsPage> {
                             surfaceTintColor: Rating.colors[card.rating],
                             margin: const EdgeInsets.all(8.0),
                             child: ListTile(
-                              title: Text(card.question),
+                              title: Text(card.front),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -67,7 +67,7 @@ class _CardsPageState extends State<CardsPage> {
                                       ? Text(
                                           'Last Reviewed: ${card.lastReviewed}')
                                       : Text(
-                                          'Last Reviewed: ${card.lastReviewed.split('T').first} ${card.lastReviewed.split('T').last.substring(0, 7)}'),
+                                          'Last Reviewed: ${card.lastReviewed.replaceFirst('T', ' ').substring(0, 16)}'),
                                 ],
                               ),
                             ),

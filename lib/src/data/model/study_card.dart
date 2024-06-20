@@ -1,16 +1,16 @@
 class StudyCard {
   final int id;
   final int deckId;
-  final String question;
-  final String answer;
+  final String front;
+  final String back;
   final String rating;
   final String lastReviewed;
 
   StudyCard({
     this.id = -1,
     this.deckId = -1,
-    required this.question,
-    required this.answer,
+    required this.front,
+    required this.back,
     this.rating = '',
     this.lastReviewed = '',
   });
@@ -18,8 +18,8 @@ class StudyCard {
   Map<String, dynamic> toMap() {
     return {
       'deckId': deckId,
-      'question': question,
-      'answer': answer,
+      'front': front,
+      'back': back,
       'rating': rating,
       'lastReviewed': lastReviewed,
     };
@@ -29,8 +29,8 @@ class StudyCard {
     return StudyCard(
       id: map['id'],
       deckId: map['deckId'],
-      question: map['question'],
-      answer: map['answer'],
+      front: map['front'],
+      back: map['back'],
       rating: map['rating'],
       lastReviewed: map['lastReviewed'],
     );

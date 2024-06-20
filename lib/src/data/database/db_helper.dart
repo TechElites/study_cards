@@ -19,9 +19,13 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     String path = join(await getDatabasesPath(), 'decks.db');
+
+    // Uncomment first time when upgrading db
+    //await deleteDatabase(path);
+
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE decks (
@@ -35,10 +39,12 @@ class DatabaseHelper {
           CREATE TABLE cards (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             deckId INTEGER,
-            question TEXT,
-            answer TEXT,
+            front TEXT,
+            back TEXT,
             rating TEXT,
             lastReviewed TEXT,
+            frontImage TEXT,
+            backImage TEXT,
             FOREIGN KEY (deckId) REFERENCES decks (id)
           )
         ''');

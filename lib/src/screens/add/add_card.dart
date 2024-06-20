@@ -88,8 +88,8 @@ class _AddCardState extends State<AddCard> {
   void _addCard() {
     final StudyCard newCard = StudyCard(
       deckId: widget.deckId,
-      question: _questionController.text,
-      answer: _answerController.text,
+      front: _frontController.text,
+      back: _backController.text,
       rating: Rating.none,
       lastReviewed: 'Never',
       /*frontImage: _selectedFrontImage?.path,

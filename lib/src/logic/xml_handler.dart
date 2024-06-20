@@ -12,7 +12,7 @@ class XmlHandler {
     final deckName =
         document.findAllElements('deck').first.attributes.first.value;
     parsedData
-        .add(StudyCard(question: deckName, answer: cards.length.toString()));
+        .add(StudyCard(front: deckName, back: cards.length.toString()));
 
     for (var card in cards) {
       final front = card
@@ -23,7 +23,7 @@ class XmlHandler {
           .findElements('rich-text')
           .firstWhere((element) => element.getAttribute('name') == 'Back')
           .innerText;
-      parsedData.add(StudyCard(question: front, answer: back));
+      parsedData.add(StudyCard(front: front, back: back));
     }
 
     return parsedData;
@@ -39,11 +39,11 @@ class XmlHandler {
           builder.element('card', nest: () {
             builder.element('rich-text', nest: () {
               builder.attribute('name', 'Front');
-              builder.text(card.question);
+              builder.text(card.front);
             });
             builder.element('rich-text', nest: () {
               builder.attribute('name', 'Back');
-              builder.text(card.answer);
+              builder.text(card.back);
             });
           });
         }
