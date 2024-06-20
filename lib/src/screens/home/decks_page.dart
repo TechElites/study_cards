@@ -66,7 +66,7 @@ class _DecksPageState extends State<DecksPage> {
                                 MaterialPageRoute(
                                   builder: (context) => CardsPage(deck: deck),
                                 ),
-                              );
+                              ).then((value) => setState(() {}));
                             },
                           ),
                         ))

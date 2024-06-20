@@ -15,8 +15,14 @@ class XmlHandler {
         .add(StudyCard(question: deckName, answer: cards.length.toString()));
 
     for (var card in cards) {
-      final front = card.childElements.first.firstChild?.value ?? '';
-      final back = card.childElements.last.firstChild?.value ?? '';
+      final front = card
+          .findElements('rich-text')
+          .firstWhere((element) => element.getAttribute('name') == 'Front')
+          .innerText;
+      final back = card
+          .findElements('rich-text')
+          .firstWhere((element) => element.getAttribute('name') == 'Back')
+          .innerText;
       parsedData.add(StudyCard(question: front, answer: back));
     }
 
