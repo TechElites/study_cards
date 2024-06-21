@@ -68,6 +68,7 @@ class _CardsPageState extends State<CardsPage> {
                           ),
                           Expanded(
                               child: Card(
+                            shadowColor: Rating.colors[card.rating],
                             surfaceTintColor: Rating.colors[card.rating],
                             margin: const EdgeInsets.all(8.0),
                             child: ListTile(
