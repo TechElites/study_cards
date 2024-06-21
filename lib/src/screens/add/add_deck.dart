@@ -54,7 +54,13 @@ class _AddDeckState extends State<AddDeck> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: _pickFile,
-              child: const Text('Pick XML File'),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Pick XML file '),
+                  Icon(Icons.folder_copy_rounded),
+                ],
+              ),
             ),
             const SizedBox(height: 16.0),
             Expanded(

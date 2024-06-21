@@ -52,7 +52,8 @@ class _SettingsCardsPageState extends State<SettingsCardsPage> {
                   onPressed: () {
                     _updateReviewCards().then(
                         (value) => ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Review cards updated'))),
+                            const SnackBar(
+                                content: Text('Review cards updated'))),
                         onError: (e) => ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(
                                 content: Text('Error updating review cards'))));
@@ -73,8 +74,8 @@ class _SettingsCardsPageState extends State<SettingsCardsPage> {
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    Text('Export deck '),
                     Icon(Icons.file_download),
-                    Text('Export deck'),
                   ],
                 ),
               ),

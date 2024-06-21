@@ -1,8 +1,10 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/deck.dart';
+import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class DecksPage extends StatefulWidget {
   const DecksPage({super.key});
@@ -20,6 +22,18 @@ class _DecksPageState extends State<DecksPage> {
       appBar: AppBar(
         title: const Text('Decks'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(
+              Provider.of<ThemeProvider>(context).isDarkMode
+                  ? Icons.light_mode
+                  : Icons.dark_mode,
+            ),
+            onPressed: () {
+              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+            },
+          ),
+        ],
       ),
       body: FutureBuilder<List<Deck>>(
         future: _dbHelper.getDecks(),
