@@ -55,7 +55,8 @@ class _DecksPageState extends State<DecksPage> {
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('Cards: ${deck.cards}'),
+                                Text('Total cards: ${deck.cards}'),
+                                Text('Cards per review: ${deck.reviewCards}'),
                                 Text(
                                     'Creation date: ${deck.creation.toString().substring(0, 10)}'),
                               ],

@@ -32,6 +32,7 @@ class DatabaseHelper {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             cards INTEGER,
+            reviewCards INTEGER,
             creation TEXT
           )
         ''');
@@ -75,6 +76,17 @@ class DatabaseHelper {
     Database db = await database;
     List<Map<String, Object?>> rawCards = await db.query('cards', where: 'deckId = ?', whereArgs: [deckId]);
     return rawCards.map((card) => StudyCard.fromMap(card)).toList();
+  }
+
+  Future<int> getReviewCards(int deckId) async {
+    Database db = await database;
+    List<Map<String, Object?>> rawDecks = await db.query('decks', where: 'id = ?', whereArgs: [deckId]);
+    return rawDecks[0]['reviewCards'] as int;
+  }
+
+  Future<void> setReviewCards(int deckId, int reviewCards) async {
+    Database db = await database;
+    await db.update('decks', {'reviewCards': reviewCards}, where: 'id = ?', whereArgs: [deckId]);
   }
 
   Future<void> updateCardRating(int cardId, String rating) async {
