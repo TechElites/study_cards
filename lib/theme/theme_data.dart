@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
-final ThemeData customLightTheme = ThemeData(
-  colorScheme: ColorScheme.fromSwatch(
-    primarySwatch: Colors.blue,
-  ).copyWith(
+final ThemeData customLightTheme = ThemeData.light().copyWith(
+  colorScheme: const ColorScheme.light(
+    primary: Colors.blue,
     secondary: Colors.blueAccent,
+  ),
+  cardTheme: CardTheme(
+    color: Colors.lightBlue[50]!,
   ),
   scaffoldBackgroundColor: Colors.white,
   appBarTheme: AppBarTheme(
@@ -14,6 +16,12 @@ final ThemeData customLightTheme = ThemeData(
     bodyLarge: TextStyle(color: Colors.black),
     bodyMedium: TextStyle(color: Colors.black),
   ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: MaterialStateProperty.all(Colors.lightBlue[50]!),
+      foregroundColor: MaterialStateProperty.all(Colors.blue[900]!),
+    ),
+  ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
     backgroundColor: Colors.blue[300]!,
     foregroundColor: Colors.black
@@ -22,14 +30,16 @@ final ThemeData customLightTheme = ThemeData(
 
 final ThemeData customDarkTheme = ThemeData.dark().copyWith(
   colorScheme: ColorScheme.dark(
-    primary: Colors.blue[700]!,
-    secondary: Colors.blue[100]!,
-    background: Colors.grey[800]!, // Lighter gray background
-    surface: Colors.grey[600]!, // Lighter gray surface
+    primary: Colors.blue,
+    secondary: Colors.blueAccent,
+    background: Colors.grey[800]!,
   ),
-  scaffoldBackgroundColor: Colors.grey[800], // Lighter gray scaffold background
+  scaffoldBackgroundColor: Colors.grey[800],
   appBarTheme: AppBarTheme(
     color: Colors.blue[700]!,
+  ),
+  cardTheme: CardTheme(
+    color: Colors.blueGrey[400]!,
   ),
   textTheme: const TextTheme(
     bodyLarge: TextStyle(color: Colors.white),
@@ -37,8 +47,8 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all(Colors.grey[600]!),
-      foregroundColor: MaterialStateProperty.all(Colors.blue[100]!),
+      backgroundColor: MaterialStateProperty.all(Colors.blueGrey[400]!),
+      foregroundColor: MaterialStateProperty.all(Colors.lightBlue[50]!),
     ),
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
