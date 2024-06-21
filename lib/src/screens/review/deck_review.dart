@@ -22,78 +22,79 @@ class _CardsReviewState extends State<ReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Review'),
-          centerTitle: true,
-        ),
-        body: GestureDetector(
-          onTap: () {
-            setState(() {
-              _reveal = true;
-            });
-          },
-          child: Center(
-            child: _index < widget.cards.length
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      appBar: AppBar(
+        title: const Text('Review'),
+        centerTitle: true,
+      ),
+      body: GestureDetector(
+        onTap: () {
+          setState(() {
+            _reveal = true;
+          });
+        },
+        child: _index < widget.cards.length
+            ? Column(
+                children: [
+                  Expanded(
+                      child: Center(
+                          child: SingleChildScrollView(
+                              child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Column(
-                        children: [
-                          const SizedBox(height: 100),
-                          Text(
-                            widget.cards[_index].front,
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                          if (widget.cards[_index].frontImage != '')
-                          //Text( widget.cards[_index].frontImage),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
-                              child: Image.file(
-                                File(widget.cards[_index].frontImage),
-                                height: 200.0,
-                                width: 200.0,
-                                fit: BoxFit.cover,
-                                alignment: Alignment.center,
-                              ),
-                            ),
-                          const SizedBox(height: 30),
-                          if (_reveal)
-                            Text(
-                              widget.cards[_index].back,
-                              style: const TextStyle(fontSize: 24),
-                            ),
-                            if (widget.cards[_index].backImage != '')
-                            //Text( widget.cards[_index].frontImage),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
-                              child: Image.file(
-                                File(widget.cards[_index].backImage),
-                                height: 200.0,
-                                width: 200.0,
-                                fit: BoxFit.cover,
-                                alignment: Alignment.center,
-                              ),
-                            )
-                          else
-                            const Text('Tap to reveal answer'),
-                        ],
+                      //const SizedBox(height: 100),
+                      Text(
+                        widget.cards[_index].front,
+                        style: const TextStyle(fontSize: 24),
                       ),
-                      if (_reveal)
+                      if (widget.cards[_index].frontImage != '')
+                        //Text( widget.cards[_index].frontImage),
                         Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 20.0), // Add some space at the bottom
-                          child: ButtonBar(
-                            alignment: MainAxisAlignment.center,
-                            children: _createRatingButtons(),
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Image.file(
+                            File(widget.cards[_index].frontImage),
+                            height: 200.0,
+                            width: 200.0,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.center,
                           ),
                         ),
+                      const SizedBox(height: 30),
+                      if (_reveal)
+                        Text(
+                          widget.cards[_index].back,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                      if (widget.cards[_index].backImage != '' && _reveal)
+                        //Text( widget.cards[_index].frontImage),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Image.file(
+                            File(widget.cards[_index].backImage),
+                            height: 200.0,
+                            width: 200.0,
+                            fit: BoxFit.cover,
+                            alignment: Alignment.center,
+                          ),
+                        )
+                      else
+                        const Text('Tap to reveal answer'),
                     ],
-                  )
-                : const Text('No more cards'),
-          ),
-        ));
+                  )))),
+                  if (_reveal)
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          bottom: 20.0), // Add some space at the bottom
+                      child: ButtonBar(
+                        alignment: MainAxisAlignment.center,
+                        children: _createRatingButtons(),
+                      ),
+                    ),
+                ],
+              )
+            : const Text('No more cards'),
+      ),
+    );
   }
 
   List<Widget> _createRatingButtons() {
