@@ -32,38 +32,48 @@ class _CardsPageState extends State<CardDetailsPage> {
       appBar: AppBar(
         title: const Text('Modify Card'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            onPressed: _modifyCard,
+            icon: const Icon(Icons.save),
+          )
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _frontController,
-              decoration: const InputDecoration(
-                labelText: 'Question',
-              ),
+      body: Column(children: [
+        Expanded(
+            child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _frontController,
+                  decoration: const InputDecoration(
+                    labelText: 'Question',
+                  ),
+                  maxLines: null,
+                ),
+                const SizedBox(height: 16.0),
+                TextField(
+                  controller: _backController,
+                  decoration: const InputDecoration(
+                    labelText: 'Answer',
+                  ),
+                  maxLines: null,
+                ),
+              ],
             ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _backController,
-              decoration: const InputDecoration(
-                labelText: 'Answer',
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            ButtonBar(
-              alignment: MainAxisAlignment.center,
-              children: _createRatingButtons(),
-            ),
-            const SizedBox(height: 16.0),
-            Text('Last reviewed: ${widget.card.lastReviewedFormatted}')
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _modifyCard,
-        child: const Icon(Icons.save),
-      ),
+          ),
+        )),
+        Column(children: [
+          ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: _createRatingButtons(),
+          ),
+          Text('Last reviewed: ${widget.card.lastReviewedFormatted}'),
+          const SizedBox(height: 16.0),
+        ])
+      ]),
     );
   }
 

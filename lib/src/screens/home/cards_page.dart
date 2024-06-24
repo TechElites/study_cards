@@ -78,12 +78,8 @@ class _CardsPageState extends State<CardsPage> {
                             child: ListTile(
                               title: Text(card.front),
                               subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text('Rating: ${card.rating}'),
-                                  Text(
-                                      'Last reviewed: ${card.lastReviewedFormatted}'),
-                                  const SizedBox(height: 5.0),
                                   Container(
                                     height:
                                         6, // Height of the colored bar/ Color of the bar
