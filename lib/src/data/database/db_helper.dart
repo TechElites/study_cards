@@ -89,6 +89,11 @@ class DatabaseHelper {
     await db.update('decks', {'reviewCards': reviewCards}, where: 'id = ?', whereArgs: [deckId]);
   }
 
+  Future<void> updateCard(StudyCard card) async {
+    Database db = await database;
+    await db.update('cards', card.toMap(), where: 'id = ?', whereArgs: [card.id]);
+  }
+
   Future<void> updateCardRating(int cardId, String rating) async {
     Database db = await database;
     await db.update('cards', {

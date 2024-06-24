@@ -6,6 +6,10 @@ class StudyCard {
   final String rating;
   final String lastReviewed;
 
+  get lastReviewedFormatted => lastReviewed.length < 6
+      ? lastReviewed
+      : lastReviewed.replaceFirst('T', ' ').substring(0, 16);
+
   StudyCard({
     this.id = -1,
     this.deckId = -1,

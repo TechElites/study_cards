@@ -3,6 +3,7 @@ import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/data/model/deck.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/screens/add/add_card.dart';
+import 'package:flash_cards/src/screens/details/card_details.dart';
 import 'package:flash_cards/src/screens/review/deck_review.dart';
 import 'package:flash_cards/src/screens/settings/settings_cards_page.dart';
 import 'package:flutter/material.dart';
@@ -68,8 +69,6 @@ class _CardsPageState extends State<CardsPage> {
                           ),
                           Expanded(
                               child: Card(
-                            shadowColor: Rating.colors[card.rating],
-                            surfaceTintColor: Rating.colors[card.rating],
                             margin: const EdgeInsets.all(8.0),
                             child: ListTile(
                               title: Text(card.front),
@@ -77,13 +76,30 @@ class _CardsPageState extends State<CardsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('Rating: ${card.rating}'),
-                                  card.lastReviewed.length < 6
-                                      ? Text(
-                                          'Last Reviewed: ${card.lastReviewed}')
-                                      : Text(
-                                          'Last Reviewed: ${card.lastReviewed.replaceFirst('T', ' ').substring(0, 16)}'),
+                                  Text('Last reviewed: ${card.lastReviewedFormatted}'),
+                                  const SizedBox(height: 5.0),
+                                  Container(
+                                    height:
+                                        6, // Height of the colored bar/ Color of the bar
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey,
+                                        width: 0.5,
+                                      ),
+                                      borderRadius: BorderRadius.circular(4),
+                                      color: Rating.colors[card.rating],
+                                    ),
+                                  ),
                                 ],
                               ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CardDetailsPage(card: card),
+                                  ),
+                                ).then((value) => setState(() {}));
+                              },
                             ),
                           ))
                         ]));
