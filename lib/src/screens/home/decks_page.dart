@@ -79,7 +79,7 @@ class _DecksPageState extends State<DecksPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => CardsPage(deck: deck),
+                                  builder: (context) => CardsPage(deckId: deck.id),
                                 ),
                               ).then((value) => setState(() {}));
                             },

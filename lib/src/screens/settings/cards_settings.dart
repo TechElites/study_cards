@@ -1,26 +1,25 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/deck.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
 import 'package:flutter/material.dart';
 
-class SettingsCardsPage extends StatefulWidget {
-  final Deck deck;
+class CardsSettingsPage extends StatefulWidget {
+  final int deckId;
 
-  const SettingsCardsPage({super.key, required this.deck});
+  const CardsSettingsPage({super.key, required this.deckId});
 
   @override
-  State<SettingsCardsPage> createState() => _SettingsCardsPageState();
+  State<CardsSettingsPage> createState() => _CardsSettingsPageState();
 }
 
-class _SettingsCardsPageState extends State<SettingsCardsPage> {
+class _CardsSettingsPageState extends State<CardsSettingsPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _cardsController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _dbHelper.getReviewCards(widget.deck.id).then((value) {
+    _dbHelper.getReviewCards(widget.deckId).then((value) {
       setState(() {
         _cardsController.text = value.toString();
       });
@@ -85,13 +84,14 @@ class _SettingsCardsPageState extends State<SettingsCardsPage> {
   }
 
   Future<void> _exportDeck() async {
-    final List<StudyCard> cards = await _dbHelper.getCards(widget.deck.id);
-    final String deckXml = XmlHandler.createXml(cards, widget.deck.name);
-    await XmlHandler.saveXmlToFile(deckXml, '${widget.deck.name}.xml');
+    final deck = await _dbHelper.getDeck(widget.deckId);
+    final List<StudyCard> cards = await _dbHelper.getCards(deck.id);
+    final String deckXml = XmlHandler.createXml(cards, deck.name);
+    await XmlHandler.saveXmlToFile(deckXml, '${deck.name}.xml');
   }
 
   Future<void> _updateReviewCards() async {
     final int reviewCards = int.parse(_cardsController.text);
-    await _dbHelper.setReviewCards(widget.deck.id, reviewCards);
+    await _dbHelper.setReviewCards(widget.deckId, reviewCards);
   }
 }

@@ -124,9 +124,7 @@ class _AddDeckState extends State<AddDeck> {
     final StudyCard newCard = StudyCard(
       deckId: deckId,
       front: front,
-      back: back,
-      rating: 'New',
-      lastReviewed: 'Never',
+      back: back
     );
     _dbHelper.insertCard(newCard);
   }

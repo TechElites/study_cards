@@ -1,18 +1,18 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
-import 'package:flash_cards/src/data/model/deck.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
+import 'package:flash_cards/src/logic/cards_shuffler.dart';
 import 'package:flash_cards/src/screens/add/add_card.dart';
 import 'package:flash_cards/src/screens/details/card_details.dart';
 import 'package:flash_cards/src/screens/review/deck_review.dart';
-import 'package:flash_cards/src/screens/settings/settings_cards_page.dart';
+import 'package:flash_cards/src/screens/settings/cards_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class CardsPage extends StatefulWidget {
-  final Deck deck;
+  final int deckId;
 
-  const CardsPage({super.key, required this.deck});
+  const CardsPage({super.key, required this.deckId});
 
   @override
   State<CardsPage> createState() => _CardsPageState();
@@ -33,7 +33,8 @@ class _CardsPageState extends State<CardsPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SettingsCardsPage(deck: widget.deck),
+                    builder: (context) =>
+                        CardsSettingsPage(deckId: widget.deckId),
                   ),
                 ).then((value) => setState(() {}));
               },
@@ -42,7 +43,7 @@ class _CardsPageState extends State<CardsPage> {
           ],
         ),
         body: FutureBuilder<List<StudyCard>>(
-          future: _dbHelper.getCards(widget.deck.id),
+          future: _dbHelper.getCards(widget.deckId),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
@@ -76,7 +77,8 @@ class _CardsPageState extends State<CardsPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text('Rating: ${card.rating}'),
-                                  Text('Last reviewed: ${card.lastReviewedFormatted}'),
+                                  Text(
+                                      'Last reviewed: ${card.lastReviewedFormatted}'),
                                   const SizedBox(height: 5.0),
                                   Container(
                                     height:
@@ -96,7 +98,8 @@ class _CardsPageState extends State<CardsPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => CardDetailsPage(card: card),
+                                    builder: (context) =>
+                                        CardDetailsPage(card: card),
                                   ),
                                 ).then((value) => setState(() {}));
                               },
@@ -118,7 +121,7 @@ class _CardsPageState extends State<CardsPage> {
                 await Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddCard(deckId: widget.deck.id),
+                    builder: (context) => AddCard(deckId: widget.deckId),
                   ),
                 );
                 setState(() {});
@@ -128,20 +131,18 @@ class _CardsPageState extends State<CardsPage> {
               child: const Icon(Icons.rate_review),
               label: 'Review',
               onTap: () async {
-                await _dbHelper.getCards(widget.deck.id).then((cards) {
+                await _dbHelper.getCards(widget.deckId).then((cards) {
                   if (cards.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('No cards to review')));
                   } else {
-                    final randomCards = cards..shuffle();
-                    _dbHelper.getReviewCards(widget.deck.id).then((value) {
+                    _dbHelper.getReviewCards(widget.deckId).then((maxCards) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => ReviewPage(
-                              cards: randomCards.length > value
-                                  ? randomCards.sublist(0, value)
-                                  : randomCards),
+                              cards:
+                                  CardsShuffler.shuffleCards(cards, maxCards)),
                         ),
                       ).then((value) => setState(() {}));
                     });

@@ -6,17 +6,24 @@ class StudyCard {
   final String rating;
   final String lastReviewed;
 
-  get lastReviewedFormatted => lastReviewed.length < 6
+  get lastReviewedFormatted => lastReviewed == 'Never'
       ? lastReviewed
       : lastReviewed.replaceFirst('T', ' ').substring(0, 16);
+
+  get minutesSinceReviewed {
+    if (lastReviewed == 'Never') return 0;
+    final now = DateTime.now();
+    final last = DateTime.parse(lastReviewed);
+    return now.difference(last).inMinutes;
+  }
 
   StudyCard({
     this.id = -1,
     this.deckId = -1,
     required this.front,
     required this.back,
-    this.rating = '',
-    this.lastReviewed = '',
+    this.rating = 'None',
+    this.lastReviewed = 'Never',
   });
 
   Map<String, dynamic> toMap() {

@@ -72,6 +72,12 @@ class DatabaseHelper {
     return rawDecks.map((deck) => Deck.fromMap(deck)).toList();
   }
 
+  Future<Deck> getDeck(int deckId) async {
+    Database db = await database;
+    List<Map<String, Object?>> rawDecks = await db.query('decks', where: 'id = ?', whereArgs: [deckId]);
+    return Deck.fromMap(rawDecks[0]);
+  }
+
   Future<List<StudyCard>> getCards(int deckId) async {
     Database db = await database;
     List<Map<String, Object?>> rawCards = await db.query('cards', where: 'deckId = ?', whereArgs: [deckId]);
