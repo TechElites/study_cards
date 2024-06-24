@@ -65,7 +65,7 @@ class XmlHandler {
     return document.toXmlString(pretty: true, indent: '  ');
   }
 
-  static Future<void> saveXmlToFile(String xmlString, String fileName, List<String> MediaList) async {
-    FileDownloaderHelper.saveFileOnDevice(fileName, xmlString, MediaList);
+  static Future<void> saveXmlToFile(String xmlString, String fileName, Map<String, String> MediaMap) async {
+    FileDownloaderHelper.saveFileOnDevice(fileName, xmlString, MediaMap);
   }
 }

@@ -2,12 +2,15 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_archive/flutter_archive.dart';
 // import 'package:share_plus/share_plus.dart';
+import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 
 class FileDownloaderHelper {
-  static Future<void> saveFileOnDevice(String fileName, String inFile, List<String> MediaList) async {
+  static Future<void> saveFileOnDevice(
+      String fileName, String inFile, Map<String, String> MediaMap) async {
     try {
+      List bytes = [];
       if (Platform.isAndroid) {
         // Check if the platform is Android
         final directory = Directory("/storage/emulated/0/Download");
@@ -20,19 +23,34 @@ class FileDownloaderHelper {
         final outFile = File(path);
 
         final res = await outFile.writeAsString(inFile, flush: true);
+        bytes.add(await res.readAsBytes());
         log("=> saved file: ${res.path}");
-        final sourceDir = Directory("storage/emulated/0/ciao");
-        final files = [
-          for (String f in MediaList)
-            File(f)
-        ];
-        final zipFile = File("zip_file_path");
-        try {
-          ZipFile.createFromFiles(
-              sourceDir: sourceDir, files: files, zipFile: zipFile);
-        } catch (e) {
-          print(e);
+        if (MediaMap.isNotEmpty) {
+          for (var i = 0; i < MediaMap.length; i++) {
+            bytes.add(
+                await File(MediaMap.entries.elementAt(i).key).readAsBytes());
+            //bytes.add(await File(MediaList[i]).readAsBytes());
+          }
         }
+        //List archiveList = [];
+        final archive = Archive();
+        for (var i = 0; i < bytes.length; i++) {
+          if (i == 0) {
+            archive.addFile(ArchiveFile(fileName, bytes[i].length, bytes[i]));
+          } else {
+            archive.addFile(ArchiveFile(MediaMap.entries.elementAt(i - 1).value,
+                bytes[i].length, bytes[i]));
+          }
+        }
+        final zipEncoder = ZipEncoder();
+        final encodedFile = zipEncoder.encode(archive);
+        if (encodedFile != null) {
+          // Save the zip file to the device
+          final zipFile =
+              await File('${directory.path}/${fileName.split('.xml')[0]}.zip')
+                  .writeAsBytes(encodedFile);
+        }
+        //final zipFile = await File('${directory.path}/$fileName.zip').writeAsBytes(encodedFile);
       } else {
         // IOS
         final directory = await getApplicationDocumentsDirectory();

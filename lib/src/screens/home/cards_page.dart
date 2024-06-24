@@ -136,15 +136,18 @@ class _CardsPageState extends State<CardsPage> {
   Future<void> _exportDeck() async {
     final List<StudyCard> cards = await _dbHelper.getCards(widget.deck.id);
     final String deckXml = XmlHandler.createXml(cards, widget.deck.name);
-    final List<String> MediaList = [];
+    final List <String> MediaList = [];
+    final Map<String, String> MediaMap = {}; //path;name
     for (final card in cards) {
       if (card.frontImage.isNotEmpty) {
         MediaList.add(card.frontImage);
+        MediaMap[card.frontImage] = '${card.id}_front.${card.frontImage.split('.').last}';
       }
       if (card.backImage.isNotEmpty) {
         MediaList.add(card.backImage);
+        MediaMap[card.backImage] = '${card.id}_back.${card.backImage.split('.').last}';
       }
     }
-    await XmlHandler.saveXmlToFile(deckXml, '${widget.deck.name}.xml', MediaList);
+    await XmlHandler.saveXmlToFile(deckXml, '${widget.deck.name}.xml', MediaMap);
   }
 }
