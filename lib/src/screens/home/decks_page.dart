@@ -53,13 +53,17 @@ class _DecksPageState extends State<DecksPage> {
                   return Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(children: [
-                        IconButton(
+                        ElevatedButton(
                           onPressed: () {
                             _dbHelper.deleteDeck(deck.id).then((_) {
                               setState(() {});
                             });
                           },
-                          icon: const Icon(Icons.delete),
+                          style: ElevatedButton.styleFrom(
+                            shape: const CircleBorder(),
+                            padding: const EdgeInsets.all(10),
+                          ),
+                          child: const Icon(Icons.delete),
                         ),
                         Expanded(
                             child: Card(
@@ -79,9 +83,13 @@ class _DecksPageState extends State<DecksPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => CardsPage(deckId: deck.id),
+                                  builder: (context) =>
+                                      CardsPage(deckId: deck.id),
                                 ),
                               ).then((value) => setState(() {}));
+                            },
+                            onLongPress: () {
+                              _changeDeckName(deck);
                             },
                           ),
                         ))
@@ -102,6 +110,43 @@ class _DecksPageState extends State<DecksPage> {
         tooltip: 'Add Deck',
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  void _changeDeckName(Deck deck) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final TextEditingController nameController = TextEditingController();
+        return AlertDialog(
+          title: const Text('Change deck name'),
+          content: TextField(
+            controller: nameController,
+            decoration: const InputDecoration(
+              hintText: 'New deck name',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                _dbHelper
+                    .updateDeckName(deck.id, nameController.text)
+                    .then((_) {
+                  setState(() {});
+                  Navigator.pop(context);
+                });
+              },
+              child: const Text('Change'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

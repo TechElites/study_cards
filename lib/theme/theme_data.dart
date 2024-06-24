@@ -22,10 +22,13 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
       foregroundColor: MaterialStateProperty.all(Colors.blue[900]!),
     ),
   ),
+  dialogTheme: const DialogTheme(
+      titleTextStyle: TextStyle(
+    color: Colors.black,
+    fontSize: 24,
+  )),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
-    backgroundColor: Colors.blue[300]!,
-    foregroundColor: Colors.black
-  ),
+      backgroundColor: Colors.blue[300]!, foregroundColor: Colors.black),
 );
 
 final ThemeData customDarkTheme = ThemeData.dark().copyWith(
@@ -51,8 +54,11 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
       foregroundColor: MaterialStateProperty.all(Colors.lightBlue[50]!),
     ),
   ),
+  dialogTheme: const DialogTheme(
+      titleTextStyle: TextStyle(
+    color: Colors.white,
+    fontSize: 24,
+  )),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
-    backgroundColor: Colors.blue[700]!,
-    foregroundColor: Colors.white
-  ),
+      backgroundColor: Colors.blue[700]!, foregroundColor: Colors.white),
 );

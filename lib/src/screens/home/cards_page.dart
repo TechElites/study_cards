@@ -1,7 +1,7 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
-import 'package:flash_cards/src/logic/cards_shuffler.dart';
+import 'package:flash_cards/src/logic/deck_shuffler.dart';
 import 'package:flash_cards/src/screens/add/add_card.dart';
 import 'package:flash_cards/src/screens/details/card_details.dart';
 import 'package:flash_cards/src/screens/review/deck_review.dart';
@@ -60,13 +60,17 @@ class _CardsPageState extends State<CardsPage> {
                     return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(children: [
-                          IconButton(
+                          ElevatedButton(
                             onPressed: () {
                               _dbHelper.deleteCard(card.id).then((_) {
                                 setState(() {});
                               });
                             },
-                            icon: const Icon(Icons.delete),
+                            style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(10),
+                            ),
+                            child: const Icon(Icons.delete),
                           ),
                           Expanded(
                               child: Card(
@@ -142,7 +146,7 @@ class _CardsPageState extends State<CardsPage> {
                         MaterialPageRoute(
                           builder: (context) => ReviewPage(
                               cards:
-                                  CardsShuffler.shuffleCards(cards, maxCards)),
+                                  DeckShuffler.shuffleCards(cards, maxCards)),
                         ),
                       ).then((value) => setState(() {}));
                     });

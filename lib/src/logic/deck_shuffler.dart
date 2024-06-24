@@ -1,12 +1,12 @@
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
 
-class CardsShuffler {
+class DeckShuffler {
   static List<StudyCard> shuffleCards(List<StudyCard> cards, int maxCards) {
     final List<StudyCard> shuffledCards = [];
 
     for (final card in cards) {
-      if (card.minutesSinceReviewed > Rating.times[card.rating]) {
+      if (card.minutesSinceReviewed >= Rating.times[card.rating]) {
         shuffledCards.add(card);
       }
     }
