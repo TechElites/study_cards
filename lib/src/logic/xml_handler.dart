@@ -11,8 +11,7 @@ class XmlHandler {
 
     final deckName =
         document.findAllElements('deck').first.attributes.first.value;
-    parsedData
-        .add(StudyCard(front: deckName, back: cards.length.toString()));
+    parsedData.add(StudyCard(front: deckName, back: cards.length.toString()));
 
     for (var card in cards) {
       final front = card
@@ -40,10 +39,22 @@ class XmlHandler {
             builder.element('rich-text', nest: () {
               builder.attribute('name', 'Front');
               builder.text(card.front);
+              if (card.frontImage != '') {
+                builder.element('media', nest: () {
+                  builder.attribute('type', 'image');
+                  builder.attribute('src', '${card.id}_front.${card.frontImage.split('.').last}');
+                });
+              }
             });
             builder.element('rich-text', nest: () {
               builder.attribute('name', 'Back');
               builder.text(card.back);
+              if (card.backImage != '') {
+                builder.element('media', nest: () {
+                  builder.attribute('type', 'image');
+                  builder.attribute('src', '${card.id}_back.${card.backImage.split('.').last}');
+                });
+              }
             });
           });
         }
@@ -54,7 +65,7 @@ class XmlHandler {
     return document.toXmlString(pretty: true, indent: '  ');
   }
 
-  static Future<void> saveXmlToFile(String xmlString, String fileName) async {
-    FileDownloaderHelper.saveFileOnDevice(fileName, xmlString);
+  static Future<void> saveXmlToFile(String xmlString, String fileName, List<String> MediaList) async {
+    FileDownloaderHelper.saveFileOnDevice(fileName, xmlString, MediaList);
   }
 }

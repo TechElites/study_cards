@@ -92,12 +92,25 @@ class _AddDeckState extends State<AddDeck> {
     );
   }
 
+  void _createFolder(folderName) async {
+    final path = Directory("storage/emulated/0/$folderName");
+    if ((await path.exists())) {
+      // TODO:
+      print("exist");
+    } else {
+      // TODO:
+      print("not exist");
+      path.create();
+    }
+  }
+
   void _addDeck() {
     final Deck newDeck = Deck(
       name: _nameController.text,
       cards: frontsAndBacks.length - 1,
       creation: DateTime.now(),
     );
+    _createFolder(newDeck.name);
     _dbHelper.insertDeck(newDeck).then((deckId) {
       if (frontsAndBacks.length > 1) {
         for (var card in frontsAndBacks.sublist(1)) {

@@ -2,10 +2,11 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_archive/flutter_archive.dart';
 // import 'package:share_plus/share_plus.dart';
 
 class FileDownloaderHelper {
-  static Future<void> saveFileOnDevice(String fileName, String inFile) async {
+  static Future<void> saveFileOnDevice(String fileName, String inFile, List<String> MediaList) async {
     try {
       if (Platform.isAndroid) {
         // Check if the platform is Android
@@ -20,6 +21,18 @@ class FileDownloaderHelper {
 
         final res = await outFile.writeAsString(inFile, flush: true);
         log("=> saved file: ${res.path}");
+        final sourceDir = Directory("storage/emulated/0/ciao");
+        final files = [
+          for (String f in MediaList)
+            File(f)
+        ];
+        final zipFile = File("zip_file_path");
+        try {
+          ZipFile.createFromFiles(
+              sourceDir: sourceDir, files: files, zipFile: zipFile);
+        } catch (e) {
+          print(e);
+        }
       } else {
         // IOS
         final directory = await getApplicationDocumentsDirectory();
