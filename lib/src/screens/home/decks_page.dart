@@ -15,6 +15,8 @@ class DecksPage extends StatefulWidget {
 
 class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
+  final List<int> _deletionDecks = [];
+  bool _deletionMode = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,101 +54,81 @@ class _DecksPageState extends State<DecksPage> {
                   final deck = snapshot.data![index];
                   return Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Row(children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            _dbHelper.deleteDeck(deck.id).then((_) {
-                              setState(() {});
+                      child: Card(
+                        elevation:
+                            _deletionDecks.contains(deck.id) ? 5 : 1,
+                        margin: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(deck.name),
+                          selected: _deletionDecks.contains(deck.id),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Total cards: ${deck.cards}'),
+                              Text(
+                                  'Creation date: ${deck.creation.toString().substring(0, 10)}'),
+                            ],
+                          ),
+                          onTap: () {
+                            if (_deletionMode) {
+                              setState(() {
+                                if (_deletionDecks.contains(deck.id)) {
+                                  _deletionDecks.remove(deck.id);
+                                  if (_deletionDecks.isEmpty) {
+                                    _deletionMode = false;
+                                  }
+                                } else {
+                                  _deletionDecks.add(deck.id);
+                                }
+                              });
+                              return;
+                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CardsPage(deckId: deck.id),
+                              ),
+                            ).then((value) => setState(() {}));
+                          },
+                          onLongPress: () {
+                            setState(() {
+                              _deletionDecks.add(deck.id);
+                              _deletionMode = true;
                             });
                           },
-                          style: ElevatedButton.styleFrom(
-                            shape: const CircleBorder(),
-                            padding: const EdgeInsets.all(10),
-                          ),
-                          child: const Icon(Icons.delete),
                         ),
-                        Expanded(
-                            child: Card(
-                          margin: const EdgeInsets.all(8.0),
-                          child: ListTile(
-                            title: Text(deck.name),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Total cards: ${deck.cards}'),
-                                Text('Cards per review: ${deck.reviewCards}'),
-                                Text(
-                                    'Creation date: ${deck.creation.toString().substring(0, 10)}'),
-                              ],
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      CardsPage(deckId: deck.id),
-                                ),
-                              ).then((value) => setState(() {}));
-                            },
-                            onLongPress: () {
-                              _changeDeckName(deck);
-                            },
-                          ),
-                        ))
-                      ]));
+                      ));
                 },
               ));
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddDeck(),
-            ),
-          ).then((value) => setState(() {}));
-        },
-        tooltip: 'Add Deck',
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-
-  void _changeDeckName(Deck deck) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        final TextEditingController nameController = TextEditingController();
-        return AlertDialog(
-          title: const Text('Change deck name'),
-          content: TextField(
-            controller: nameController,
-            decoration: const InputDecoration(
-              hintText: 'New deck name',
-            ),
-          ),
-          actions: [
-            TextButton(
+      floatingActionButton: _deletionMode
+          ? FloatingActionButton(
               onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                _dbHelper
-                    .updateDeckName(deck.id, nameController.text)
-                    .then((_) {
-                  setState(() {});
-                  Navigator.pop(context);
+                setState(() {
+                  _deletionMode = false;
+                  for (var deck in _deletionDecks) {
+                    _dbHelper.deleteDeck(deck);
+                  }
+                  _deletionDecks.clear();
                 });
               },
-              child: const Text('Change'),
+              tooltip: 'Delete Decks',
+              child: const Icon(Icons.delete),
+            )
+          : FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddDeck(),
+                  ),
+                ).then((value) => setState(() {}));
+              },
+              tooltip: 'Add Deck',
+              child: const Icon(Icons.add),
             ),
-          ],
-        );
-      },
     );
   }
 }

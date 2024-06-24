@@ -14,6 +14,7 @@ class CardsSettingsPage extends StatefulWidget {
 
 class _CardsSettingsPageState extends State<CardsSettingsPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _cardsController = TextEditingController();
 
   @override
@@ -22,6 +23,11 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     _dbHelper.getReviewCards(widget.deckId).then((value) {
       setState(() {
         _cardsController.text = value.toString();
+      });
+    });
+    _dbHelper.getDeck(widget.deckId).then((value) {
+      setState(() {
+        _nameController.text = value.name;
       });
     });
   }
@@ -35,50 +41,61 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Stack(alignment: const Alignment(1.0, 1.0), children: [
-                TextField(
-                  keyboardType: TextInputType.number,
-                  controller: _cardsController,
-                  decoration: const InputDecoration(
-                    labelText: 'Cards per review',
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    _updateReviewCards().then(
+        child: Column(children: [
+          Stack(alignment: const Alignment(1.0, 1.0), children: [
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(
+                labelText: 'Deck name',
+              ),
+            ),
+            IconButton(
+              onPressed: () {
+                _dbHelper
+                    .updateDeckName(widget.deckId, _nameController.text)
+                    .then(
                         (value) => ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Review cards updated'))),
+                            const SnackBar(content: Text('Deck name updated'))),
                         onError: (e) => ScaffoldMessenger.of(context)
                             .showSnackBar(const SnackBar(
-                                content: Text('Error updating review cards'))));
-                  },
-                  icon: const Icon(Icons.check),
-                )
-              ]),
-              ElevatedButton(
-                onPressed: () {
-                  _exportDeck().then(
-                      (value) => ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content: Text('Deck saved to Downloads folder'))),
-                      onError: (e) => ScaffoldMessenger.of(context)
-                          .showSnackBar(const SnackBar(
-                              content: Text('Error saving deck'))));
-                },
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Export deck '),
-                    Icon(Icons.file_download),
-                  ],
-                ),
+                                content: Text('Error updating deck name'))));
+              },
+              icon: const Icon(Icons.check),
+            )
+          ]),
+          const SizedBox(height: 16.0),
+          Stack(alignment: const Alignment(1.0, 1.0), children: [
+            TextField(
+              keyboardType: TextInputType.number,
+              controller: _cardsController,
+              decoration: const InputDecoration(
+                labelText: 'Cards per review',
               ),
-            ]),
+            ),
+            IconButton(
+              onPressed: () {
+                _updateReviewCards().then(
+                    (value) => ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Review cards updated'))),
+                    onError: (e) => ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Error updating review cards'))));
+              },
+              icon: const Icon(Icons.check),
+            )
+          ]),
+        ]),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _exportDeck().then(
+              (value) => ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('Deck saved to Downloads folder'))),
+              onError: (e) => ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Error saving deck'))));
+        },
+        child: const Icon(Icons.file_download),
       ),
     );
   }

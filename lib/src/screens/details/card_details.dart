@@ -29,51 +29,44 @@ class _CardsPageState extends State<CardDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Modify Card'),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            onPressed: _modifyCard,
-            icon: const Icon(Icons.save),
-          )
-        ],
-      ),
+      appBar: AppBar(title: const Text('Modify Card'), centerTitle: true),
       body: Column(children: [
-        Expanded(
-            child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _frontController,
-                  decoration: const InputDecoration(
-                    labelText: 'Question',
-                  ),
-                  maxLines: null,
-                ),
-                const SizedBox(height: 16.0),
-                TextField(
-                  controller: _backController,
-                  decoration: const InputDecoration(
-                    labelText: 'Answer',
-                  ),
-                  maxLines: null,
-                ),
-              ],
-            ),
-          ),
-        )),
         Column(children: [
+          const SizedBox(height: 16.0),
           ButtonBar(
             alignment: MainAxisAlignment.center,
             children: _createRatingButtons(),
           ),
           Text('Last reviewed: ${widget.card.lastReviewedFormatted}'),
-          const SizedBox(height: 16.0),
-        ])
+        ]),
+        Expanded(
+            child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                controller: _frontController,
+                decoration: const InputDecoration(
+                  labelText: 'Question',
+                ),
+                maxLines: null,
+              ),
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _backController,
+                decoration: const InputDecoration(
+                  labelText: 'Answer',
+                ),
+                maxLines: null,
+              ),
+            ],
+          ),
+        ))
       ]),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _modifyCard,
+        child: const Icon(Icons.check),
+      ),
     );
   }
 
