@@ -119,6 +119,26 @@ class DatabaseHelper {
     await db.delete('cards', where: 'deckId = ?', whereArgs: [deckId]);
   }
 
+  Future<void> deleteDecks(List<int> deckIds) async {
+    Database db = await database;
+    await db.delete('decks', where: 'id IN (${deckIds.join(',')})');
+    await db.delete('cards', where: 'deckId IN (${deckIds.join(',')})');
+  }
+
+  Future<void> deleteCards(List<int> cardIds) async {
+    Database db = await database;
+    await db.rawUpdate('''
+      UPDATE decks
+      SET cards = cards - ${cardIds.length}
+      WHERE id = (
+        SELECT deckId
+        FROM cards
+        WHERE id IN (${cardIds.join(',')})
+      )
+    ''');
+    await db.delete('cards', where: 'id IN (${cardIds.join(',')})');
+  }
+
   Future<void> deleteCard(int cardId) async {
     Database db = await database;
     await db.rawUpdate('''
