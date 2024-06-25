@@ -106,9 +106,12 @@ class _AddDeckState extends State<AddDeck> {
     );
     _dbHelper.insertDeck(newDeck).then((deckId) {
       if (frontsAndBacks.length > 1) {
+        final List<StudyCard> cards = [];
         for (var card in frontsAndBacks.sublist(1)) {
-          _addCard(deckId, card.front, card.back);
+          cards.add(
+              StudyCard(deckId: deckId, front: card.front, back: card.back));
         }
+        _dbHelper.insertDeckCards(cards);
       }
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -118,14 +121,5 @@ class _AddDeckState extends State<AddDeck> {
       );
       Navigator.pop(context, newDeck);
     });
-  }
-
-  void _addCard(deckId, front, back) {
-    final StudyCard newCard = StudyCard(
-      deckId: deckId,
-      front: front,
-      back: back
-    );
-    _dbHelper.insertCard(newCard);
   }
 }
