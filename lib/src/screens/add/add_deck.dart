@@ -21,16 +21,22 @@ class _AddDeckState extends State<AddDeck> {
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['xml'],
+      allowedExtensions: ['xml', 'zip'],
     );
 
     if (result != null && result.files.isNotEmpty) {
       File file = File(result.files.single.path!);
-      String fileContent = await file.readAsString();
-      setState(() {
+      String fileContent = '';
+      if (file.path.endsWith('.zip')) {
+        print('qui');
+        XmlHandler.unzipFile(file);
+      } else {
+        fileContent = await file.readAsString();
+      }
+      /*setState(() {
         frontsAndBacks = XmlHandler.parseXml(fileContent);
         _nameController.text = frontsAndBacks[0].front;
-      });
+      });*/
     }
   }
 
@@ -92,7 +98,7 @@ class _AddDeckState extends State<AddDeck> {
     );
   }
 
-  void _createFolder(folderName) async {
+  /*void _createFolder(folderName) async {
     final path = Directory("storage/emulated/0/$folderName");
     if ((await path.exists())) {
       // TODO:
@@ -102,7 +108,7 @@ class _AddDeckState extends State<AddDeck> {
       print("not exist");
       path.create();
     }
-  }
+  }*/
 
   void _addDeck() {
     final Deck newDeck = Deck(
@@ -110,7 +116,7 @@ class _AddDeckState extends State<AddDeck> {
       cards: frontsAndBacks.length - 1,
       creation: DateTime.now(),
     );
-    _createFolder(newDeck.name);
+    /*_createFolder(newDeck.name);*/
     _dbHelper.insertDeck(newDeck).then((deckId) {
       if (frontsAndBacks.length > 1) {
         for (var card in frontsAndBacks.sublist(1)) {

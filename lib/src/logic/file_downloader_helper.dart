@@ -46,9 +46,8 @@ class FileDownloaderHelper {
         final encodedFile = zipEncoder.encode(archive);
         if (encodedFile != null) {
           // Save the zip file to the device
-          final zipFile =
-              await File('${directory.path}/${fileName.split('.xml')[0]}.zip')
-                  .writeAsBytes(encodedFile);
+          await File('${directory.path}/${fileName.split('.xml')[0]}.zip')
+              .writeAsBytes(encodedFile);
         }
         //final zipFile = await File('${directory.path}/$fileName.zip').writeAsBytes(encodedFile);
       } else {
