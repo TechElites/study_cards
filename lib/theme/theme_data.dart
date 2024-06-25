@@ -33,8 +33,8 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
 
 final ThemeData customDarkTheme = ThemeData.dark().copyWith(
   colorScheme: ColorScheme.dark(
-    primary: Colors.cyan,
-    secondary: Colors.cyanAccent,
+    primary: Colors.lightBlue[200]!,
+    secondary: Colors.lightBlueAccent,
     background: Colors.grey[800]!,
   ),
   scaffoldBackgroundColor: Colors.grey[800],

@@ -72,8 +72,10 @@ class _DecksPageState extends State<DecksPage> {
                         padding: const EdgeInsets.symmetric(horizontal: 20.0),
                         child: const Icon(Icons.delete, color: Colors.white),
                       ),
-                      child: Padding(
+                      child: Container(
                           padding: const EdgeInsets.all(8.0),
+                          color:
+                              _deleter.isInList(deck.id) ? Colors.blue.withOpacity(0.1) : null,
                           child: Card(
                             elevation: _deleter.isInList(deck.id) ? 5 : 1,
                             margin: const EdgeInsets.all(8.0),
