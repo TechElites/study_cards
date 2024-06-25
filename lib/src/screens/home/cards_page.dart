@@ -73,7 +73,7 @@ class _CardsPageState extends State<CardsPage> {
                           });
                         },
                         background: Container(
-                          color: Colors.red,
+                          color: Colors.red[400],
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.symmetric(horizontal: 20.0),
                           child: const Icon(Icons.delete, color: Colors.white),
