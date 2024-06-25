@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/logic/file_downloader_helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:xml/xml.dart' as xml;
@@ -25,14 +26,45 @@ class XmlHandler {
           .findElements('rich-text')
           .firstWhere((element) => element.getAttribute('name') == 'Front')
           .innerText;
+      final frontImage = card
+          .findElements('media')
+          .firstWhere((element) => element.getAttribute('type') == 'image',
+              orElse: () => xml.XmlElement(xml.XmlName('media'), [], []))
+          .getAttribute('src');
       final back = card
           .findElements('rich-text')
           .firstWhere((element) => element.getAttribute('name') == 'Back')
           .innerText;
-      parsedData.add(StudyCard(front: front, back: back));
+      final backImage = card
+          .findElements('media')
+          .firstWhere((element) => element.getAttribute('type') == 'image',
+              orElse: () => xml.XmlElement(xml.XmlName('media'), [], []))
+          .getAttribute('src');
+      print("a");
+      print(getFilePath().then((value) => value.toString()));
+      print("b");
+      parsedData.add(StudyCard(
+          front: front,
+          back: back,
+          frontImage: path.join(
+              '/storage/emulated/0/Android/data/com.example.flash_cards/files/deckprova',
+              frontImage ?? ''),
+          backImage: path.join(
+              '/storage/emulated/0/Android/data/com.example.flash_cards/files/deckprova',
+              backImage ?? '')));
     }
 
     return parsedData;
+  }
+
+  static Future<String> getFilePath() async {
+    // Ottieni la directory principale di archiviazione esterna
+    Directory appDocDir =
+        await getExternalStorageDirectory().then((value) => value) ??
+            Directory('');
+    // Costruisci il percorso del file desiderato
+    String filePath = '${appDocDir.path}/ciao';
+    return '/storage/emulated/0/Android/data/com.example.flash_cards/files/deckprova';
   }
 
   static String createXml(List<StudyCard> cards, String deckName) {
@@ -79,7 +111,7 @@ class XmlHandler {
     FileDownloaderHelper.saveFileOnDevice(fileName, xmlString, MediaMap);
   }
 
-  static Future<void> unzipFile(File zipFile) async {
+  static Future<File?> unzipFile(File zipFile) async {
     try {
       // Verifica e richiesta dei permessi di archiviazione
       final hasPermission = await requestStoragePermission();
@@ -106,10 +138,7 @@ class XmlHandler {
           Directory(path.join(externalDir.path, zipFileName));
       await destinationDir.create(recursive: true);
 
-      // Logging dettagliato
-      print('Percorso della directory di destinazione: ${destinationDir.path}');
-      print('Numero di file nell\'archivio ZIP: ${archive.length}');
-
+      File? xmlFile;
       // Estrai ogni file dall'archivio ZIP nella directory di destinazione
       for (final file in archive) {
         if (file.isFile) {
@@ -122,6 +151,11 @@ class XmlHandler {
             await outputFile.create(recursive: true);
             await outputFile.writeAsBytes(file.content as List<int>);
             print('File estratto: $filePath');
+
+            // Se trovi il file XML, restituisci l'oggetto File
+            if (path.extension(filename) == '.xml') {
+              xmlFile = outputFile;
+            }
           } catch (e) {
             print('Errore durante l\'estrazione del file $filename: $e');
           }
@@ -133,13 +167,13 @@ class XmlHandler {
         }
       }
 
-      // Verifica se la directory contiene effettivamente dei file
-      List<FileSystemEntity> contents = destinationDir.listSync();
-      print('Contenuto della directory di destinazione: $contents');
-
       print('Unzipped successfully to ${destinationDir.path}');
+
+      // Restituisci l'oggetto File del file XML (o null se non trovato)
+      return xmlFile;
     } catch (e) {
       print('Errore durante l\'unzip del file: $e');
+      return null;
     }
   }
 

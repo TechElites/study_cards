@@ -29,14 +29,16 @@ class _AddDeckState extends State<AddDeck> {
       String fileContent = '';
       if (file.path.endsWith('.zip')) {
         print('qui');
-        XmlHandler.unzipFile(file);
+        // XmlHandler.unzipFile(file);
+        fileContent = await XmlHandler.unzipFile(file)
+            .then((value) => value!.readAsString());
       } else {
         fileContent = await file.readAsString();
       }
-      /*setState(() {
+      setState(() {
         frontsAndBacks = XmlHandler.parseXml(fileContent);
         _nameController.text = frontsAndBacks[0].front;
-      });*/
+      });
     }
   }
 
