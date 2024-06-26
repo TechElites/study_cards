@@ -44,6 +44,8 @@ class DatabaseHelper {
             back TEXT,
             rating TEXT,
             lastReviewed TEXT,
+            frontMedia TEXT,
+            backMedia TEXT,
             FOREIGN KEY (deckId) REFERENCES decks (id)
           )
         ''');

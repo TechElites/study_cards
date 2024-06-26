@@ -1,4 +1,5 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
+import 'package:flash_cards/src/data/model/deck.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
 import 'package:flutter/material.dart';
@@ -42,48 +43,44 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(children: [
-          Stack(alignment: const Alignment(1.0, 1.0), children: [
-            TextField(
+          TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Deck name',
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                _dbHelper
-                    .updateDeckName(widget.deckId, _nameController.text)
-                    .then(
-                        (value) => ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Deck name updated'))),
-                        onError: (e) => ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                                content: Text('Error updating deck name'))));
-              },
-              icon: const Icon(Icons.check),
-            )
-          ]),
+              decoration: InputDecoration(
+                  labelText: 'Deck name',
+                  suffixIcon: InkWell(
+                      onTap: () {
+                        _dbHelper
+                            .updateDeckName(widget.deckId, _nameController.text)
+                            .then(
+                                (value) => ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                        content: Text('Deck name updated'))),
+                                onError: (e) => ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                        content:
+                                            Text('Error updating deck name'))));
+                      },
+                      child: const Icon(Icons.check,
+                          color: Colors.grey, size: 32.0)))),
           const SizedBox(height: 16.0),
-          Stack(alignment: const Alignment(1.0, 1.0), children: [
-            TextField(
+          TextField(
               keyboardType: TextInputType.number,
               controller: _cardsController,
-              decoration: const InputDecoration(
-                labelText: 'Cards per review',
-              ),
-            ),
-            IconButton(
-              onPressed: () {
-                _updateReviewCards().then(
-                    (value) => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Review cards updated'))),
-                    onError: (e) => ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                            content: Text('Error updating review cards'))));
-              },
-              icon: const Icon(Icons.check),
-            )
-          ]),
+              decoration: InputDecoration(
+                  labelText: 'Cards per review',
+                  suffixIcon: InkWell(
+                      onTap: () {
+                        _updateReviewCards().then(
+                            (value) => ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                                    content: Text('Review cards updated'))),
+                            onError: (e) => ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                                    content:
+                                        Text('Error updating review cards'))));
+                      },
+                      child: const Icon(Icons.check,
+                          color: Colors.grey, size: 32.0)))),
         ]),
       ),
       floatingActionButton: FloatingActionButton(
@@ -101,10 +98,21 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   }
 
   Future<void> _exportDeck() async {
-    final deck = await _dbHelper.getDeck(widget.deckId);
+    final Deck deck = await _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = await _dbHelper.getCards(deck.id);
     final String deckXml = XmlHandler.createXml(cards, deck.name);
-    await XmlHandler.saveXmlToFile(deckXml, '${deck.name}.xml');
+    final Map<String, String> mediaMap = {}; //path;name
+    for (final card in cards) {
+      if (card.frontMedia.isNotEmpty) {
+        mediaMap[card.frontMedia] =
+            '${card.id}_front.${card.frontMedia.split('.').last}';
+      }
+      if (card.backMedia.isNotEmpty) {
+        mediaMap[card.backMedia] =
+            '${card.id}_back.${card.backMedia.split('.').last}';
+      }
+    }
+    await XmlHandler.saveXmlToFile(deckXml, '${deck.name}.xml', mediaMap);
   }
 
   Future<void> _updateReviewCards() async {

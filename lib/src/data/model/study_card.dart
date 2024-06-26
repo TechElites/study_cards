@@ -5,6 +5,8 @@ class StudyCard {
   final String back;
   final String rating;
   final String lastReviewed;
+  final String frontMedia;
+  final String backMedia;
 
   get lastReviewedFormatted => lastReviewed == 'Never'
       ? lastReviewed
@@ -24,6 +26,8 @@ class StudyCard {
     required this.back,
     this.rating = 'None',
     this.lastReviewed = 'Never',
+    this.frontMedia = '',
+    this.backMedia = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -33,6 +37,8 @@ class StudyCard {
       'back': back,
       'rating': rating,
       'lastReviewed': lastReviewed,
+      'frontMedia': frontMedia,
+      'backMedia': backMedia,
     };
   }
 
@@ -44,6 +50,8 @@ class StudyCard {
       back: map['back'],
       rating: map['rating'],
       lastReviewed: map['lastReviewed'],
+      frontMedia: map['frontMedia'],
+      backMedia: map['backMedia'],
     );
   }
 }
