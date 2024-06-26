@@ -20,52 +20,62 @@ class _CardsReviewState extends State<ReviewPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Review'),
-          centerTitle: true,
-        ),
-        body: GestureDetector(
-          onTap: () {
-            setState(() {
-              _reveal = true;
-            });
-          },
-          child: Center(
-            child: _index < widget.cards.length
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          const SizedBox(height: 100),
-                          Text(
-                            widget.cards[_index].front,
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                          const SizedBox(height: 30),
-                          if (_reveal)
+      appBar: AppBar(
+        title: const Text('Review'),
+        centerTitle: true,
+      ),
+      body: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          setState(() {
+            _reveal = true;
+          });
+        },
+        child: _index < widget.cards.length
+            ? Column(
+                children: [
+                  Expanded(
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
                             Text(
-                              widget.cards[_index].back,
+                              widget.cards[_index].front,
+                              textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 24),
-                            )
-                          else
-                            const Text('Tap to reveal answer'),
-                        ],
+                            ),
+                            const SizedBox(height: 16),
+                            if (_reveal)
+                              Text(
+                                widget.cards[_index].back,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 24),
+                              )
+                          ],
+                        ),
                       ),
-                      if (_reveal)
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 20.0), // Add some space at the bottom
-                          child: ButtonBar(
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(16.0),
+                    child: _reveal
+                        ? ButtonBar(
                             alignment: MainAxisAlignment.center,
                             children: _createRatingButtons(),
+                          )
+                        : const Text(
+                            'Tap to reveal answer',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 16),
                           ),
-                        ),
-                    ],
-                  )
-                : const Text('No more cards'),
-          ),
-        ));
+                  ),
+                ],
+              )
+            : const Center(child: Text('No more cards to review')),
+      ),
+    );
   }
 
   List<Widget> _createRatingButtons() {

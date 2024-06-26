@@ -32,6 +32,7 @@ class DatabaseHelper {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
             cards INTEGER,
+            reviewCards INTEGER,
             creation TEXT
           )
         ''');
@@ -60,11 +61,18 @@ class DatabaseHelper {
   Future<int> insertCard(StudyCard card) async {
     Database db = await database;
     await db.insert('cards', card.toMap());
-    return await db.rawUpdate('''
-      UPDATE decks
-      SET cards = cards + 1
-      WHERE id = ?
-    ''', [card.deckId]);
+    final deck = await getDeck(card.deckId);
+    return await db.update('decks', {'cards': deck.cards + 1},
+        where: 'id = ?', whereArgs: [deck.id]);
+  }
+
+  Future<void> insertDeckCards(List<StudyCard> cards) async {
+    Database db = await database;
+    Batch batch = db.batch();
+    for (var card in cards) {
+      batch.insert('cards', card.toMap());
+    }
+    await batch.commit();
   }
 
   Future<List<Deck>> getDecks() async {
@@ -73,18 +81,55 @@ class DatabaseHelper {
     return rawDecks.map((deck) => Deck.fromMap(deck)).toList();
   }
 
+  Future<Deck> getDeck(int deckId) async {
+    Database db = await database;
+    List<Map<String, Object?>> rawDecks =
+        await db.query('decks', where: 'id = ?', whereArgs: [deckId]);
+    return Deck.fromMap(rawDecks[0]);
+  }
+
   Future<List<StudyCard>> getCards(int deckId) async {
     Database db = await database;
-    List<Map<String, Object?>> rawCards = await db.query('cards', where: 'deckId = ?', whereArgs: [deckId]);
+    List<Map<String, Object?>> rawCards =
+        await db.query('cards', where: 'deckId = ?', whereArgs: [deckId]);
     return rawCards.map((card) => StudyCard.fromMap(card)).toList();
+  }
+
+  Future<int> getReviewCards(int deckId) async {
+    Database db = await database;
+    List<Map<String, Object?>> rawDecks =
+        await db.query('decks', where: 'id = ?', whereArgs: [deckId]);
+    return rawDecks[0]['reviewCards'] as int;
+  }
+
+  Future<void> setReviewCards(int deckId, int reviewCards) async {
+    Database db = await database;
+    await db.update('decks', {'reviewCards': reviewCards},
+        where: 'id = ?', whereArgs: [deckId]);
+  }
+
+  Future<void> updateDeckName(int deckId, String name) async {
+    Database db = await database;
+    await db.update('decks', {'name': name},
+        where: 'id = ?', whereArgs: [deckId]);
+  }
+
+  Future<void> updateCard(StudyCard card) async {
+    Database db = await database;
+    await db
+        .update('cards', card.toMap(), where: 'id = ?', whereArgs: [card.id]);
   }
 
   Future<void> updateCardRating(int cardId, String rating) async {
     Database db = await database;
-    await db.update('cards', {
-      'rating': rating,
-      'lastReviewed': DateTime.now().toIso8601String(),
-    }, where: 'id = ?', whereArgs: [cardId]);
+    await db.update(
+        'cards',
+        {
+          'rating': rating,
+          'lastReviewed': DateTime.now().toIso8601String(),
+        },
+        where: 'id = ?',
+        whereArgs: [cardId]);
   }
 
   Future<void> deleteDeck(int deckId) async {
@@ -93,17 +138,31 @@ class DatabaseHelper {
     await db.delete('cards', where: 'deckId = ?', whereArgs: [deckId]);
   }
 
+  Future<void> deleteDecks(List<int> deckIds) async {
+    Database db = await database;
+    await db.delete('decks', where: 'id IN (${deckIds.join(',')})');
+    await db.delete('cards', where: 'deckId IN (${deckIds.join(',')})');
+  }
+
+  Future<void> deleteCards(List<int> cardIds) async {
+    Database db = await database;
+    final deckId =
+        (await db.query('cards', where: 'id = ?', whereArgs: [cardIds[0]]))[0]
+            ['deckId'] as int;
+    final deck = await getDeck(deckId);
+    await db.update('decks', {'cards': deck.cards - cardIds.length},
+        where: 'id = ?', whereArgs: [deck.id]);
+    await db.delete('cards', where: 'id IN (${cardIds.join(',')})');
+  }
+
   Future<void> deleteCard(int cardId) async {
     Database db = await database;
-    await db.rawUpdate('''
-      UPDATE decks
-      SET cards = cards - 1
-      WHERE id = (
-        SELECT deckId
-        FROM cards
-        WHERE id = ?
-      )
-    ''', [cardId]);
+    final deckId =
+        (await db.query('cards', where: 'id = ?', whereArgs: [cardId]))[0]
+            ['deckId'] as int;
+    final deck = await getDeck(deckId);
+    await db.update('decks', {'cards': deck.cards - 1},
+        where: 'id = ?', whereArgs: [deck.id]);
     await db.delete('cards', where: 'id = ?', whereArgs: [cardId]);
   }
 }

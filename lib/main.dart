@@ -1,8 +1,16 @@
+import 'package:flash_cards/theme/theme_data.dart';
+import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/home/decks_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const StudyCards());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => ThemeProvider(),
+      child: const StudyCards(),
+    ),
+  );
 }
 
 class StudyCards extends StatelessWidget {
@@ -10,13 +18,16 @@ class StudyCards extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Study Cards',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade900),
-        useMaterial3: true,
-      ),
-      home: const DecksPage(),
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'Study Cards',
+          themeMode: themeProvider.currentTheme,
+          theme: customLightTheme,
+          darkTheme: customDarkTheme,
+          home: const DecksPage(),
+        );
+      },
     );
   }
 }

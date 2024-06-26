@@ -1,6 +1,5 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
-import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flutter/material.dart';
 
 class AddCard extends StatefulWidget {
@@ -54,12 +53,9 @@ class _AddCardState extends State<AddCard> {
 
   void _addCard() {
     final StudyCard newCard = StudyCard(
-      deckId: widget.deckId,
-      front: _frontController.text,
-      back: _backController.text,
-      rating: Rating.none,
-      lastReviewed: 'Never',
-    );
+        deckId: widget.deckId,
+        front: _frontController.text,
+        back: _backController.text);
 
     _dbHelper.insertCard(newCard).then((id) {
       // show toast
