@@ -92,8 +92,8 @@ class _AddCardState extends State<AddCard> {
       back: _backController.text,
       rating: Rating.none,
       lastReviewed: 'Never',
-      frontImage: _selectedFrontImage?.path ?? '',
-      backImage: _selectedBackImage?.path ?? '',
+      frontMedia: _selectedFrontImage?.path ?? '',
+      backMedia: _selectedBackImage?.path ?? '',
     );
 
     _dbHelper.insertCard(newCard).then((id) {

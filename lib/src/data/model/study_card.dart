@@ -5,8 +5,8 @@ class StudyCard {
   final String back;
   final String rating;
   final String lastReviewed;
-  final String frontImage;
-  final String backImage;
+  final String frontMedia;
+  final String backMedia;
 
   StudyCard({
     this.id = -1,
@@ -15,8 +15,8 @@ class StudyCard {
     required this.back,
     this.rating = '',
     this.lastReviewed = '',
-    this.frontImage = '',
-    this.backImage = '',
+    this.frontMedia = '',
+    this.backMedia = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -26,8 +26,8 @@ class StudyCard {
       'back': back,
       'rating': rating,
       'lastReviewed': lastReviewed,
-      'frontImage': frontImage,
-      'backImage': backImage,
+      'frontImage': frontMedia,
+      'backImage': backMedia,
     };
   }
 
@@ -39,8 +39,8 @@ class StudyCard {
       back: map['back'],
       rating: map['rating'],
       lastReviewed: map['lastReviewed'],
-      frontImage: map['frontImage'],
-      backImage: map['backImage'],
+      frontMedia: map['frontImage'],
+      backMedia: map['backImage'],
     );
   }
 }

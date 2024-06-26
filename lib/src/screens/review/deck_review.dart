@@ -47,12 +47,12 @@ class _CardsReviewState extends State<ReviewPage> {
                         widget.cards[_index].front,
                         style: const TextStyle(fontSize: 24),
                       ),
-                      if (widget.cards[_index].frontImage != '')
+                      if (widget.cards[_index].frontMedia != '')
                         //Text( widget.cards[_index].frontImage),
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: Image.file(
-                            File(widget.cards[_index].frontImage),
+                            File(widget.cards[_index].frontMedia),
                             height: 200.0,
                             width: 200.0,
                             fit: BoxFit.cover,
@@ -62,15 +62,15 @@ class _CardsReviewState extends State<ReviewPage> {
                       const SizedBox(height: 30),
                       if (_reveal)
                         Text(
-                          widget.cards[_index].back,
+                          widget.cards[_index].backMedia,
                           style: const TextStyle(fontSize: 24),
                         ),
-                      if (widget.cards[_index].backImage != '' && _reveal)
-                        //Text( widget.cards[_index].frontImage),
+                      if (widget.cards[_index].backMedia != '' && _reveal)
+                      
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16.0),
                           child: Image.file(
-                            File(widget.cards[_index].backImage),
+                            File(widget.cards[_index].backMedia),
                             height: 200.0,
                             width: 200.0,
                             fit: BoxFit.cover,

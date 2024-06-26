@@ -139,13 +139,13 @@ class _CardsPageState extends State<CardsPage> {
     final List <String> MediaList = [];
     final Map<String, String> MediaMap = {}; //path;name
     for (final card in cards) {
-      if (card.frontImage.isNotEmpty) {
-        MediaList.add(card.frontImage);
-        MediaMap[card.frontImage] = '${card.id}_front.${card.frontImage.split('.').last}';
+      if (card.frontMedia.isNotEmpty) {
+        MediaList.add(card.frontMedia);
+        MediaMap[card.frontMedia] = '${card.id}_front.${card.frontMedia.split('.').last}';
       }
-      if (card.backImage.isNotEmpty) {
-        MediaList.add(card.backImage);
-        MediaMap[card.backImage] = '${card.id}_back.${card.backImage.split('.').last}';
+      if (card.backMedia.isNotEmpty) {
+        MediaList.add(card.backMedia);
+        MediaMap[card.backMedia] = '${card.id}_back.${card.backMedia.split('.').last}';
       }
     }
     await XmlHandler.saveXmlToFile(deckXml, '${widget.deck.name}.xml', MediaMap);
