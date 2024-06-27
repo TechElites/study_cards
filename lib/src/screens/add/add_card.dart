@@ -39,6 +39,7 @@ class _AddCardState extends State<AddCard> {
               TextField(
                   controller: _frontController,
                   focusNode: focus,
+                  maxLines: null,
                   decoration: InputDecoration(
                       labelText: 'Question',
                       suffixIcon: InkWell(
@@ -59,6 +60,7 @@ class _AddCardState extends State<AddCard> {
               const SizedBox(height: 16.0),
               TextField(
                   controller: _backController,
+                  maxLines: null,
                   decoration: InputDecoration(
                       labelText: 'Answer',
                       suffixIcon: InkWell(
