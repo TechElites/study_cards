@@ -20,6 +20,7 @@ class _AddCardState extends State<AddCard> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _frontController = TextEditingController();
   final TextEditingController _backController = TextEditingController();
+  FocusNode focus = FocusNode();
   File? _selectedFrontImage;
   File? _selectedBackImage;
 
@@ -37,6 +38,7 @@ class _AddCardState extends State<AddCard> {
             children: [
               TextField(
                   controller: _frontController,
+                  focusNode: focus,
                   decoration: InputDecoration(
                       labelText: 'Question',
                       suffixIcon: InkWell(
@@ -105,6 +107,7 @@ class _AddCardState extends State<AddCard> {
         _backController.clear();
         _selectedFrontImage = null;
         _selectedBackImage = null;
+        focus.requestFocus();
       });
     });
   }
