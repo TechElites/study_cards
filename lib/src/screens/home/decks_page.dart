@@ -67,10 +67,10 @@ class _DecksPageState extends State<DecksPage> {
                         }
                       },
                       onDismissed: (direction) {
+                        setState(() {
+                          snapshot.data!.removeAt(index);
+                        });
                         _dbHelper.deleteDeck(deck.id).then((_) {
-                          setState(() {
-                            snapshot.data!.removeAt(index);
-                          });
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                                 content: Text('Deck ${deck.name} deleted')),

@@ -22,10 +22,26 @@ class CardsPage extends StatefulWidget {
 
 class _CardsPageState extends State<CardsPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
+  List<StudyCard>? _allCards;
+  List<StudyCard>? _shownCards;
+  String _filteredRating = "All";
   final ListDeleter _deleter = ListDeleter();
+
+  void refresh() {
+    setState(() {
+      _allCards = null;
+      _shownCards = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_allCards == null) {
+      _dbHelper.getCards(widget.deckId).then((value) => setState(() {
+            _allCards = value;
+            _shownCards = value;
+          }));
+    }
     return Scaffold(
         appBar: AppBar(
           title: const Text('Cards'),
@@ -39,27 +55,23 @@ class _CardsPageState extends State<CardsPage> {
                     builder: (context) =>
                         CardsSettingsPage(deckId: widget.deckId),
                   ),
-                ).then((value) => setState(() {}));
+                ).then((value) => refresh());
               },
               icon: const Icon(Icons.settings),
             )
           ],
         ),
-        body: FutureBuilder<List<StudyCard>>(
-          future: _dbHelper.getCards(widget.deckId),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            return RefreshIndicator(
+        body: _shownCards == null
+            ? const Center(child: CircularProgressIndicator())
+            : RefreshIndicator(
                 onRefresh: () async {
-                  setState(() {});
+                  refresh();
                 },
                 child: ListView.builder(
-                  itemCount: snapshot.data!.length,
+                  itemCount: _shownCards?.length,
                   itemBuilder: (context, index) {
-                    final card = snapshot.data![index];
+                    final card = _shownCards?.elementAt(index) ??
+                        StudyCard(front: '', back: '');
                     return Dismissible(
                         key: Key(card.id.toString()),
                         direction: DismissDirection.endToStart,
@@ -74,10 +86,10 @@ class _CardsPageState extends State<CardsPage> {
                           }
                         },
                         onDismissed: (direction) {
+                          setState(() {
+                            _shownCards?.removeAt(index);
+                          });
                           _dbHelper.deleteCard(card.id).then((_) {
-                            setState(() {
-                              snapshot.data!.removeAt(index);
-                            });
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Card deleted')),
                             );
@@ -130,7 +142,7 @@ class _CardsPageState extends State<CardsPage> {
                                       builder: (context) =>
                                           CardDetailsPage(card: card),
                                     ),
-                                  ).then((value) => setState(() {}));
+                                  ).then((value) => refresh());
                                 },
                                 onLongPress: () {
                                   setState(() {
@@ -146,15 +158,14 @@ class _CardsPageState extends State<CardsPage> {
                               ),
                             )));
                   },
-                ));
-          },
-        ),
+                ),
+              ),
         floatingActionButton: _deleter.isDeleting
             ? FloatingActionButton(
                 onPressed: () {
                   _dbHelper
                       .deleteCards(_deleter.dumpList())
-                      .then((value) => setState(() {}));
+                      .then((value) => refresh());
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Cards deleted')),
                   );
@@ -162,28 +173,32 @@ class _CardsPageState extends State<CardsPage> {
                 tooltip: 'Delete Cards',
                 child: const Icon(Icons.delete),
               )
-            : SpeedDial(
-                icon: Icons.menu,
-                activeIcon: Icons.close,
-                children: [
-                  SpeedDialChild(
-                    child: const Icon(Icons.add),
-                    label: 'Add cards',
-                    onTap: () async {
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddCard(deckId: widget.deckId),
-                        ),
-                      ).then((value) => setState(() {}));
-                    },
-                  ),
-                  SpeedDialChild(
+            : SpeedDial(icon: Icons.menu, activeIcon: Icons.close, children: [
+                SpeedDialChild(
+                  child: const Icon(Icons.filter_alt_rounded),
+                  label: 'Filter cards',
+                  onTap: () async {
+                    _openRatingFilter();
+                  },
+                ),
+                SpeedDialChild(
+                  child: const Icon(Icons.add),
+                  label: 'Add cards',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddCard(deckId: widget.deckId),
+                      ),
+                    ).then((value) => refresh());
+                  },
+                ),
+                SpeedDialChild(
                     child: const Icon(Icons.rate_review),
                     label: 'Review',
-                    onTap: () async {
-                      await _dbHelper.getCards(widget.deckId).then((cards) {
-                        if (cards.isEmpty) {
+                    onTap: () {
+                      if (_shownCards != null) {
+                        if (_shownCards!.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text('No cards to review')));
@@ -196,15 +211,56 @@ class _CardsPageState extends State<CardsPage> {
                               MaterialPageRoute(
                                 builder: (context) => ReviewPage(
                                     cards: DeckShuffler.shuffleCards(
-                                        cards, maxCards)),
+                                        _shownCards!, maxCards)),
                               ),
-                            ).then((value) => setState(() {}));
+                            ).then((value) => refresh());
                           });
                         }
-                      });
-                    },
-                  )
+                      }
+                    })
+              ]));
+  }
+
+  void _openRatingFilter() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Select Rating',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              Column(
+                children: [
+                  for (var rating in ["All"].followedBy(Rating.ratings))
+                    ListTile(
+                      title: Text(rating),
+                      selected: rating == _filteredRating,
+                      onTap: () {
+                        setState(() {
+                          _filteredRating = rating;
+                          if (rating != "All") {
+                            _shownCards = _allCards!
+                                .where((element) => element.rating == rating)
+                                .toList();
+                          } else {
+                            _shownCards = _allCards;
+                          }
+                        });
+                        Navigator.pop(context);
+                      },
+                    )
                 ],
-              ));
+              )
+            ],
+          ),
+        );
+      },
+    );
   }
 }

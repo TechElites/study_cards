@@ -22,4 +22,6 @@ class Rating {
     'Good': 30,
     'Easy': 90,
   };
+
+  static List<String> ratings = ['None', 'Fail', 'Hard', 'Good', 'Easy'];
 }
