@@ -1,6 +1,13 @@
+import 'dart:io';
+
 import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flash_cards/src/logic/file_downloader_helper.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:xml/xml.dart' as xml;
+import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
+import 'package:path/path.dart' as path;
 
 class XmlHandler {
   static List<StudyCard> parseXml(String xmlString) {
@@ -11,19 +18,48 @@ class XmlHandler {
 
     final deckName =
         document.findAllElements('deck').first.attributes.first.value;
-    parsedData
-        .add(StudyCard(front: deckName, back: cards.length.toString()));
+    parsedData.add(StudyCard(front: deckName, back: cards.length.toString()));
 
     for (var card in cards) {
       final front = card
           .findElements('rich-text')
           .firstWhere((element) => element.getAttribute('name') == 'Front')
           .innerText;
+      var frontMedia = card
+          .findElements('media')
+          .firstWhere(
+              (element) =>
+                  element.getAttribute('type') == 'image' &&
+                  element.getAttribute('name') == 'Front',
+              orElse: () => xml.XmlElement(xml.XmlName('media'), [], []))
+          .getAttribute('src');
       final back = card
           .findElements('rich-text')
           .firstWhere((element) => element.getAttribute('name') == 'Back')
           .innerText;
-      parsedData.add(StudyCard(front: front, back: back));
+      var backMedia = card
+          .findElements('media')
+          .firstWhere(
+              (element) =>
+                  element.getAttribute('type') == 'image' &&
+                  element.getAttribute('name') == 'Back',
+              orElse: () => xml.XmlElement(xml.XmlName('media'), [], []))
+          .getAttribute('src');
+      var appPath = '';
+      getExternalStorageDirectory().then((directory) {
+        appPath = directory!.path;
+        frontMedia = frontMedia != null
+            ? path.join(appPath.toString(), deckName, frontMedia)
+            : '';
+        backMedia = backMedia != null
+            ? path.join(appPath.toString(), deckName, backMedia)
+            : '';
+        parsedData.add(StudyCard(
+            front: front,
+            back: back,
+            frontMedia: frontMedia ?? '',
+            backMedia: backMedia ?? ''));
+      });
     }
 
     return parsedData;
@@ -41,10 +77,26 @@ class XmlHandler {
               builder.attribute('name', 'Front');
               builder.text(card.front);
             });
+            if (card.frontMedia != '') {
+              builder.element('media', nest: () {
+                builder.attribute('type', 'image');
+                builder.attribute('name', 'Front');
+                builder.attribute('src',
+                    '${card.id}_front.${card.frontMedia.split('.').last}');
+              });
+            }
             builder.element('rich-text', nest: () {
               builder.attribute('name', 'Back');
               builder.text(card.back);
             });
+            if (card.backMedia != '') {
+              builder.element('media', nest: () {
+                builder.attribute('type', 'image');
+                builder.attribute('name', 'Back');
+                builder.attribute(
+                    'src', '${card.id}_back.${card.backMedia.split('.').last}');
+              });
+            }
           });
         }
       });
@@ -54,7 +106,82 @@ class XmlHandler {
     return document.toXmlString(pretty: true, indent: '  ');
   }
 
-  static Future<void> saveXmlToFile(String xmlString, String fileName) async {
-    FileDownloaderHelper.saveFileOnDevice(fileName, xmlString);
+  static Future<void> saveXmlToFile(
+      String xmlString, String fileName, Map<String, String> mediaMap) async {
+    FileDownloaderHelper.saveFileOnDevice(fileName, xmlString, mediaMap);
+  }
+
+  static Future<File?> unzipFile(File zipFile) async {
+    try {
+      // Verifica e richiesta dei permessi di archiviazione
+      final hasPermission = await requestStoragePermission();
+      if (!hasPermission) {
+        throw Exception("Permessi di archiviazione non concessi.");
+      }
+
+      // Ottieni la directory di archiviazione esterna
+      Directory? externalDir = await getExternalStorageDirectory();
+      if (externalDir == null) {
+        throw Exception(
+            "Impossibile trovare la directory di archiviazione esterna.");
+      }
+
+      // Leggi il contenuto del file ZIP
+      final bytes = await zipFile.readAsBytes();
+      final archive = ZipDecoder().decodeBytes(bytes);
+
+      // Ottieni il nome dell'archivio senza l'estensione .zip
+      String zipFileName = path.basenameWithoutExtension(zipFile.path);
+
+      // Crea la directory di destinazione con lo stesso nome dell'archivio
+      Directory destinationDir =
+          Directory(path.join(externalDir.path, zipFileName));
+      await destinationDir.create(recursive: true);
+
+      File? xmlFile;
+      // Estrai ogni file dall'archivio ZIP nella directory di destinazione
+      for (final file in archive) {
+        if (file.isFile) {
+          final filename = file.name;
+          final filePath = path.join(destinationDir.path, filename);
+
+          try {
+            // Crea il file e scrivi il contenuto
+            final outputFile = File(filePath);
+            await outputFile.create(recursive: true);
+            await outputFile.writeAsBytes(file.content as List<int>);
+
+            // Se trovi il file XML, restituisci l'oggetto File
+            if (path.extension(filename) == '.xml') {
+              xmlFile = outputFile;
+            }
+          } catch (e) {
+            throw Exception(
+                'Errore durante l\'estrazione del file $filename: $e');
+          }
+        } else {
+          // Se è una directory, crea la directory
+          final dirPath = path.join(destinationDir.path, file.name);
+          await Directory(dirPath).create(recursive: true);
+        }
+      }
+
+      // Restituisci l'oggetto File del file XML (o null se non trovato)
+      return xmlFile;
+    } catch (e) {
+      throw Exception('Errore durante l\'unzip del file: $e');
+    }
+  }
+
+  static Future<bool> requestStoragePermission() async {
+    // Richiedi i permessi di archiviazione necessari
+    if (Platform.isAndroid &&
+        await Permission.manageExternalStorage.request().isGranted) {
+      return true;
+    } else if (await Permission.storage.request().isGranted) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

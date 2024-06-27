@@ -21,7 +21,7 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'decks.db');
 
     // Uncomment first time when upgrading db
-    //await deleteDatabase(path);
+    // await deleteDatabase(path);
 
     return await openDatabase(
       path,
@@ -44,8 +44,8 @@ class DatabaseHelper {
             back TEXT,
             rating TEXT,
             lastReviewed TEXT,
-            frontImage TEXT,
-            backImage TEXT,
+            frontMedia TEXT,
+            backMedia TEXT,
             FOREIGN KEY (deckId) REFERENCES decks (id)
           )
         ''');

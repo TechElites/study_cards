@@ -21,12 +21,18 @@ class _AddDeckState extends State<AddDeck> {
   Future<void> _pickFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['xml'],
+      allowedExtensions: ['xml', 'zip'],
     );
 
     if (result != null && result.files.isNotEmpty) {
       File file = File(result.files.single.path!);
-      String fileContent = await file.readAsString();
+      String fileContent = '';
+      if (file.path.endsWith('.zip')) {
+        fileContent = await XmlHandler.unzipFile(file)
+            .then((value) => value!.readAsString());
+      } else {
+        fileContent = await file.readAsString();
+      }
       setState(() {
         frontsAndBacks = XmlHandler.parseXml(fileContent);
         _nameController.text = frontsAndBacks[0].front;
@@ -57,7 +63,7 @@ class _AddDeckState extends State<AddDeck> {
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Pick XML file '),
+                  Text('Pick XML or ZIP file '),
                   Icon(Icons.folder_copy_rounded),
                 ],
               ),
@@ -108,8 +114,12 @@ class _AddDeckState extends State<AddDeck> {
       if (frontsAndBacks.length > 1) {
         final List<StudyCard> cards = [];
         for (var card in frontsAndBacks.sublist(1)) {
-          cards.add(
-              StudyCard(deckId: deckId, front: card.front, back: card.back));
+          cards.add(StudyCard(
+              deckId: deckId,
+              front: card.front,
+              back: card.back,
+              frontMedia: card.frontMedia,
+              backMedia: card.backMedia));
         }
         _dbHelper.insertDeckCards(cards);
       }

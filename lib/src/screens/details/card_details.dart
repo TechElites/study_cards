@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
@@ -51,6 +53,16 @@ class _CardsPageState extends State<CardDetailsPage> {
                 ),
                 maxLines: null,
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Image.file(
+                  File(widget.card.frontMedia),
+                  height: 200.0,
+                  width: 200.0,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                ),
+              ),
               const SizedBox(height: 16.0),
               TextField(
                 controller: _backController,
@@ -58,6 +70,16 @@ class _CardsPageState extends State<CardDetailsPage> {
                   labelText: 'Answer',
                 ),
                 maxLines: null,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Image.file(
+                  File(widget.card.frontMedia),
+                  height: 200.0,
+                  width: 200.0,
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
+                ),
               ),
             ],
           ),

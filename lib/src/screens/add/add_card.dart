@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+enum Type { front, back }
 
 class AddCard extends StatefulWidget {
   final int deckId;
@@ -15,50 +20,80 @@ class _AddCardState extends State<AddCard> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _frontController = TextEditingController();
   final TextEditingController _backController = TextEditingController();
+  File? _selectedFrontImage;
+  File? _selectedBackImage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Card'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _frontController,
-              decoration: const InputDecoration(
-                labelText: 'Question',
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _backController,
-              decoration: const InputDecoration(
-                labelText: 'Answer',
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _addCard,
-              child: const Text('Add Card'),
-            ),
-          ],
+        appBar: AppBar(
+          title: const Text('Add Card'),
+          centerTitle: true,
         ),
-      ),
-    );
+        body: SingleChildScrollView(
+          //Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              TextField(
+                  controller: _frontController,
+                  decoration: InputDecoration(
+                      labelText: 'Question',
+                      suffixIcon: InkWell(
+                          onTap: () => _pickImage(Type.front),
+                          child: const Icon(Icons.add_photo_alternate_rounded,
+                              color: Colors.grey, size: 32.0)))),
+              if (_selectedFrontImage != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Image.file(
+                    _selectedFrontImage!,
+                    height: 200.0,
+                    width: 200.0,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                ),
+              const SizedBox(height: 16.0),
+              TextField(
+                  controller: _backController,
+                  decoration: InputDecoration(
+                      labelText: 'Answer',
+                      suffixIcon: InkWell(
+                          onTap: () => _pickImage(Type.back),
+                          child: const Icon(Icons.add_photo_alternate_rounded,
+                              color: Colors.grey, size: 32.0)))),
+              if (_selectedBackImage != null)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Image.file(
+                    _selectedBackImage!,
+                    height: 200.0,
+                    width: 200.0,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: _addCard,
+                child: const Text('Add Card'),
+              ),
+            ],
+          ),
+        ));
   }
 
   void _addCard() {
     final StudyCard newCard = StudyCard(
-        deckId: widget.deckId,
-        front: _frontController.text,
-        back: _backController.text);
+      deckId: widget.deckId,
+      front: _frontController.text,
+      back: _backController.text,
+      frontMedia: _selectedFrontImage?.path ?? '',
+      backMedia: _selectedBackImage?.path ?? '',
+    );
 
     _dbHelper.insertCard(newCard).then((id) {
-      // show toast
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Card added successfully'),
@@ -68,7 +103,47 @@ class _AddCardState extends State<AddCard> {
       setState(() {
         _frontController.clear();
         _backController.clear();
+        _selectedFrontImage = null;
+        _selectedBackImage = null;
       });
     });
+  }
+
+  Future<void> _pickImage(Type type) async {
+    final picker = ImagePicker();
+    final XFile? pickedFile = await showDialog<XFile?>(
+      context: context,
+      builder: (BuildContext context) => SimpleDialog(
+        title: const Text('Select source'),
+        children: <Widget>[
+          SimpleDialogOption(
+            onPressed: () {
+              picker
+                  .pickImage(source: ImageSource.camera)
+                  .then((value) => Navigator.pop(context, value));
+            },
+            child: const Text('Camera'),
+          ),
+          SimpleDialogOption(
+            onPressed: () {
+              picker
+                  .pickImage(source: ImageSource.gallery)
+                  .then((value) => Navigator.pop(context, value));
+            },
+            child: const Text('Gallery'),
+          ),
+        ],
+      ),
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        if (type == Type.front) {
+          _selectedFrontImage = File(pickedFile.path);
+        } else if (type == Type.back) {
+          _selectedBackImage = File(pickedFile.path);
+        }
+      });
+    }
   }
 }
