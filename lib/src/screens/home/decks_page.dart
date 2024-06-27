@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/deck.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
@@ -5,7 +7,9 @@ import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as path;
 
 class DecksPage extends StatefulWidget {
   const DecksPage({super.key});
@@ -64,6 +68,7 @@ class _DecksPageState extends State<DecksPage> {
                             SnackBar(
                                 content: Text('Deck ${deck.name} deleted')),
                           );
+                          deleteFolder(List.of([deck.name]));
                         });
                       },
                       background: Container(
@@ -74,8 +79,9 @@ class _DecksPageState extends State<DecksPage> {
                       ),
                       child: Container(
                           padding: const EdgeInsets.all(8.0),
-                          color:
-                              _deleter.isInList(deck.id) ? Colors.blue.withOpacity(0.1) : null,
+                          color: _deleter.isInList(deck.id)
+                              ? Colors.blue.withOpacity(0.1)
+                              : null,
                           child: Card(
                             elevation: _deleter.isInList(deck.id) ? 5 : 1,
                             margin: const EdgeInsets.all(8.0),
@@ -120,9 +126,11 @@ class _DecksPageState extends State<DecksPage> {
       floatingActionButton: _deleter.isDeleting
           ? FloatingActionButton(
               onPressed: () {
-                _dbHelper
-                    .deleteDecks(_deleter.dumpList())
-                    .then((value) => setState(() {}));
+                final list = _deleter.dumpList();
+                _dbHelper.deleteDecks(list.keys.toList()).then((value) {
+                  setState(() {});
+                  deleteFolder(list.values.toList());
+                });
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Decks deleted')),
                 );
@@ -143,5 +151,19 @@ class _DecksPageState extends State<DecksPage> {
               child: const Icon(Icons.add),
             ),
     );
+  }
+
+  void deleteFolder(List<String> list) {
+    var appPath = '';
+    getExternalStorageDirectory().then((directory) {
+      appPath = directory!.path;
+      for (var deckName in list) {
+        final folder = Directory(path.join(appPath.toString(), deckName));
+        if (folder.existsSync()) {
+          print('Deleting folder: ${folder.path}');
+          folder.deleteSync(recursive: true);
+        }
+      }
+    });
   }
 }

@@ -80,8 +80,9 @@ class _CardsPageState extends State<CardsPage> {
                         ),
                         child: Container(
                             padding: const EdgeInsets.all(8.0),
-                            color:
-                                _deleter.isInList(card.id) ? Colors.blue.withOpacity(0.1) : null,
+                            color: _deleter.isInList(card.id)
+                                ? Colors.blue.withOpacity(0.1)
+                                : null,
                             child: Card(
                               elevation: _deleter.isInList(card.id) ? 5 : 1,
                               margin: const EdgeInsets.all(8.0),
@@ -136,7 +137,7 @@ class _CardsPageState extends State<CardsPage> {
             ? FloatingActionButton(
                 onPressed: () {
                   _dbHelper
-                      .deleteCards(_deleter.dumpList())
+                      .deleteCards(_deleter.dumpList().keys.toList())
                       .then((value) => setState(() {}));
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Cards deleted')),
