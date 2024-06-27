@@ -210,8 +210,11 @@ class _CardsPageState extends State<CardsPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => ReviewPage(
-                                    cards: DeckShuffler.shuffleCards(
-                                        _shownCards!, maxCards)),
+                                    cards: _filteredRating == "All"
+                                        ? DeckShuffler.shuffleTimedCards(
+                                            _shownCards!, maxCards)
+                                        : DeckShuffler.shuffleCards(
+                                            _shownCards!, maxCards)),
                               ),
                             ).then((value) => refresh());
                           });
