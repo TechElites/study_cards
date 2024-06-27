@@ -6,6 +6,7 @@ import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:vibration/vibration.dart';
 
 class DecksPage extends StatefulWidget {
   const DecksPage({super.key});
@@ -55,6 +56,16 @@ class _DecksPageState extends State<DecksPage> {
                   return Dismissible(
                       key: Key(deck.id.toString()),
                       direction: DismissDirection.endToStart,
+                      onUpdate: (details) {
+                        if (details.progress >= 0.5 &&
+                            details.progress <= 0.55) {
+                          Vibration.hasVibrator().then((value) {
+                            if (value ?? false) {
+                              Vibration.vibrate(duration: 10);
+                            }
+                          });
+                        }
+                      },
                       onDismissed: (direction) {
                         _dbHelper.deleteDeck(deck.id).then((_) {
                           setState(() {
@@ -74,8 +85,9 @@ class _DecksPageState extends State<DecksPage> {
                       ),
                       child: Container(
                           padding: const EdgeInsets.all(8.0),
-                          color:
-                              _deleter.isInList(deck.id) ? Colors.blue.withOpacity(0.1) : null,
+                          color: _deleter.isInList(deck.id)
+                              ? Colors.blue.withOpacity(0.1)
+                              : null,
                           child: Card(
                             elevation: _deleter.isInList(deck.id) ? 5 : 1,
                             margin: const EdgeInsets.all(8.0),
@@ -109,6 +121,11 @@ class _DecksPageState extends State<DecksPage> {
                                 setState(() {
                                   _deleter.isDeleting = true;
                                   _deleter.toggleItem(deck.id);
+                                });
+                                Vibration.hasVibrator().then((value) {
+                                  if (value ?? false) {
+                                    Vibration.vibrate(duration: 10);
+                                  }
                                 });
                               },
                             ),

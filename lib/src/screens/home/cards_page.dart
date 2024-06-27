@@ -9,6 +9,7 @@ import 'package:flash_cards/src/screens/review/deck_review.dart';
 import 'package:flash_cards/src/screens/settings/cards_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:vibration/vibration.dart';
 
 class CardsPage extends StatefulWidget {
   final int deckId;
@@ -62,6 +63,16 @@ class _CardsPageState extends State<CardsPage> {
                     return Dismissible(
                         key: Key(card.id.toString()),
                         direction: DismissDirection.endToStart,
+                        onUpdate: (details) {
+                          if (details.progress >= 0.5 &&
+                              details.progress <= 0.55) {
+                            Vibration.hasVibrator().then((value) {
+                              if (value ?? false) {
+                                Vibration.vibrate(duration: 10);
+                              }
+                            });
+                          }
+                        },
                         onDismissed: (direction) {
                           _dbHelper.deleteCard(card.id).then((_) {
                             setState(() {
@@ -80,8 +91,9 @@ class _CardsPageState extends State<CardsPage> {
                         ),
                         child: Container(
                             padding: const EdgeInsets.all(8.0),
-                            color:
-                                _deleter.isInList(card.id) ? Colors.blue.withOpacity(0.1) : null,
+                            color: _deleter.isInList(card.id)
+                                ? Colors.blue.withOpacity(0.1)
+                                : null,
                             child: Card(
                               elevation: _deleter.isInList(card.id) ? 5 : 1,
                               margin: const EdgeInsets.all(8.0),
@@ -125,6 +137,11 @@ class _CardsPageState extends State<CardsPage> {
                                     _deleter.isDeleting = true;
                                     _deleter.toggleItem(card.id);
                                   });
+                                  Vibration.hasVibrator().then((value) {
+                                    if (value ?? false) {
+                                      Vibration.vibrate(duration: 10);
+                                    }
+                                  });
                                 },
                               ),
                             )));
@@ -158,8 +175,7 @@ class _CardsPageState extends State<CardsPage> {
                         MaterialPageRoute(
                           builder: (context) => AddCard(deckId: widget.deckId),
                         ),
-                      );
-                      setState(() {});
+                      ).then((value) => setState(() {}));
                     },
                   ),
                   SpeedDialChild(
