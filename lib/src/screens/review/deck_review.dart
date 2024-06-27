@@ -120,8 +120,8 @@ class _CardsReviewState extends State<ReviewPage> {
             });
           },
           style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.all(Colors.black),
-            backgroundColor: MaterialStateProperty.all(rating.value),
+            foregroundColor: WidgetStateProperty.all(Colors.black),
+            backgroundColor: WidgetStateProperty.all(rating.value),
           ),
           child: Text(rating.key),
         )

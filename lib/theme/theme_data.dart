@@ -18,8 +18,8 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all(Colors.lightBlue[50]!),
-      foregroundColor: MaterialStateProperty.all(Colors.blue[900]!),
+      backgroundColor: WidgetStateProperty.all(Colors.lightBlue[50]!),
+      foregroundColor: WidgetStateProperty.all(Colors.blue[900]!),
     ),
   ),
   dialogTheme: const DialogTheme(
@@ -35,7 +35,7 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
   colorScheme: ColorScheme.dark(
     primary: Colors.lightBlue[200]!,
     secondary: Colors.lightBlueAccent,
-    background: Colors.grey[800]!,
+    surface: Colors.grey[800]!,
   ),
   scaffoldBackgroundColor: Colors.grey[800],
   appBarTheme: AppBarTheme(
@@ -50,8 +50,8 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all(Colors.blueGrey[400]!),
-      foregroundColor: MaterialStateProperty.all(Colors.lightBlue[50]!),
+      backgroundColor: WidgetStateProperty.all(Colors.blueGrey[400]!),
+      foregroundColor: WidgetStateProperty.all(Colors.lightBlue[50]!),
     ),
   ),
   dialogTheme: const DialogTheme(

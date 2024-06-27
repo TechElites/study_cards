@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/data/model/study_card.dart';
@@ -47,18 +49,40 @@ class _CardsPageState extends State<CardDetailsPage> {
               TextField(
                 controller: _frontController,
                 decoration: const InputDecoration(
-                  labelText: 'Question',
+                  labelText: 'Front',
                 ),
                 maxLines: null,
               ),
+              if(widget.card.frontMedia != '')
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Image.file(
+                    File(widget.card.frontMedia),
+                    height: 200.0,
+                    width: 200.0,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                ),
               const SizedBox(height: 16.0),
               TextField(
                 controller: _backController,
                 decoration: const InputDecoration(
-                  labelText: 'Answer',
+                  labelText: 'Back',
                 ),
                 maxLines: null,
               ),
+              if(widget.card.backMedia != '')
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Image.file(
+                    File(widget.card.backMedia),
+                    height: 200.0,
+                    width: 200.0,
+                    fit: BoxFit.cover,
+                    alignment: Alignment.center,
+                  ),
+                ),
             ],
           ),
         ))
@@ -101,12 +125,12 @@ class _CardsPageState extends State<CardDetailsPage> {
           },
           style: ButtonStyle(
             foregroundColor: rating.key == _ratingController
-                ? MaterialStateProperty.all(Colors.white)
-                : MaterialStateProperty.all(Colors.black),
-            backgroundColor: MaterialStateProperty.all(rating.value),
+                ? WidgetStateProperty.all(Colors.white)
+                : WidgetStateProperty.all(Colors.black),
+            backgroundColor: WidgetStateProperty.all(rating.value),
             elevation: rating.key == _ratingController
-                ? MaterialStateProperty.all(5)
-                : MaterialStateProperty.all(0),
+                ? WidgetStateProperty.all(5)
+                : WidgetStateProperty.all(0),
           ),
           child: Text(rating.key),
         )

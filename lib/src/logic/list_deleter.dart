@@ -1,5 +1,5 @@
 class ListDeleter {
-  final List<int> _list = [];
+  final Map<int, String> _list = <int, String>{};
   bool isDeleting = false;
 
   void toggleMode() {
@@ -7,24 +7,24 @@ class ListDeleter {
   }
 
   bool isInList(int id) {
-    return _list.contains(id);
+    return _list.containsKey(id);
   }
 
-  void toggleItem(int id) {
+  void toggleItem(int id, {String name = ''}) {
     if (isDeleting) {
-      if (_list.contains(id)) {
+      if (_list.containsKey(id)) {
         _list.remove(id);
         if (_list.isEmpty) {
           isDeleting = false;
         }
       } else {
-        _list.add(id);
+        _list[id] = name;
       }
     }
   }
 
-  List<int> dumpList() {
-    final list = List<int>.from(_list);
+  Map<int, String> dumpList() {
+    final list = Map<int, String>.from(_list);
     _list.clear();
     isDeleting = false;
     return list;

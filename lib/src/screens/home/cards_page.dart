@@ -164,7 +164,7 @@ class _CardsPageState extends State<CardsPage> {
             ? FloatingActionButton(
                 onPressed: () {
                   _dbHelper
-                      .deleteCards(_deleter.dumpList())
+                      .deleteCards(_deleter.dumpList().keys.toList())
                       .then((value) => refresh());
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Cards deleted')),
