@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
-// import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
 
@@ -12,16 +12,12 @@ class FileDownloaderHelper {
     try {
       List bytes = [];
       if (Platform.isAndroid) {
-        // Check if the platform is Android
         final directory = Directory("/storage/emulated/0/Download");
-
         if (!directory.existsSync()) {
-          // Create the directory if it doesn't exist
           await directory.create();
         }
         final path = '${directory.path}/$fileName';
         final outFile = File(path);
-
         final res = await outFile.writeAsString(inFile, flush: true);
         bytes.add(await res.readAsBytes());
         log("=> saved file: ${res.path}");
@@ -43,19 +39,15 @@ class FileDownloaderHelper {
         final zipEncoder = ZipEncoder();
         final encodedFile = zipEncoder.encode(archive);
         if (encodedFile != null) {
-          // Save the zip file to the device
           await File('${directory.path}/${fileName.split('.xml')[0]}.zip')
               .writeAsBytes(encodedFile);
         }
       } else {
-        // IOS
         final directory = await getApplicationDocumentsDirectory();
-        // Get the application documents directory path
         final path = '${directory.path}/$fileName';
         final file = File(path);
         await file.writeAsString(inFile);
-        // final res = await Share.shareXFiles([XFile(path)]);
-        // log("=> saved status: ${res.status}");
+        await Share.shareXFiles([XFile(path)]);
       }
     } catch (e) {
       throw Exception(e);

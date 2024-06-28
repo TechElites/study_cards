@@ -113,45 +113,34 @@ class XmlHandler {
 
   static Future<File?> unzipFile(File zipFile) async {
     try {
-      // Verifica e richiesta dei permessi di archiviazione
       final hasPermission = await requestStoragePermission();
       if (!hasPermission) {
         throw Exception("Permessi di archiviazione non concessi.");
       }
-
-      // Ottieni la directory di archiviazione esterna
       Directory? externalDir = await getExternalStorageDirectory();
       if (externalDir == null) {
         throw Exception(
             "Impossibile trovare la directory di archiviazione esterna.");
       }
-
-      // Leggi il contenuto del file ZIP
       final bytes = await zipFile.readAsBytes();
       final archive = ZipDecoder().decodeBytes(bytes);
 
-      // Ottieni il nome dell'archivio senza l'estensione .zip
       String zipFileName = path.basenameWithoutExtension(zipFile.path);
-
-      // Crea la directory di destinazione con lo stesso nome dell'archivio
       Directory destinationDir =
           Directory(path.join(externalDir.path, zipFileName));
       await destinationDir.create(recursive: true);
 
       File? xmlFile;
-      // Estrai ogni file dall'archivio ZIP nella directory di destinazione
       for (final file in archive) {
         if (file.isFile) {
           final filename = file.name;
           final filePath = path.join(destinationDir.path, filename);
 
           try {
-            // Crea il file e scrivi il contenuto
             final outputFile = File(filePath);
             await outputFile.create(recursive: true);
             await outputFile.writeAsBytes(file.content as List<int>);
 
-            // Se trovi il file XML, restituisci l'oggetto File
             if (path.extension(filename) == '.xml') {
               xmlFile = outputFile;
             }
@@ -160,13 +149,11 @@ class XmlHandler {
                 'Errore durante l\'estrazione del file $filename: $e');
           }
         } else {
-          // Se è una directory, crea la directory
           final dirPath = path.join(destinationDir.path, file.name);
           await Directory(dirPath).create(recursive: true);
         }
       }
 
-      // Restituisci l'oggetto File del file XML (o null se non trovato)
       return xmlFile;
     } catch (e) {
       throw Exception('Errore durante l\'unzip del file: $e');
@@ -174,7 +161,6 @@ class XmlHandler {
   }
 
   static Future<bool> requestStoragePermission() async {
-    // Richiedi i permessi di archiviazione necessari
     if (Platform.isAndroid &&
         await Permission.manageExternalStorage.request().isGranted) {
       return true;
