@@ -227,37 +227,45 @@ class _CardsPageState extends State<CardsPage> {
   void _openRatingFilter() {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
         return Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Wrap(
             children: [
-              const Text(
-                'Select Rating',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
               Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  for (var rating in ["All"].followedBy(Rating.ratings))
-                    ListTile(
-                      title: Text(rating),
-                      selected: rating == _filteredRating,
-                      onTap: () {
-                        setState(() {
-                          _filteredRating = rating;
-                          if (rating != "All") {
-                            _shownCards = _allCards!
-                                .where((element) => element.rating == rating)
-                                .toList();
-                          } else {
-                            _shownCards = _allCards;
-                          }
-                        });
-                        Navigator.pop(context);
-                      },
-                    )
+                  const Text(
+                    'Select Rating',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  Column(
+                    children: [
+                      for (var rating in ["All", "Ignore rating"]
+                          .followedBy(Rating.ratings))
+                        ListTile(
+                          title: Text(rating),
+                          selected: rating == _filteredRating,
+                          onTap: () {
+                            setState(() {
+                              _filteredRating = rating;
+                              if (rating != "All" &&
+                                  rating != "Ignore rating") {
+                                _shownCards = _allCards!
+                                    .where(
+                                        (element) => element.rating == rating)
+                                    .toList();
+                              } else {
+                                _shownCards = _allCards;
+                              }
+                            });
+                            Navigator.pop(context);
+                          },
+                        )
+                    ],
+                  )
                 ],
               )
             ],

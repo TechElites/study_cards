@@ -17,10 +17,10 @@ class Rating {
 
   static Map<String, int> times = {
     'None': 0,
-    'Fail': 3,
-    'Hard': 10,
-    'Good': 30,
-    'Easy': 90,
+    'Fail': 1,
+    'Hard': 3,
+    'Good': 10,
+    'Easy': 30,
   };
 
   static List<String> ratings = ['None', 'Fail', 'Hard', 'Good', 'Easy'];
