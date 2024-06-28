@@ -48,6 +48,46 @@ class _AddDeckState extends State<AddDeck> {
       appBar: AppBar(
         title: const Text('Add Deck'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.info),
+            onPressed: () {
+              // Show a scrollable dialog with information about how to format the XML file and Zip file
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('How to format the XML file or Zip file'),
+                    content: const SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Text(
+                            'To see an example of how to format the XML file try creating a deck and exporting it.',
+                          ),
+                          Text(
+                              'To add more lines to the same card side, use the tag <br> or <br />.'),
+                          SizedBox(height: 8.0),
+                          Text(
+                              'The ZIP file should contain an XML file with the same format and the media files in the same directory.'),
+                          Text(
+                              'The Zip file mustn\'t contain subdirectories. To create a ZIP file without subdirectories: right-click on Explorer > New > Compressed (zipped) folder. Then drag and drop (or copy and paste) the XML file and media files into the ZIP file.')
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
