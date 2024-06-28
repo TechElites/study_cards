@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
@@ -20,27 +19,29 @@ class FileDownloaderHelper {
         final outFile = File(path);
         final res = await outFile.writeAsString(inFile, flush: true);
         bytes.add(await res.readAsBytes());
-        log("=> saved file: ${res.path}");
         if (mediaMap.isNotEmpty) {
           for (var i = 0; i < mediaMap.length; i++) {
             bytes.add(
                 await File(mediaMap.entries.elementAt(i).key).readAsBytes());
           }
-        }
-        final archive = Archive();
-        for (var i = 0; i < bytes.length; i++) {
-          if (i == 0) {
-            archive.addFile(ArchiveFile(fileName, bytes[i].length, bytes[i]));
-          } else {
-            archive.addFile(ArchiveFile(mediaMap.entries.elementAt(i - 1).value,
-                bytes[i].length, bytes[i]));
+          final archive = Archive();
+          for (var i = 0; i < bytes.length; i++) {
+            if (i == 0) {
+              archive.addFile(ArchiveFile(fileName, bytes[i].length, bytes[i]));
+            } else {
+              archive.addFile(ArchiveFile(
+                  mediaMap.entries.elementAt(i - 1).value,
+                  bytes[i].length,
+                  bytes[i]));
+            }
           }
-        }
-        final zipEncoder = ZipEncoder();
-        final encodedFile = zipEncoder.encode(archive);
-        if (encodedFile != null) {
-          await File('${directory.path}/${fileName.split('.xml')[0]}.zip')
-              .writeAsBytes(encodedFile);
+          final zipEncoder = ZipEncoder();
+          final encodedFile = zipEncoder.encode(archive);
+          if (encodedFile != null) {
+            await File('${directory.path}/${fileName.split('.xml')[0]}.zip')
+                .writeAsBytes(encodedFile);
+          }
+          await outFile.delete();
         }
       } else {
         final directory = await getApplicationDocumentsDirectory();

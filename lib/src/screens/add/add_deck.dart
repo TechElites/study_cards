@@ -33,9 +33,11 @@ class _AddDeckState extends State<AddDeck> {
       } else {
         fileContent = await file.readAsString();
       }
-      setState(() {
-        frontsAndBacks = XmlHandler.parseXml(fileContent);
-        _nameController.text = frontsAndBacks[0].front;
+      XmlHandler.parseXml(fileContent).then((value) {
+        setState(() {
+          frontsAndBacks = value;
+          _nameController.text = frontsAndBacks[0].front;
+        });
       });
     }
   }

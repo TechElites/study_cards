@@ -10,7 +10,9 @@ import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as path;
 
 class XmlHandler {
-  static List<StudyCard> parseXml(String xmlString) {
+  static Future<List<StudyCard>> parseXml(String xmlString) async {
+    xmlString = xmlString.replaceAll('\n', '');
+    xmlString = xmlString.replaceAll('  ', '');
     final document = xml.XmlDocument.parse(xmlString);
     final cards = document.findAllElements('card');
 
@@ -24,7 +26,8 @@ class XmlHandler {
       final front = card
           .findElements('rich-text')
           .firstWhere((element) => element.getAttribute('name') == 'Front')
-          .innerText;
+          .innerXml
+          .replaceAll('<br/>', '\n');
       var frontMedia = card
           .findElements('media')
           .firstWhere(
@@ -36,7 +39,8 @@ class XmlHandler {
       final back = card
           .findElements('rich-text')
           .firstWhere((element) => element.getAttribute('name') == 'Back')
-          .innerText;
+          .innerXml
+          .replaceAll('<br/>', '\n');
       var backMedia = card
           .findElements('media')
           .firstWhere(
@@ -46,22 +50,20 @@ class XmlHandler {
               orElse: () => xml.XmlElement(xml.XmlName('media'), [], []))
           .getAttribute('src');
       var appPath = '';
-      getExternalStorageDirectory().then((directory) {
-        appPath = directory!.path;
-        frontMedia = frontMedia != null
-            ? path.join(appPath.toString(), deckName, frontMedia)
-            : '';
-        backMedia = backMedia != null
-            ? path.join(appPath.toString(), deckName, backMedia)
-            : '';
-        parsedData.add(StudyCard(
-            front: front,
-            back: back,
-            frontMedia: frontMedia ?? '',
-            backMedia: backMedia ?? ''));
-      });
+      final directory = await getExternalStorageDirectory();
+      appPath = directory!.path;
+      frontMedia = frontMedia != null
+          ? path.join(appPath.toString(), deckName, frontMedia)
+          : '';
+      backMedia = backMedia != null
+          ? path.join(appPath.toString(), deckName, backMedia)
+          : '';
+      parsedData.add(StudyCard(
+          front: front,
+          back: back,
+          frontMedia: frontMedia,
+          backMedia: backMedia));
     }
-
     return parsedData;
   }
 
@@ -75,9 +77,16 @@ class XmlHandler {
           builder.element('card', nest: () {
             builder.element('rich-text', nest: () {
               builder.attribute('name', 'Front');
-              builder.text(card.front);
+              String front = card.front;
+              if (front.contains('\n')) {
+                for (String s in front.split('\n')) {
+                  builder.text(s);
+                  builder.element('br');
+                }
+              }
+              builder.text(front);
             });
-            if (card.frontMedia != '') {
+            if (card.frontMedia.isNotEmpty) {
               builder.element('media', nest: () {
                 builder.attribute('type', 'image');
                 builder.attribute('name', 'Front');
@@ -87,9 +96,16 @@ class XmlHandler {
             }
             builder.element('rich-text', nest: () {
               builder.attribute('name', 'Back');
-              builder.text(card.back);
+              final String back = card.back;
+              if (back.contains('\n')) {
+                for (String s in back.split('\n')) {
+                  builder.text(s);
+                  builder.element('br');
+                }
+              }
+              builder.text(back);
             });
-            if (card.backMedia != '') {
+            if (card.backMedia.isNotEmpty) {
               builder.element('media', nest: () {
                 builder.attribute('type', 'image');
                 builder.attribute('name', 'Back');
