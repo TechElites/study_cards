@@ -50,7 +50,7 @@ class _AddDeckState extends State<AddDeck> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.info),
+            icon: const Icon(Icons.info),
             onPressed: () {
               // Show a scrollable dialog with information about how to format the XML file and Zip file
               showDialog(
@@ -65,12 +65,14 @@ class _AddDeckState extends State<AddDeck> {
                             'To see an example of how to format the XML file try creating a deck and exporting it.',
                           ),
                           Text(
-                              'To add more lines to the same card side, use the tag <br> or <br />.'),
+                              'To add more lines to the same card side, use the tag <br/>'),
                           SizedBox(height: 8.0),
                           Text(
                               'The ZIP file should contain an XML file with the same format and the media files in the same directory.'),
                           Text(
-                              'The Zip file mustn\'t contain subdirectories. To create a ZIP file without subdirectories: right-click on Explorer > New > Compressed (zipped) folder. Then drag and drop (or copy and paste) the XML file and media files into the ZIP file.')
+                              'The Zip file mustn\'t contain subdirectories. To create a ZIP file without subdirectories:'),
+                          Text(
+                              'Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag and drop (or copy and paste) the XML file and media files into the ZIP file.')
                         ],
                       ),
                     ),
