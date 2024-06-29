@@ -1,5 +1,5 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/study_card.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/logic/deck_shuffler.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
@@ -37,10 +37,11 @@ class _CardsPageState extends State<CardsPage> {
   @override
   Widget build(BuildContext context) {
     if (_allCards == null) {
-      _dbHelper.getCards(widget.deckId).then((value) => setState(() {
-            _allCards = value;
-            _shownCards = value;
-          }));
+      final value = _dbHelper.getCards(widget.deckId);
+      setState(() {
+        _allCards = value;
+        _shownCards = value;
+      });
     }
     return Scaffold(
         appBar: AppBar(
@@ -203,21 +204,19 @@ class _CardsPageState extends State<CardsPage> {
                               const SnackBar(
                                   content: Text('No cards to review')));
                         } else {
-                          _dbHelper
-                              .getReviewCards(widget.deckId)
-                              .then((maxCards) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ReviewPage(
-                                    cards: _filteredRating == "All"
-                                        ? DeckShuffler.shuffleTimedCards(
-                                            _shownCards!, maxCards)
-                                        : DeckShuffler.shuffleCards(
-                                            _shownCards!, maxCards)),
-                              ),
-                            ).then((value) => refresh());
-                          });
+                          final maxCards =
+                              _dbHelper.getReviewCards(widget.deckId);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ReviewPage(
+                                  cards: _filteredRating == "All"
+                                      ? DeckShuffler.shuffleTimedCards(
+                                          _shownCards!, maxCards)
+                                      : DeckShuffler.shuffleCards(
+                                          _shownCards!, maxCards)),
+                            ),
+                          ).then((value) => refresh());
                         }
                       }
                     })

@@ -1,16 +1,15 @@
 import 'dart:io';
-
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
 
-class FileDownloaderHelper {
+class FileDownloaderMobile {
   static Future<void> saveFileOnDevice(
       String fileName, String inFile, Map<String, String> mediaMap) async {
-    try {
-      List bytes = [];
-      if (Platform.isAndroid) {
+    List bytes = [];
+    switch (Platform.operatingSystem) {
+      case 'android':
         final directory = Directory("/storage/emulated/0/Download");
         if (!directory.existsSync()) {
           await directory.create();
@@ -43,15 +42,16 @@ class FileDownloaderHelper {
           }
           await outFile.delete();
         }
-      } else {
+        break;
+      case 'ios':
         final directory = await getApplicationDocumentsDirectory();
         final path = '${directory.path}/$fileName';
         final file = File(path);
         await file.writeAsString(inFile);
         await Share.shareXFiles([XFile(path)]);
-      }
-    } catch (e) {
-      throw Exception(e);
+        break;
+      default:
+        break;
     }
   }
 }

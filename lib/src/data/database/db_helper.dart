@@ -1,168 +1,125 @@
-import 'package:flash_cards/src/data/model/deck.dart';
-import 'package:flash_cards/src/data/model/study_card.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flash_cards/src/data/model/deck/deck.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   factory DatabaseHelper() => _instance;
 
-  static Database? _database;
-
   DatabaseHelper._internal();
 
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDatabase();
-    return _database!;
+  Future<void> init() async {
+    await Hive.initFlutter();
+    Hive.registerAdapter(HiveDeckAdapter());
+    Hive.registerAdapter(HiveStudyCardAdapter());
+    await Hive.openBox<HiveDeck>('decks');
+    await Hive.openBox<HiveStudyCard>('cards');
   }
 
-  Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'decks.db');
-
-    // Uncomment first time when upgrading db
-    // await deleteDatabase(path);
-
-    return await openDatabase(
-      path,
-      version: 3,
-      onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE decks (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT,
-            cards INTEGER,
-            reviewCards INTEGER,
-            creation TEXT
-          )
-        ''');
-        await db.execute('''
-          CREATE TABLE cards (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            deckId INTEGER,
-            front TEXT,
-            back TEXT,
-            rating TEXT,
-            lastReviewed TEXT,
-            frontMedia TEXT,
-            backMedia TEXT,
-            FOREIGN KEY (deckId) REFERENCES decks (id)
-          )
-        ''');
-      },
-    );
-  }
+  Box<HiveDeck> get decksBox => Hive.box<HiveDeck>('decks');
+  Box<HiveStudyCard> get cardsBox => Hive.box<HiveStudyCard>('cards');
 
   Future<int> insertDeck(Deck deck) async {
-    Database db = await database;
-    return await db.insert('decks', deck.toMap());
+    return await decksBox.add(deck.toHiveDeck());
   }
 
-  Future<int> insertCard(StudyCard card) async {
-    Database db = await database;
-    await db.insert('cards', card.toMap());
-    final deck = await getDeck(card.deckId);
-    return await db.update('decks', {'cards': deck.cards + 1},
-        where: 'id = ?', whereArgs: [deck.id]);
+  Future<void> insertCard(StudyCard card) async {
+    await cardsBox.add(card.toHiveStudyCard());
+    final deck = decksBox.values.firstWhere((d) => d.key == card.deckId);
+    deck.cards += 1;
+    await deck.save();
   }
 
   Future<void> insertDeckCards(List<StudyCard> cards) async {
-    Database db = await database;
-    Batch batch = db.batch();
     for (var card in cards) {
-      batch.insert('cards', card.toMap());
+      await cardsBox.add(card.toHiveStudyCard());
     }
-    await batch.commit();
   }
 
-  Future<List<Deck>> getDecks() async {
-    Database db = await database;
-    List<Map<String, Object?>> rawDecks = await db.query('decks');
-    return rawDecks.map((deck) => Deck.fromMap(deck)).toList();
+  List<Deck> getDecks() {
+    return decksBox.values.map((deck) => Deck.fromHiveDeck(deck)).toList();
   }
 
-  Future<Deck> getDeck(int deckId) async {
-    Database db = await database;
-    List<Map<String, Object?>> rawDecks =
-        await db.query('decks', where: 'id = ?', whereArgs: [deckId]);
-    return Deck.fromMap(rawDecks[0]);
+  Deck getDeck(int deckId) {
+    return Deck.fromHiveDeck(
+        decksBox.values.firstWhere((deck) => deck.key == deckId));
   }
 
-  Future<List<StudyCard>> getCards(int deckId) async {
-    Database db = await database;
-    List<Map<String, Object?>> rawCards =
-        await db.query('cards', where: 'deckId = ?', whereArgs: [deckId]);
-    return rawCards.map((card) => StudyCard.fromMap(card)).toList();
+  List<StudyCard> getCards(int deckId) {
+    return cardsBox.values
+        .where((card) => card.deckId == deckId)
+        .map((card) => StudyCard.fromHiveStudyCard(card))
+        .toList();
   }
 
-  Future<int> getReviewCards(int deckId) async {
-    Database db = await database;
-    List<Map<String, Object?>> rawDecks =
-        await db.query('decks', where: 'id = ?', whereArgs: [deckId]);
-    return rawDecks[0]['reviewCards'] as int;
+  int getReviewCards(int deckId) {
+    return decksBox.values.firstWhere((deck) => deck.key == deckId).reviewCards;
   }
 
   Future<void> setReviewCards(int deckId, int reviewCards) async {
-    Database db = await database;
-    await db.update('decks', {'reviewCards': reviewCards},
-        where: 'id = ?', whereArgs: [deckId]);
+    final deck = decksBox.values.firstWhere((deck) => deck.key == deckId);
+    deck.reviewCards = reviewCards;
+    await deck.save();
   }
 
   Future<void> updateDeckName(int deckId, String name) async {
-    Database db = await database;
-    await db.update('decks', {'name': name},
-        where: 'id = ?', whereArgs: [deckId]);
+    final deck = decksBox.values.firstWhere((deck) => deck.key == deckId);
+    deck.name = name;
+    await deck.save();
   }
 
   Future<void> updateCard(StudyCard card) async {
-    Database db = await database;
-    await db
-        .update('cards', card.toMap(), where: 'id = ?', whereArgs: [card.id]);
+    final existingCard = cardsBox.values.firstWhere((c) => c.key == card.id);
+    existingCard.front = card.front;
+    existingCard.back = card.back;
+    existingCard.rating = card.rating;
+    existingCard.lastReviewed = card.lastReviewed;
+    existingCard.frontMedia = card.frontMedia;
+    existingCard.backMedia = card.backMedia;
+    await existingCard.save();
   }
 
   Future<void> updateCardRating(int cardId, String rating) async {
-    Database db = await database;
-    await db.update(
-        'cards',
-        {
-          'rating': rating,
-          'lastReviewed': DateTime.now().toIso8601String(),
-        },
-        where: 'id = ?',
-        whereArgs: [cardId]);
+    final card = cardsBox.values.firstWhere((c) => c.key == cardId);
+    card.rating = rating;
+    card.lastReviewed = DateTime.now().toIso8601String();
+    await card.save();
   }
 
   Future<void> deleteDeck(int deckId) async {
-    Database db = await database;
-    await db.delete('decks', where: 'id = ?', whereArgs: [deckId]);
-    await db.delete('cards', where: 'deckId = ?', whereArgs: [deckId]);
+    final deck = decksBox.values.firstWhere((deck) => deck.key == deckId);
+    await deck.delete();
+    final cards =
+        cardsBox.values.where((card) => card.deckId == deckId).toList();
+    for (var card in cards) {
+      await card.delete();
+    }
   }
 
   Future<void> deleteDecks(List<int> deckIds) async {
-    Database db = await database;
-    await db.delete('decks', where: 'id IN (${deckIds.join(',')})');
-    await db.delete('cards', where: 'deckId IN (${deckIds.join(',')})');
+    for (var deckId in deckIds) {
+      await deleteDeck(deckId);
+    }
   }
 
   Future<void> deleteCards(List<int> cardIds) async {
-    Database db = await database;
-    final deckId =
-        (await db.query('cards', where: 'id = ?', whereArgs: [cardIds[0]]))[0]
-            ['deckId'] as int;
-    final deck = await getDeck(deckId);
-    await db.update('decks', {'cards': deck.cards - cardIds.length},
-        where: 'id = ?', whereArgs: [deck.id]);
-    await db.delete('cards', where: 'id IN (${cardIds.join(',')})');
+    final card = cardsBox.values.firstWhere((card) => card.key == cardIds[0]);
+    final deckId = card.deckId;
+    final deck = decksBox.values.firstWhere((deck) => deck.key == deckId);
+    deck.cards -= cardIds.length;
+    await deck.save();
+    for (var cardId in cardIds) {
+      final card = cardsBox.values.firstWhere((c) => c.key == cardId);
+      await card.delete();
+    }
   }
 
   Future<void> deleteCard(int cardId) async {
-    Database db = await database;
-    final deckId =
-        (await db.query('cards', where: 'id = ?', whereArgs: [cardId]))[0]
-            ['deckId'] as int;
-    final deck = await getDeck(deckId);
-    await db.update('decks', {'cards': deck.cards - 1},
-        where: 'id = ?', whereArgs: [deck.id]);
-    await db.delete('cards', where: 'id = ?', whereArgs: [cardId]);
+    final card = cardsBox.values.firstWhere((c) => c.key == cardId);
+    final deckId = card.deckId;
+    await card.delete();
+    final deck = decksBox.values.firstWhere((deck) => deck.key == deckId);
+    deck.cards -= 1;
+    await deck.save();
   }
 }

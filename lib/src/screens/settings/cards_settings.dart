@@ -1,6 +1,6 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/deck.dart';
-import 'package:flash_cards/src/data/model/study_card.dart';
+import 'package:flash_cards/src/data/model/deck/deck.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
 import 'package:flutter/material.dart';
 
@@ -21,15 +21,11 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   @override
   void initState() {
     super.initState();
-    _dbHelper.getReviewCards(widget.deckId).then((value) {
-      setState(() {
-        _cardsController.text = value.toString();
-      });
-    });
-    _dbHelper.getDeck(widget.deckId).then((value) {
-      setState(() {
-        _nameController.text = value.name;
-      });
+    final revC = _dbHelper.getReviewCards(widget.deckId);
+    final d = _dbHelper.getDeck(widget.deckId);
+    setState(() {
+      _nameController.text = d.name;
+      _cardsController.text = revC.toString();
     });
   }
 
@@ -98,8 +94,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   }
 
   Future<void> _exportDeck() async {
-    final Deck deck = await _dbHelper.getDeck(widget.deckId);
-    final List<StudyCard> cards = await _dbHelper.getCards(deck.id);
+    final Deck deck = _dbHelper.getDeck(widget.deckId);
+    final List<StudyCard> cards = _dbHelper.getCards(deck.id);
     final String deckXml = XmlHandler.createXml(cards, deck.name);
     final Map<String, String> mediaMap = {}; //path;name
     for (final card in cards) {

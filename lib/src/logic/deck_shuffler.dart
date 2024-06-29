@@ -1,5 +1,5 @@
 import 'package:flash_cards/src/data/model/rating.dart';
-import 'package:flash_cards/src/data/model/study_card.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
 
 class DeckShuffler {
   static List<StudyCard> shuffleTimedCards(List<StudyCard> cards, int maxCards) {

@@ -1,6 +1,6 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/study_card.dart';
-import 'package:flash_cards/src/data/model/deck.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';

@@ -1,10 +1,12 @@
+import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/theme/theme_data.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/home/decks_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  await DatabaseHelper().init();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),

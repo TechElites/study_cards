@@ -1,7 +1,6 @@
 import 'dart:io';
-
-import 'package:flash_cards/src/data/model/study_card.dart';
-import 'package:flash_cards/src/logic/file_downloader_helper.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/logic/downloaders/file_downloader.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:xml/xml.dart' as xml;
@@ -124,7 +123,7 @@ class XmlHandler {
 
   static Future<void> saveXmlToFile(
       String xmlString, String fileName, Map<String, String> mediaMap) async {
-    FileDownloaderHelper.saveFileOnDevice(fileName, xmlString, mediaMap);
+    FileDownloader.saveFileOnDevice(fileName, xmlString, mediaMap);
   }
 
   static Future<File?> unzipFile(File zipFile) async {
