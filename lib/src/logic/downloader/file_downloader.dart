@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flash_cards/src/logic/downloaders/file_downloader_mobile.dart';
-import 'package:flash_cards/src/logic/downloaders/file_downloader_web.dart';
+import 'package:flash_cards/src/logic/downloader/file_downloader_mobile.dart';
+import 'package:flash_cards/src/logic/downloader/file_downloader_web.dart';
 
 class FileDownloader {
   static Future<void> saveFileOnDevice(
       String fileName, String inFile, Map<String, String> mediaMap) async {
     try {
       if (kIsWeb) {
-        FileDownloaderWeb.saveFileOnDevice(fileName, inFile, mediaMap);
+        FileDownloaderWeb.saveFileOnDevice(fileName, inFile);
       } else {
         FileDownloaderMobile.saveFileOnDevice(fileName, inFile, mediaMap);
       }

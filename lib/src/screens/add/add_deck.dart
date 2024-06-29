@@ -1,10 +1,9 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
-import 'package:flash_cards/src/logic/xml_handler.dart';
+import 'package:flash_cards/src/logic/uploader/file_uploader.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'dart:io';
 
 class AddDeck extends StatefulWidget {
   const AddDeck({super.key});
@@ -17,30 +16,6 @@ class _AddDeckState extends State<AddDeck> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _nameController = TextEditingController();
   List<StudyCard> frontsAndBacks = [StudyCard(front: '', back: '')];
-
-  Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['xml', 'zip'],
-    );
-
-    if (result != null && result.files.isNotEmpty) {
-      File file = File(result.files.single.path!);
-      String fileContent = '';
-      if (file.path.endsWith('.zip')) {
-        fileContent = await XmlHandler.unzipFile(file)
-            .then((value) => value!.readAsString());
-      } else {
-        fileContent = await file.readAsString();
-      }
-      XmlHandler.parseXml(fileContent).then((value) {
-        setState(() {
-          frontsAndBacks = value;
-          _nameController.text = frontsAndBacks[0].front;
-        });
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,17 +37,15 @@ class _AddDeckState extends State<AddDeck> {
                       child: Column(
                         children: [
                           Text(
-                            'To see an example of how to format the XML file try creating a deck and exporting it.',
+'''
+Note that if you're using the web version of this app only xml files are enabled, since images in cards are not supported for now.\n
+To see an example of how to format the XML file try creating a deck and exporting it.
+To add more lines to the same card side, use the tag <br/>.\n
+The ZIP file should contain an XML file with the same format and the media files in the same directory.
+The Zip file mustn't contain subdirectories. To create a ZIP file without subdirectories:
+Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag and drop (or copy and paste) the XML file and media files into the ZIP file.
+''',
                           ),
-                          Text(
-                              'To add more lines to the same card side, use the tag <br/>'),
-                          SizedBox(height: 8.0),
-                          Text(
-                              'The ZIP file should contain an XML file with the same format and the media files in the same directory.'),
-                          Text(
-                              'The Zip file mustn\'t contain subdirectories. To create a ZIP file without subdirectories:'),
-                          Text(
-                              'Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag and drop (or copy and paste) the XML file and media files into the ZIP file.')
                         ],
                       ),
                     ),
@@ -103,11 +76,18 @@ class _AddDeckState extends State<AddDeck> {
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _pickFile,
+              onPressed: () {
+                FileUploader.uploadFile().then((value) {
+                  setState(() {
+                    frontsAndBacks = value;
+                    _nameController.text = frontsAndBacks[0].front;
+                  });
+                });
+              },
               child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Pick XML or ZIP file '),
+                  Text(kIsWeb ? 'Pick XML file ' : 'Pick XML or ZIP file '),
                   Icon(Icons.folder_copy_rounded),
                 ],
               ),

@@ -1,11 +1,7 @@
-import 'dart:io';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/downloaders/file_downloader.dart';
+import 'package:flash_cards/src/logic/downloader/file_downloader.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:xml/xml.dart' as xml;
-import 'package:archive/archive.dart';
-import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as path;
 
 class XmlHandler {
@@ -62,6 +58,34 @@ class XmlHandler {
           back: back,
           frontMedia: frontMedia,
           backMedia: backMedia));
+    }
+    return parsedData;
+  }
+
+  static Future<List<StudyCard>> parseSimpleXml(String xmlString) async {
+    xmlString = xmlString.replaceAll('\n', '');
+    xmlString = xmlString.replaceAll('  ', '');
+    final document = xml.XmlDocument.parse(xmlString);
+    final cards = document.findAllElements('card');
+
+    List<StudyCard> parsedData = [];
+
+    final deckName =
+        document.findAllElements('deck').first.attributes.first.value;
+    parsedData.add(StudyCard(front: deckName, back: cards.length.toString()));
+
+    for (var card in cards) {
+      final front = card
+          .findElements('rich-text')
+          .firstWhere((element) => element.getAttribute('name') == 'Front')
+          .innerXml
+          .replaceAll('<br/>', '\n');
+      final back = card
+          .findElements('rich-text')
+          .firstWhere((element) => element.getAttribute('name') == 'Back')
+          .innerXml
+          .replaceAll('<br/>', '\n');
+      parsedData.add(StudyCard(front: front, back: back));
     }
     return parsedData;
   }
@@ -124,65 +148,5 @@ class XmlHandler {
   static Future<void> saveXmlToFile(
       String xmlString, String fileName, Map<String, String> mediaMap) async {
     FileDownloader.saveFileOnDevice(fileName, xmlString, mediaMap);
-  }
-
-  static Future<File?> unzipFile(File zipFile) async {
-    try {
-      final hasPermission = await requestStoragePermission();
-      if (!hasPermission) {
-        throw Exception("Permessi di archiviazione non concessi.");
-      }
-      Directory? externalDir = await getExternalStorageDirectory();
-      if (externalDir == null) {
-        throw Exception(
-            "Impossibile trovare la directory di archiviazione esterna.");
-      }
-      final bytes = await zipFile.readAsBytes();
-      final archive = ZipDecoder().decodeBytes(bytes);
-
-      String zipFileName = path.basenameWithoutExtension(zipFile.path);
-      Directory destinationDir =
-          Directory(path.join(externalDir.path, zipFileName));
-      await destinationDir.create(recursive: true);
-
-      File? xmlFile;
-      for (final file in archive) {
-        if (file.isFile) {
-          final filename = file.name;
-          final filePath = path.join(destinationDir.path, filename);
-
-          try {
-            final outputFile = File(filePath);
-            await outputFile.create(recursive: true);
-            await outputFile.writeAsBytes(file.content as List<int>);
-
-            if (path.extension(filename) == '.xml') {
-              xmlFile = outputFile;
-            }
-          } catch (e) {
-            throw Exception(
-                'Errore durante l\'estrazione del file $filename: $e');
-          }
-        } else {
-          final dirPath = path.join(destinationDir.path, file.name);
-          await Directory(dirPath).create(recursive: true);
-        }
-      }
-
-      return xmlFile;
-    } catch (e) {
-      throw Exception('Errore durante l\'unzip del file: $e');
-    }
-  }
-
-  static Future<bool> requestStoragePermission() async {
-    if (Platform.isAndroid &&
-        await Permission.manageExternalStorage.request().isGranted) {
-      return true;
-    } else if (await Permission.storage.request().isGranted) {
-      return true;
-    } else {
-      return false;
-    }
   }
 }

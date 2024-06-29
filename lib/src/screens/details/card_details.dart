@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +37,12 @@ class _CardsPageState extends State<CardDetailsPage> {
           const SizedBox(height: 16.0),
           ButtonBar(
             alignment: MainAxisAlignment.center,
-            children: _createRatingButtons(),
+            children:
+                RatingButtons.build(selected: _ratingController, (rating) {
+              setState(() {
+                _ratingController = rating;
+              });
+            }),
           ),
           Text('Last reviewed: ${widget.card.lastReviewedFormatted}'),
         ]),
@@ -53,7 +58,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                 ),
                 maxLines: null,
               ),
-              if(widget.card.frontMedia != '')
+              if (widget.card.frontMedia != '')
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Image.file(
@@ -72,7 +77,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                 ),
                 maxLines: null,
               ),
-              if(widget.card.backMedia != '')
+              if (widget.card.backMedia != '')
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Image.file(
@@ -111,29 +116,5 @@ class _CardsPageState extends State<CardDetailsPage> {
       );
       Navigator.pop(context);
     });
-  }
-
-  List<Widget> _createRatingButtons() {
-    return [
-      for (var rating
-          in Rating.colors.entries.where((e) => e.key != Rating.none))
-        ElevatedButton(
-          onPressed: () {
-            setState(() {
-              _ratingController = rating.key;
-            });
-          },
-          style: ButtonStyle(
-            foregroundColor: rating.key == _ratingController
-                ? WidgetStateProperty.all(Colors.white)
-                : WidgetStateProperty.all(Colors.black),
-            backgroundColor: WidgetStateProperty.all(rating.value),
-            elevation: rating.key == _ratingController
-                ? WidgetStateProperty.all(5)
-                : WidgetStateProperty.all(0),
-          ),
-          child: Text(rating.key),
-        )
-    ];
   }
 }

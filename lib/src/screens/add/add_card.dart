@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
@@ -42,10 +42,14 @@ class _AddCardState extends State<AddCard> {
                   maxLines: null,
                   decoration: InputDecoration(
                       labelText: 'Question',
-                      suffixIcon: InkWell(
-                          onTap: () => _pickImage(Type.front),
-                          child: const Icon(Icons.add_photo_alternate_rounded,
-                              color: Colors.grey, size: 32.0)))),
+                      suffixIcon: kIsWeb
+                          ? null
+                          : InkWell(
+                              onTap: () => _pickImage(Type.front),
+                              child: const Icon(
+                                  Icons.add_photo_alternate_rounded,
+                                  color: Colors.grey,
+                                  size: 32.0)))),
               if (_selectedFrontImage != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -63,10 +67,14 @@ class _AddCardState extends State<AddCard> {
                   maxLines: null,
                   decoration: InputDecoration(
                       labelText: 'Answer',
-                      suffixIcon: InkWell(
-                          onTap: () => _pickImage(Type.back),
-                          child: const Icon(Icons.add_photo_alternate_rounded,
-                              color: Colors.grey, size: 32.0)))),
+                      suffixIcon: kIsWeb
+                          ? null
+                          : InkWell(
+                              onTap: () => _pickImage(Type.back),
+                              child: const Icon(
+                                  Icons.add_photo_alternate_rounded,
+                                  color: Colors.grey,
+                                  size: 32.0)))),
               if (_selectedBackImage != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),

@@ -2,8 +2,7 @@ import 'package:universal_html/html.dart';
 import 'dart:convert';
 
 class FileDownloaderWeb {
-  static Future<void> saveFileOnDevice(
-      String fileName, String inFile, Map<String, String> mediaMap) async {
+  static Future<void> saveFileOnDevice(String fileName, String inFile) async {
     try {
       final bytes = utf8.encode(inFile);
       final blob = Blob([bytes]);

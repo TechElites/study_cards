@@ -1,7 +1,7 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
 
@@ -85,12 +85,21 @@ class _CardsReviewState extends State<ReviewPage> {
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.only(bottom: 16.0),
                     child: _reveal
                         ? ButtonBar(
                             alignment: MainAxisAlignment.center,
-                            children: _createRatingButtons(),
-                          )
+                            children: RatingButtons.build((rating) {
+                              _dbHelper.updateCardRating(
+                                  widget.cards[_index].id, rating);
+                              setState(() {
+                                _index++;
+                                if (_index >= widget.cards.length) {
+                                  Navigator.pop(context);
+                                }
+                                _reveal = false;
+                              });
+                            }))
                         : const Text(
                             'Tap to reveal answer',
                             textAlign: TextAlign.center,
@@ -102,29 +111,5 @@ class _CardsReviewState extends State<ReviewPage> {
             : const Center(child: Text('No more cards to review')),
       ),
     );
-  }
-
-  List<Widget> _createRatingButtons() {
-    return [
-      for (var rating
-          in Rating.colors.entries.where((e) => e.key != Rating.none))
-        ElevatedButton(
-          onPressed: () {
-            _dbHelper.updateCardRating(widget.cards[_index].id, rating.key);
-            setState(() {
-              _index++;
-              if (_index >= widget.cards.length) {
-                Navigator.pop(context);
-              }
-              _reveal = false;
-            });
-          },
-          style: ButtonStyle(
-            foregroundColor: WidgetStateProperty.all(Colors.black),
-            backgroundColor: WidgetStateProperty.all(rating.value),
-          ),
-          child: Text(rating.key),
-        )
-    ];
   }
 }
