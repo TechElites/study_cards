@@ -1,7 +1,9 @@
 import 'package:universal_html/html.dart';
 import 'dart:convert';
 
+/// Class to handle downloading files on web.
 class FileDownloaderWeb {
+  /// Save the deck file on web.
   static Future<void> saveFileOnDevice(String fileName, String inFile) async {
     try {
       final bytes = utf8.encode(inFile);

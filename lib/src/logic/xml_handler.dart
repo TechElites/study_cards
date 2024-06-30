@@ -4,7 +4,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:xml/xml.dart' as xml;
 import 'package:path/path.dart' as path;
 
+/// Handles the XML data.
 class XmlHandler {
+  /// Parses the XML string with images and returns a list of [StudyCard].
   static Future<List<StudyCard>> parseXml(String xmlString) async {
     xmlString = xmlString.replaceAll('\n', '');
     xmlString = xmlString.replaceAll('  ', '');
@@ -62,6 +64,7 @@ class XmlHandler {
     return parsedData;
   }
 
+  /// Parses the XML string and returns a list of [StudyCard].
   static Future<List<StudyCard>> parseSimpleXml(String xmlString) async {
     xmlString = xmlString.replaceAll('\n', '');
     xmlString = xmlString.replaceAll('  ', '');
@@ -90,6 +93,7 @@ class XmlHandler {
     return parsedData;
   }
 
+  /// Creates an XML string from a list of [StudyCard].
   static String createXml(List<StudyCard> cards, String deckName) {
     final builder = xml.XmlBuilder();
     builder.processing('xml', 'version="1.0" encoding="UTF-8"');
@@ -145,6 +149,7 @@ class XmlHandler {
     return document.toXmlString(pretty: true, indent: '  ');
   }
 
+  /// Saves the XML string to a file.
   static Future<void> saveXmlToFile(
       String xmlString, String fileName, Map<String, String> mediaMap) async {
     FileDownloader.saveFileOnDevice(fileName, xmlString, mediaMap);

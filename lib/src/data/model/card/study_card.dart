@@ -2,6 +2,8 @@ import 'package:hive/hive.dart';
 
 part 'study_card.g.dart';
 
+/// HiveStudyCard class is a Hive type adapter class that 
+/// can be saved in the database.
 @HiveType(typeId: 1)
 class HiveStudyCard extends HiveObject {
   @HiveField(0)
@@ -26,6 +28,7 @@ class HiveStudyCard extends HiveObject {
   late String backMedia;
 }
 
+/// StudyCard class is a model class to rapresent a card.
 class StudyCard {
   final int id;
   final int deckId;
@@ -36,10 +39,12 @@ class StudyCard {
   final String frontMedia;
   final String backMedia;
 
+  /// Formats the last reviewed date to a more readable format.
   get lastReviewedFormatted => lastReviewed == 'Never'
       ? lastReviewed
       : lastReviewed.replaceFirst('T', ' ').substring(0, 16);
 
+  /// Returns the minutes since the card was last reviewed.
   get minutesSinceReviewed {
     if (lastReviewed == 'Never') return 0;
     final now = DateTime.now();
@@ -58,6 +63,7 @@ class StudyCard {
     this.backMedia = '',
   });
 
+  /// Converts the StudyCard object to a HiveStudyCard object.
   HiveStudyCard toHiveStudyCard() {
     return HiveStudyCard()
       ..deckId = deckId
@@ -69,6 +75,7 @@ class StudyCard {
       ..backMedia = backMedia;
   }
 
+  /// Converts the HiveStudyCard object to a StudyCard object.
   factory StudyCard.fromHiveStudyCard(HiveStudyCard hiveCard) {
     return StudyCard(
       id: hiveCard.key,

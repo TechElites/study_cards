@@ -2,6 +2,8 @@ import 'package:hive/hive.dart';
 
 part 'deck.g.dart';
 
+/// HiveDeck class is a Hive type adapter class that
+/// can be saved in the database.
 @HiveType(typeId: 0)
 class HiveDeck extends HiveObject {
   @HiveField(0)
@@ -17,6 +19,8 @@ class HiveDeck extends HiveObject {
   late String creation;
 }
 
+/// Deck class is a model class to rapresent a deck
+/// of cards.
 class Deck {
   final int id;
   final String name;
@@ -32,6 +36,7 @@ class Deck {
     required this.creation,
   });
 
+  /// Converts the Deck object to a HiveDeck object.
   HiveDeck toHiveDeck() {
     return HiveDeck()
       ..name = name
@@ -40,6 +45,7 @@ class Deck {
       ..creation = creation.toIso8601String();
   }
 
+  /// Converts a HiveDeck object to a Deck object.
   static Deck fromHiveDeck(HiveDeck hiveDeck) {
     return Deck(
       id: hiveDeck.key,

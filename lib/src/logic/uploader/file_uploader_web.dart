@@ -4,7 +4,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
 
+/// Class to handle uploading files on web.
 class FileUploaderWeb {
+  /// Reads a deck file on web.
   static Future<List<StudyCard>> uploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,

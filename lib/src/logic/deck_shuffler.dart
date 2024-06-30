@@ -1,7 +1,9 @@
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 
+/// Class to shuffle the deck of cards.
 class DeckShuffler {
+  /// Shuffles the deck of cards based on rating times.
   static List<StudyCard> shuffleTimedCards(List<StudyCard> cards, int maxCards) {
     final List<StudyCard> shuffledCards = [];
 
@@ -18,6 +20,7 @@ class DeckShuffler {
     return shuffleCards(shuffledCards, maxCards);
   }
 
+  /// Shuffles the deck of cards.
   static List<StudyCard> shuffleCards(List<StudyCard> cards, int maxCards) {
     final List<StudyCard> shuffledCards = cards;
 

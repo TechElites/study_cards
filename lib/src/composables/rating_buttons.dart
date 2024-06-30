@@ -1,7 +1,9 @@
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flutter/material.dart';
 
+/// Class to build rating buttons.
 class RatingButtons {
+  /// Builds a list of rating buttons.
   static List<Widget> build(Function(String rating) onPressed, {String selected = ''}) {
     return [
       for (var rating

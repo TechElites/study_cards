@@ -9,7 +9,9 @@ import 'package:flash_cards/src/logic/permission_helper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
+/// Class to handle uploading files on mobile devices.
 class FileUploaderMobile {
+  /// Reads a deck file on mobile devices.
   static Future<List<StudyCard>> uploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -31,6 +33,7 @@ class FileUploaderMobile {
     return [];
   }
 
+  /// Unzips the file and returns the xml file.
   static Future<File?> _unzipFile(File zipFile) async {
     try {
       final hasPermission = await PermissionHelper.requestStoragePermissions();

@@ -4,7 +4,9 @@ import 'package:share_plus/share_plus.dart';
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
 
+/// Class to handle donwloading files on mobile devices.
 class FileDownloaderMobile {
+  /// Save the deck file on mobile device.
   static Future<void> saveFileOnDevice(
       String fileName, String inFile, Map<String, String> mediaMap) async {
     List bytes = [];
