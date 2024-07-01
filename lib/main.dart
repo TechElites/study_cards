@@ -1,8 +1,10 @@
+import 'package:flash_cards/src/logic/language/localizations.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/theme/theme_data.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/home/decks_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -27,6 +29,16 @@ class StudyCards extends StatelessWidget {
           themeMode: themeProvider.currentTheme,
           theme: customLightTheme,
           darkTheme: customDarkTheme,
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('en', 'US'), // Inglese
+            Locale('it', 'IT'), // Italiano
+          ],
           home: const DecksPage(),
         );
       },

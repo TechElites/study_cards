@@ -1,0 +1,18 @@
+{
+  "add_card": "Add Card",
+  "add_deck": "Add Deck",
+  "answer": "Answer",
+  "camera": "Camera",
+  "card_add_success": "Card added successfully",
+  "close": "Close",
+  "deck_add_success": "Deck added successfully",
+  "deck_name": "Deck Name",
+  "format_instructions": "Note that if you're using the web version of this app only xml files are enabled, since images in cards are not supported for now.\nTo see an example of how to format the XML file try creating a deck and exporting it.To add more lines to the same card side, use the tag <br/>.\nThe ZIP file should contain an XML file with the same format and the media files in the same directory.The Zip file mustn't contain subdirectories. To create a ZIP file without subdirectories:Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag and drop (or copy and paste) the XML file and media files into the ZIP file.",
+  "gallery": "Gallery",
+  "how_to_format": "How to format the XML file or Zip file",
+  "number_of_cards": "Number of cards",
+  "pick_xml": "Pick XML file ",
+  "pick_xml_or_zip": "Pick XML or ZIP file ",
+  "question": "Question",
+  "select_source": "Select Source"
+}

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -27,10 +28,10 @@ class _AddCardState extends State<AddCard> {
   File? _selectedBackImage;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext cx) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Add Card'),
+          title: Text('add_card'.tr(cx)),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
@@ -43,11 +44,11 @@ class _AddCardState extends State<AddCard> {
                   focusNode: focus,
                   maxLines: null,
                   decoration: InputDecoration(
-                      labelText: 'Question',
+                      labelText: 'question'.tr(cx),
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
-                              onTap: () => _pickImage(ImageSide.front),
+                              onTap: () => _pickImage(cx, ImageSide.front),
                               child: const Icon(
                                   Icons.add_photo_alternate_rounded,
                                   color: Colors.grey,
@@ -68,11 +69,11 @@ class _AddCardState extends State<AddCard> {
                   controller: _backController,
                   maxLines: null,
                   decoration: InputDecoration(
-                      labelText: 'Answer',
+                      labelText: 'answer'.tr(cx),
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
-                              onTap: () => _pickImage(ImageSide.back),
+                              onTap: () => _pickImage(cx, ImageSide.back),
                               child: const Icon(
                                   Icons.add_photo_alternate_rounded,
                                   color: Colors.grey,
@@ -90,8 +91,24 @@ class _AddCardState extends State<AddCard> {
                 ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: _addCard,
-                child: const Text('Add Card'),
+                onPressed: () {
+                  _addCard().then((_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('card_add_success'.tr(cx)),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                    setState(() {
+                      _frontController.clear();
+                      _backController.clear();
+                      _selectedFrontImage = null;
+                      _selectedBackImage = null;
+                      focus.requestFocus();
+                    });
+                  });
+                },
+                child: Text('add_card'.tr(cx)),
               ),
             ],
           ),
@@ -99,7 +116,7 @@ class _AddCardState extends State<AddCard> {
   }
 
   /// Adds a new card to the database
-  void _addCard() {
+  Future<void> _addCard() {
     final StudyCard newCard = StudyCard(
       deckId: widget.deckId,
       front: _frontController.text,
@@ -108,30 +125,16 @@ class _AddCardState extends State<AddCard> {
       backMedia: _selectedBackImage?.path ?? '',
     );
 
-    _dbHelper.insertCard(newCard).then((id) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Card added successfully'),
-          duration: Duration(seconds: 1),
-        ),
-      );
-      setState(() {
-        _frontController.clear();
-        _backController.clear();
-        _selectedFrontImage = null;
-        _selectedBackImage = null;
-        focus.requestFocus();
-      });
-    });
+    return _dbHelper.insertCard(newCard);
   }
 
   /// Opens a dialog to select an image from the gallery or camera
-  Future<void> _pickImage(ImageSide type) async {
+  Future<void> _pickImage(BuildContext cx, ImageSide type) async {
     final picker = ImagePicker();
     final XFile? pickedFile = await showDialog<XFile?>(
       context: context,
       builder: (BuildContext context) => SimpleDialog(
-        title: const Text('Select source'),
+        title: Text('select_source'.tr(cx)),
         children: <Widget>[
           SimpleDialogOption(
             onPressed: () {
@@ -139,7 +142,7 @@ class _AddCardState extends State<AddCard> {
                   .pickImage(source: ImageSource.camera)
                   .then((value) => Navigator.pop(context, value));
             },
-            child: const Text('Camera'),
+            child: Text('camera'.tr(cx)),
           ),
           SimpleDialogOption(
             onPressed: () {
@@ -147,7 +150,7 @@ class _AddCardState extends State<AddCard> {
                   .pickImage(source: ImageSource.gallery)
                   .then((value) => Navigator.pop(context, value));
             },
-            child: const Text('Gallery'),
+            child: Text('gallery'.tr(cx)),
           ),
         ],
       ),
