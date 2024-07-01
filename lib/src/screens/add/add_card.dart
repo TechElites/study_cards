@@ -5,8 +5,10 @@ import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-enum Type { front, back }
+/// Which side of the card the image is on
+enum ImageSide { front, back }
 
+/// Creates a page to handle the creation of new cards
 class AddCard extends StatefulWidget {
   final int deckId;
 
@@ -45,7 +47,7 @@ class _AddCardState extends State<AddCard> {
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
-                              onTap: () => _pickImage(Type.front),
+                              onTap: () => _pickImage(ImageSide.front),
                               child: const Icon(
                                   Icons.add_photo_alternate_rounded,
                                   color: Colors.grey,
@@ -70,7 +72,7 @@ class _AddCardState extends State<AddCard> {
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
-                              onTap: () => _pickImage(Type.back),
+                              onTap: () => _pickImage(ImageSide.back),
                               child: const Icon(
                                   Icons.add_photo_alternate_rounded,
                                   color: Colors.grey,
@@ -96,6 +98,7 @@ class _AddCardState extends State<AddCard> {
         ));
   }
 
+  /// Adds a new card to the database
   void _addCard() {
     final StudyCard newCard = StudyCard(
       deckId: widget.deckId,
@@ -122,7 +125,8 @@ class _AddCardState extends State<AddCard> {
     });
   }
 
-  Future<void> _pickImage(Type type) async {
+  /// Opens a dialog to select an image from the gallery or camera
+  Future<void> _pickImage(ImageSide type) async {
     final picker = ImagePicker();
     final XFile? pickedFile = await showDialog<XFile?>(
       context: context,
@@ -151,9 +155,9 @@ class _AddCardState extends State<AddCard> {
 
     if (pickedFile != null) {
       setState(() {
-        if (type == Type.front) {
+        if (type == ImageSide.front) {
           _selectedFrontImage = File(pickedFile.path);
-        } else if (type == Type.back) {
+        } else if (type == ImageSide.back) {
           _selectedBackImage = File(pickedFile.path);
         }
       });

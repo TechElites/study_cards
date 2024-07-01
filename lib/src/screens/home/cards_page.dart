@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:vibration/vibration.dart';
 
+/// Creates a page that displays the list of cards in a deck
 class CardsPage extends StatefulWidget {
   final int deckId;
 
@@ -223,6 +224,7 @@ class _CardsPageState extends State<CardsPage> {
               ]));
   }
 
+  /// Opens a dialog to filter the cards by rating
   void _openRatingFilter() {
     showModalBottomSheet(
       context: context,

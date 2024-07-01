@@ -5,6 +5,7 @@ import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/logic/uploader/file_uploader.dart';
 import 'package:flutter/material.dart';
 
+/// Creates a page to handle the creation of a new deck
 class AddDeck extends StatefulWidget {
   const AddDeck({super.key});
 
@@ -128,6 +129,7 @@ Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag a
     );
   }
 
+  /// Adds the deck to the database
   void _addDeck() {
     final Deck newDeck = Deck(
       name: _nameController.text,

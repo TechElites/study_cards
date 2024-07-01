@@ -4,6 +4,7 @@ import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
 import 'package:flutter/material.dart';
 
+/// Creates a page to handle the settings of a deck
 class CardsSettingsPage extends StatefulWidget {
   final int deckId;
 
@@ -93,6 +94,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     );
   }
 
+  /// Exports the deck to an XML file
   Future<void> _exportDeck() async {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);

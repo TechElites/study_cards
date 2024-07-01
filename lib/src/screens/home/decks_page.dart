@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:vibration/vibration.dart';
 
+/// Creates a page to display the list of all the decks
 class DecksPage extends StatefulWidget {
   const DecksPage({super.key});
 
@@ -159,6 +160,7 @@ class _DecksPageState extends State<DecksPage> {
     );
   }
 
+  /// Deletes the folders associated to a deck
   void deleteFolder(List<String> list) {
     var appPath = '';
     getExternalStorageDirectory().then((directory) {
@@ -166,7 +168,6 @@ class _DecksPageState extends State<DecksPage> {
       for (var deckName in list) {
         final folder = Directory(path.join(appPath.toString(), deckName));
         if (folder.existsSync()) {
-          //print('Deleting folder: ${folder.path}');
           folder.deleteSync(recursive: true);
         }
       }

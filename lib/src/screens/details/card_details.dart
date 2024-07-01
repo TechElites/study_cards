@@ -5,6 +5,7 @@ import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
 
+/// Creates a page to handle the creation of new cards
 class CardDetailsPage extends StatefulWidget {
   final StudyCard card;
 
@@ -99,6 +100,7 @@ class _CardsPageState extends State<CardDetailsPage> {
     );
   }
 
+  /// Modifies the card in the database
   void _modifyCard() {
     final StudyCard modifiedCard = StudyCard(
         id: widget.card.id,
