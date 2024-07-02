@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 enum Type { front, back }
 
@@ -45,7 +45,13 @@ class _AddCardState extends State<AddCard> {
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
-                              onTap: () => _pickImage(Type.front),
+                              onTap: () {
+                                MediaPicker.pickImage(context).then((value) {
+                                  setState(() {
+                                    _selectedFrontImage = File(value);
+                                  });
+                                });
+                              },
                               child: const Icon(
                                   Icons.add_photo_alternate_rounded,
                                   color: Colors.grey,
@@ -70,7 +76,13 @@ class _AddCardState extends State<AddCard> {
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
-                              onTap: () => _pickImage(Type.back),
+                              onTap: () {
+                                MediaPicker.pickImage(context).then((value) {
+                                  setState(() {
+                                    _selectedBackImage = File(value);
+                                  });
+                                });
+                              },
                               child: const Icon(
                                   Icons.add_photo_alternate_rounded,
                                   color: Colors.grey,
@@ -122,7 +134,7 @@ class _AddCardState extends State<AddCard> {
     });
   }
 
-  Future<void> _pickImage(Type type) async {
+  /*Future<void> _pickImage(Type type) async {
     final picker = ImagePicker();
     final XFile? pickedFile = await showDialog<XFile?>(
       context: context,
@@ -158,5 +170,5 @@ class _AddCardState extends State<AddCard> {
         }
       });
     }
-  }
+  }*/
 }

@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CardDetailsPage extends StatefulWidget {
@@ -19,6 +21,8 @@ class _CardsPageState extends State<CardDetailsPage> {
   final TextEditingController _frontController = TextEditingController();
   final TextEditingController _backController = TextEditingController();
   String _ratingController = 'None';
+  File? _selectedFrontImage;
+  File? _selectedBackImage;
 
   @override
   void initState() {
@@ -26,6 +30,10 @@ class _CardsPageState extends State<CardDetailsPage> {
     _frontController.text = widget.card.front;
     _backController.text = widget.card.back;
     _ratingController = widget.card.rating;
+    _selectedFrontImage =
+        widget.card.frontMedia != '' ? File(widget.card.frontMedia) : null;
+    _selectedBackImage =
+        widget.card.backMedia != '' ? File(widget.card.backMedia) : null;
   }
 
   @override
@@ -53,39 +61,125 @@ class _CardsPageState extends State<CardDetailsPage> {
             children: [
               TextField(
                 controller: _frontController,
-                decoration: const InputDecoration(
-                  labelText: 'Front',
-                ),
+                decoration: InputDecoration(
+                    labelText: 'Front',
+                    suffixIcon: kIsWeb || _selectedFrontImage != null
+                        ? null
+                        : InkWell(
+                            onTap: () {
+                              MediaPicker.pickImage(context).then((value) {
+                                setState(() {
+                                  _selectedFrontImage = File(value);
+                                });
+                              });
+                            },
+                            child: const Icon(Icons.add_photo_alternate_rounded,
+                                color: Colors.grey, size: 32.0))),
                 maxLines: null,
               ),
-              if (widget.card.frontMedia != '')
+              if (_selectedFrontImage != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Image.file(
-                    File(widget.card.frontMedia),
-                    height: 200.0,
-                    width: 200.0,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      Image.file(
+                        File(_selectedFrontImage!.path),
+                        height: 200.0,
+                        width: 200.0,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _selectedFrontImage = null;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.image_not_supported_rounded,
+                                color: Colors.red,
+                              )),
+                          const SizedBox(width: 16.0),
+                          IconButton(
+                              onPressed: () {
+                                MediaPicker.pickImage(context).then((value) {
+                                  setState(() {
+                                    _selectedFrontImage = File(value);
+                                  });
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.edit_square,
+                                color: Colors.blue,
+                              )),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               const SizedBox(height: 16.0),
               TextField(
                 controller: _backController,
-                decoration: const InputDecoration(
-                  labelText: 'Back',
-                ),
+                decoration: InputDecoration(
+                    labelText: 'Back',
+                    suffixIcon: kIsWeb || _selectedBackImage != null
+                        ? null
+                        : InkWell(
+                            onTap: () {
+                              MediaPicker.pickImage(context).then((value) {
+                                setState(() {
+                                  _selectedBackImage = File(value);
+                                });
+                              });
+                            },
+                            child: const Icon(Icons.add_photo_alternate_rounded,
+                                color: Colors.grey, size: 32.0))),
                 maxLines: null,
               ),
-              if (widget.card.backMedia != '')
+              if (_selectedBackImage != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: Image.file(
-                    File(widget.card.backMedia),
-                    height: 200.0,
-                    width: 200.0,
-                    fit: BoxFit.cover,
-                    alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      Image.file(
+                        File(_selectedBackImage!.path),
+                        height: 200.0,
+                        width: 200.0,
+                        fit: BoxFit.cover,
+                        alignment: Alignment.center,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _selectedBackImage = null;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.image_not_supported_rounded,
+                                color: Colors.red,
+                              )),
+                          const SizedBox(width: 16.0),
+                          IconButton(
+                              onPressed: () {
+                                MediaPicker.pickImage(context).then((value) {
+                                  setState(() {
+                                    _selectedBackImage = File(value);
+                                  });
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.edit_square,
+                                color: Colors.blue,
+                              )),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
             ],
@@ -106,7 +200,10 @@ class _CardsPageState extends State<CardDetailsPage> {
         front: _frontController.text,
         back: _backController.text,
         rating: _ratingController,
-        lastReviewed: DateTime.now().toIso8601String());
+        lastReviewed: DateTime.now().toIso8601String(),
+        frontMedia: _selectedFrontImage?.path ?? '',
+        backMedia: _selectedBackImage?.path ?? '');
+
     _dbHelper.updateCard(modifiedCard).then((id) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
