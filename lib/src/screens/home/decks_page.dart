@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
+import 'package:flash_cards/src/screens/ads/ads_screen.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
@@ -42,6 +43,16 @@ class _DecksPageState extends State<DecksPage> {
               Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
             },
           ),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MyBannerAdWidget(),
+                  ),
+                ).then((value) => setState(() {}));
+              },
+              icon: const Icon(Icons.public))
         ],
       ),
       body: RefreshIndicator(

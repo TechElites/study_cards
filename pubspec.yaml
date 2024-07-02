@@ -51,6 +51,7 @@ dependencies:
   vibration: ^1.9.0
   share_plus: ^9.0.0
   universal_html: ^2.2.4
+  google_mobile_ads: ^5.1.0
 
 flutter_launcher_icons:
   android: true
