@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 
 /// Which side of the card the image is on
 enum ImageSide { front, back }
@@ -47,7 +47,13 @@ class _AddCardState extends State<AddCard> {
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
-                              onTap: () => _pickImage(ImageSide.front),
+                              onTap: () {
+                                MediaPicker.pickImage(context).then((value) {
+                                  setState(() {
+                                    _selectedFrontImage = File(value);
+                                  });
+                                });
+                              },
                               child: const Icon(
                                   Icons.add_photo_alternate_rounded,
                                   color: Colors.grey,
@@ -72,7 +78,13 @@ class _AddCardState extends State<AddCard> {
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
-                              onTap: () => _pickImage(ImageSide.back),
+                              onTap: () {
+                                MediaPicker.pickImage(context).then((value) {
+                                  setState(() {
+                                    _selectedBackImage = File(value);
+                                  });
+                                });
+                              },
                               child: const Icon(
                                   Icons.add_photo_alternate_rounded,
                                   color: Colors.grey,
@@ -123,44 +135,5 @@ class _AddCardState extends State<AddCard> {
         focus.requestFocus();
       });
     });
-  }
-
-  /// Opens a dialog to select an image from the gallery or camera
-  Future<void> _pickImage(ImageSide type) async {
-    final picker = ImagePicker();
-    final XFile? pickedFile = await showDialog<XFile?>(
-      context: context,
-      builder: (BuildContext context) => SimpleDialog(
-        title: const Text('Select source'),
-        children: <Widget>[
-          SimpleDialogOption(
-            onPressed: () {
-              picker
-                  .pickImage(source: ImageSource.camera)
-                  .then((value) => Navigator.pop(context, value));
-            },
-            child: const Text('Camera'),
-          ),
-          SimpleDialogOption(
-            onPressed: () {
-              picker
-                  .pickImage(source: ImageSource.gallery)
-                  .then((value) => Navigator.pop(context, value));
-            },
-            child: const Text('Gallery'),
-          ),
-        ],
-      ),
-    );
-
-    if (pickedFile != null) {
-      setState(() {
-        if (type == ImageSide.front) {
-          _selectedFrontImage = File(pickedFile.path);
-        } else if (type == ImageSide.back) {
-          _selectedBackImage = File(pickedFile.path);
-        }
-      });
-    }
   }
 }
