@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 
 /// Creates a page to review the cards
@@ -21,10 +22,10 @@ class _CardsReviewState extends State<ReviewPage> {
   var _reveal = false;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext cx) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Review'),
+        title: Text('review'.tr(cx)),
         centerTitle: true,
       ),
       body: GestureDetector(
@@ -90,26 +91,26 @@ class _CardsReviewState extends State<ReviewPage> {
                     child: _reveal
                         ? ButtonBar(
                             alignment: MainAxisAlignment.center,
-                            children: RatingButtons.build((rating) {
+                            children: RatingButtons.build(cx, (rating) {
                               _dbHelper.updateCardRating(
                                   widget.cards[_index].id, rating);
                               setState(() {
                                 _index++;
                                 if (_index >= widget.cards.length) {
-                                  Navigator.pop(context);
+                                  Navigator.pop(cx);
                                 }
                                 _reveal = false;
                               });
                             }))
-                        : const Text(
-                            'Tap to reveal answer',
+                        : Text(
+                            'tap_reveal_answer'.tr(cx),
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 16),
+                            style: const TextStyle(fontSize: 16),
                           ),
                   ),
                 ],
               )
-            : const Center(child: Text('No more cards to review')),
+            : Center(child: Text('no_cards_review'.tr(cx))),
       ),
     );
   }
