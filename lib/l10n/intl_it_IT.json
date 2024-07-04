@@ -41,5 +41,10 @@
   "select_rating": "Seleziona valutazione",
   "select_source": "Seleziona la fonte",
   "tap_reveal_answer": "Tocca per rivelare la risposta",
-  "total_cards": "Carte totali"
+  "total_cards": "Carte totali",
+  "none": "Nessuno",
+  "fail": "Fallita",
+  "hard": "Difficile",
+  "good": "Buono",
+  "easy": "Facile"
 }

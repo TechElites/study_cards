@@ -41,5 +41,10 @@
   "select_rating": "Select rating",
   "select_source": "Select Source",
   "tap_reveal_answer": "Tap to reveal answer",
-  "total_cards": "Total Cards"
+  "total_cards": "Total Cards",
+  "none": "None",
+  "fail": "Fail",
+  "hard": "Hard",
+  "good": "Good",
+  "easy": "Easy"
 }
