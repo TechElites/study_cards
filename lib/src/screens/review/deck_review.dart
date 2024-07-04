@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/composables/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -23,7 +24,7 @@ class _CardsReviewState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext cx) {
-    return Scaffold(
+    return AdsScaffold(
       appBar: AppBar(
         title: Text('review'.tr(cx)),
         centerTitle: true,

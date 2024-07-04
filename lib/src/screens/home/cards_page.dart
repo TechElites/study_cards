@@ -1,3 +1,4 @@
+import 'package:flash_cards/src/composables/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
@@ -45,7 +46,7 @@ class _CardsPageState extends State<CardsPage> {
         _shownCards = value;
       });
     }
-    return Scaffold(
+    return AdsScaffold(
         appBar: AppBar(
           title: Text('cards'.tr(cx)),
           centerTitle: true,

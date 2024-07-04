@@ -1,3 +1,4 @@
+import 'package:flash_cards/src/composables/ads_scaffold.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
@@ -21,7 +22,7 @@ class _AddDeckState extends State<AddDeck> {
 
   @override
   Widget build(BuildContext cx) {
-    return Scaffold(
+    return AdsScaffold(
       appBar: AppBar(
         title: Text('add_deck'.tr(cx)),
         centerTitle: true,

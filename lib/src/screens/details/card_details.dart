@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/composables/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
@@ -40,7 +41,7 @@ class _CardsPageState extends State<CardDetailsPage> {
 
   @override
   Widget build(BuildContext cx) {
-    return Scaffold(
+    return AdsScaffold(
       appBar: AppBar(title: Text('modify_card'.tr(cx)), centerTitle: true),
       body: Column(children: [
         Column(children: [

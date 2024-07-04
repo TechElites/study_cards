@@ -1,3 +1,4 @@
+import 'package:flash_cards/src/composables/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -33,7 +34,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
 
   @override
   Widget build(BuildContext cx) {
-    return Scaffold(
+    return AdsScaffold(
       appBar: AppBar(
         title: Text('settings'.tr(cx)),
         centerTitle: true,
