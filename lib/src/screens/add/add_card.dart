@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
@@ -27,10 +28,10 @@ class _AddCardState extends State<AddCard> {
   File? _selectedBackImage;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext cx) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Add Card'),
+          title: Text('add_card'.tr(cx)),
           centerTitle: true,
         ),
         body: SingleChildScrollView(
@@ -43,7 +44,7 @@ class _AddCardState extends State<AddCard> {
                   focusNode: focus,
                   maxLines: null,
                   decoration: InputDecoration(
-                      labelText: 'Question',
+                      labelText: 'question'.tr(cx),
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
@@ -74,7 +75,7 @@ class _AddCardState extends State<AddCard> {
                   controller: _backController,
                   maxLines: null,
                   decoration: InputDecoration(
-                      labelText: 'Answer',
+                      labelText: 'answer'.tr(cx),
                       suffixIcon: kIsWeb
                           ? null
                           : InkWell(
@@ -102,8 +103,24 @@ class _AddCardState extends State<AddCard> {
                 ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: _addCard,
-                child: const Text('Add Card'),
+                onPressed: () {
+                  _addCard().then((_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('card_add_success'.tr(cx)),
+                        duration: const Duration(seconds: 1),
+                      ),
+                    );
+                    setState(() {
+                      _frontController.clear();
+                      _backController.clear();
+                      _selectedFrontImage = null;
+                      _selectedBackImage = null;
+                      focus.requestFocus();
+                    });
+                  });
+                },
+                child: Text('add_card'.tr(cx)),
               ),
             ],
           ),
@@ -111,7 +128,7 @@ class _AddCardState extends State<AddCard> {
   }
 
   /// Adds a new card to the database
-  void _addCard() {
+  Future<void> _addCard() {
     final StudyCard newCard = StudyCard(
       deckId: widget.deckId,
       front: _frontController.text,
@@ -120,20 +137,6 @@ class _AddCardState extends State<AddCard> {
       backMedia: _selectedBackImage?.path ?? '',
     );
 
-    _dbHelper.insertCard(newCard).then((id) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Card added successfully'),
-          duration: Duration(seconds: 1),
-        ),
-      );
-      setState(() {
-        _frontController.clear();
-        _backController.clear();
-        _selectedFrontImage = null;
-        _selectedBackImage = null;
-        focus.requestFocus();
-      });
-    });
+    return _dbHelper.insertCard(newCard);
   }
 }

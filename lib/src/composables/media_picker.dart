@@ -1,13 +1,14 @@
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class MediaPicker {
-  static Future<String> pickImage(BuildContext context) async {
+  static Future<String> pickImage(BuildContext cx) async {
     final picker = ImagePicker();
     final XFile? pickedFile = await showDialog<XFile?>(
-      context: context,
+      context: cx,
       builder: (BuildContext context) => SimpleDialog(
-        title: const Text('Select source'),
+        title: Text('select_source'.tr(cx)),
         children: <Widget>[
           SimpleDialogOption(
             onPressed: () {
@@ -15,7 +16,7 @@ class MediaPicker {
                   .pickImage(source: ImageSource.camera)
                   .then((value) => Navigator.pop(context, value));
             },
-            child: const Text('Camera'),
+            child: Text('camera'.tr(cx)),
           ),
           SimpleDialogOption(
             onPressed: () {
@@ -23,7 +24,7 @@ class MediaPicker {
                   .pickImage(source: ImageSource.gallery)
                   .then((value) => Navigator.pop(context, value));
             },
-            child: const Text('Gallery'),
+            child: Text('gallery'.tr(cx)),
           ),
         ],
       ),

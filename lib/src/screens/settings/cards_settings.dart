@@ -1,6 +1,7 @@
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
 import 'package:flutter/material.dart';
 
@@ -31,10 +32,10 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext cx) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text('settings'.tr(cx)),
         centerTitle: true,
       ),
       body: Padding(
@@ -43,19 +44,14 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
           TextField(
               controller: _nameController,
               decoration: InputDecoration(
-                  labelText: 'Deck name',
+                  labelText: 'deck_name'.tr(cx),
                   suffixIcon: InkWell(
                       onTap: () {
                         _dbHelper
                             .updateDeckName(widget.deckId, _nameController.text)
-                            .then(
-                                (value) => ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                        content: Text('Deck name updated'))),
-                                onError: (e) => ScaffoldMessenger.of(context)
-                                    .showSnackBar(const SnackBar(
-                                        content:
-                                            Text('Error updating deck name'))));
+                            .then((value) => ScaffoldMessenger.of(cx)
+                                .showSnackBar(SnackBar(
+                                    content: Text('deck_name_update'.tr(cx)))));
                       },
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
@@ -64,17 +60,12 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
               keyboardType: TextInputType.number,
               controller: _cardsController,
               decoration: InputDecoration(
-                  labelText: 'Cards per review',
+                  labelText: 'cards_per_review'.tr(cx),
                   suffixIcon: InkWell(
                       onTap: () {
-                        _updateReviewCards().then(
-                            (value) => ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                                    content: Text('Review cards updated'))),
-                            onError: (e) => ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                                    content:
-                                        Text('Error updating review cards'))));
+                        _updateReviewCards().then((value) =>
+                            ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
+                                content: Text('review_cards_update'.tr(cx)))));
                       },
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
@@ -82,12 +73,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _exportDeck().then(
-              (value) => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('Deck saved to Downloads folder'))),
-              onError: (e) => ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Error saving deck'))));
+          _exportDeck().then((value) => ScaffoldMessenger.of(cx).showSnackBar(
+              const SnackBar(content: Text('Deck saved to Downloads folder'))));
         },
         child: const Icon(Icons.file_download),
       ),

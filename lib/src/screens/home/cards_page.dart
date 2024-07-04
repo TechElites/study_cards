@@ -2,6 +2,7 @@ import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/logic/deck_shuffler.dart';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
 import 'package:flash_cards/src/screens/add/add_card.dart';
 import 'package:flash_cards/src/screens/details/card_details.dart';
@@ -36,7 +37,7 @@ class _CardsPageState extends State<CardsPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext cx) {
     if (_allCards == null) {
       final value = _dbHelper.getCards(widget.deckId);
       setState(() {
@@ -46,13 +47,13 @@ class _CardsPageState extends State<CardsPage> {
     }
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Cards'),
+          title: Text('cards'.tr(cx)),
           centerTitle: true,
           actions: [
             IconButton(
               onPressed: () {
                 Navigator.push(
-                  context,
+                  cx,
                   MaterialPageRoute(
                     builder: (context) =>
                         CardsSettingsPage(deckId: widget.deckId),
@@ -93,7 +94,7 @@ class _CardsPageState extends State<CardsPage> {
                           });
                           _dbHelper.deleteCard(card.id).then((_) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Card deleted')),
+                              SnackBar(content: Text('card_deleted'.tr(cx))),
                             );
                           });
                         },
@@ -168,27 +169,27 @@ class _CardsPageState extends State<CardsPage> {
                   _dbHelper
                       .deleteCards(_deleter.dumpList().keys.toList())
                       .then((value) => refresh());
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Cards deleted')),
+                  ScaffoldMessenger.of(cx).showSnackBar(
+                    SnackBar(content: Text('cards_deleted'.tr(cx))),
                   );
                 },
-                tooltip: 'Delete Cards',
+                tooltip: 'delete_cards'.tr(cx),
                 child: const Icon(Icons.delete),
               )
             : SpeedDial(icon: Icons.menu, activeIcon: Icons.close, children: [
                 SpeedDialChild(
                   child: const Icon(Icons.filter_alt_rounded),
-                  label: 'Filter cards',
+                  label: 'filter_cards'.tr(cx),
                   onTap: () async {
-                    _openRatingFilter();
+                    _openRatingFilter(cx);
                   },
                 ),
                 SpeedDialChild(
                   child: const Icon(Icons.add),
-                  label: 'Add cards',
+                  label: 'add_cards'.tr(cx),
                   onTap: () {
                     Navigator.push(
-                      context,
+                      cx,
                       MaterialPageRoute(
                         builder: (context) => AddCard(deckId: widget.deckId),
                       ),
@@ -197,21 +198,20 @@ class _CardsPageState extends State<CardsPage> {
                 ),
                 SpeedDialChild(
                     child: const Icon(Icons.rate_review),
-                    label: 'Review',
+                    label: 'review'.tr(cx),
                     onTap: () {
                       if (_shownCards != null) {
                         if (_shownCards!.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('No cards to review')));
+                          ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
+                              content: Text('no_cards_review'.tr(cx))));
                         } else {
                           final maxCards =
                               _dbHelper.getReviewCards(widget.deckId);
                           Navigator.push(
-                            context,
+                            cx,
                             MaterialPageRoute(
                               builder: (context) => ReviewPage(
-                                  cards: _filteredRating == "All"
+                                  cards: _filteredRating == "all".tr(cx)
                                       ? DeckShuffler.shuffleTimedCards(
                                           _shownCards!, maxCards)
                                       : DeckShuffler.shuffleCards(
@@ -225,7 +225,7 @@ class _CardsPageState extends State<CardsPage> {
   }
 
   /// Opens a dialog to filter the cards by rating
-  void _openRatingFilter() {
+  void _openRatingFilter(BuildContext cx) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -237,9 +237,10 @@ class _CardsPageState extends State<CardsPage> {
               Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Select Rating',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  Text(
+                    'select_rating'.tr(cx),
+                    style: const TextStyle(
+                        fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   Column(
@@ -247,7 +248,7 @@ class _CardsPageState extends State<CardsPage> {
                       for (var rating in ["All", "Ignore rating"]
                           .followedBy(Rating.ratings))
                         ListTile(
-                          title: Text(rating),
+                          title: Text(rating.tr(cx)),
                           selected: rating == _filteredRating,
                           onTap: () {
                             setState(() {
