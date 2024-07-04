@@ -4,7 +4,6 @@ import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -219,14 +218,6 @@ class _CardsPageState extends State<CardDetailsPage> {
         frontMedia: _selectedFrontImage?.path ?? '',
         backMedia: _selectedBackImage?.path ?? '');
 
-    _dbHelper.updateCard(modifiedCard).then((id) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Card modified successfully'),
-          duration: Duration(seconds: 1),
-        ),
-      );
-      Navigator.pop(context);
-    });
+    return _dbHelper.updateCard(modifiedCard);
   }
 }
