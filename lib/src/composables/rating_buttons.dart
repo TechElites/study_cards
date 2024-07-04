@@ -19,6 +19,7 @@ class RatingButtons {
             elevation: rating.key == selected
                 ? WidgetStateProperty.all(5)
                 : WidgetStateProperty.all(0),
+            padding: WidgetStateProperty.all(EdgeInsets.all(8.0)),
           ),
           child: Text(rating.key.tr(cx)),
         )
