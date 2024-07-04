@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flash_cards/src/data/database/db_helper.dart';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
@@ -24,22 +25,22 @@ class _DecksPageState extends State<DecksPage> {
   final ListDeleter _deleter = ListDeleter();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext cx) {
     final decks = _dbHelper.getDecks();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Decks'),
+        title: Text('decks'.tr(cx)),
         centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(
-              Provider.of<ThemeProvider>(context).isDarkMode
+              Provider.of<ThemeProvider>(cx).isDarkMode
                   ? Icons.light_mode
                   : Icons.dark_mode,
             ),
             onPressed: () {
-              Provider.of<ThemeProvider>(context, listen: false).toggleTheme();
+              Provider.of<ThemeProvider>(cx, listen: false).toggleTheme();
             },
           ),
         ],
@@ -70,7 +71,9 @@ class _DecksPageState extends State<DecksPage> {
                     });
                     _dbHelper.deleteDeck(deck.id).then((_) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Deck ${deck.name} deleted')),
+                        SnackBar(
+                            content:
+                                Text('${'deck_deleted'.tr(cx)}: ${deck.name}')),
                       );
                       deleteFolder(List.of([deck.name]));
                     });
@@ -95,9 +98,9 @@ class _DecksPageState extends State<DecksPage> {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Total cards: ${deck.cards}'),
+                              Text('${'total_cards'.tr(cx)}: ${deck.cards}'),
                               Text(
-                                  'Creation date: ${deck.creation.toString().substring(0, 10)}'),
+                                  '${'creation_date'.tr(cx)}: ${deck.creation.toString().substring(0, 10)}'),
                             ],
                           ),
                           onTap: () {
@@ -138,23 +141,23 @@ class _DecksPageState extends State<DecksPage> {
                   setState(() {});
                   deleteFolder(list.values.toList());
                 });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Decks deleted')),
+                ScaffoldMessenger.of(cx).showSnackBar(
+                  SnackBar(content: Text('decks_deleted'.tr(cx))),
                 );
               },
-              tooltip: 'Delete Decks',
+              tooltip: 'delete_decks'.tr(cx),
               child: const Icon(Icons.delete),
             )
           : FloatingActionButton(
               onPressed: () {
                 Navigator.push(
-                  context,
+                  cx,
                   MaterialPageRoute(
                     builder: (context) => const AddDeck(),
                   ),
                 ).then((value) => setState(() {}));
               },
-              tooltip: 'Add Deck',
+              tooltip: 'add_deck'.tr(cx),
               child: const Icon(Icons.add),
             ),
     );

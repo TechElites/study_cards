@@ -1,3 +1,4 @@
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -19,10 +20,10 @@ class _AddDeckState extends State<AddDeck> {
   List<StudyCard> frontsAndBacks = [StudyCard(front: '', back: '')];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext cx) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Deck'),
+        title: Text('add_deck'.tr(cx)),
         centerTitle: true,
         actions: [
           IconButton(
@@ -30,23 +31,14 @@ class _AddDeckState extends State<AddDeck> {
             onPressed: () {
               // Show a scrollable dialog with information about how to format the XML file and Zip file
               showDialog(
-                context: context,
+                context: cx,
                 builder: (context) {
                   return AlertDialog(
-                    title: const Text('How to format the XML file or Zip file'),
-                    content: const SingleChildScrollView(
+                    title: Text('how_to_format'.tr(cx)),
+                    content: SingleChildScrollView(
                       child: Column(
                         children: [
-                          Text(
-'''
-Note that if you're using the web version of this app only xml files are enabled, since images in cards are not supported for now.\n
-To see an example of how to format the XML file try creating a deck and exporting it.
-To add more lines to the same card side, use the tag <br/>.\n
-The ZIP file should contain an XML file with the same format and the media files in the same directory.
-The Zip file mustn't contain subdirectories. To create a ZIP file without subdirectories:
-Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag and drop (or copy and paste) the XML file and media files into the ZIP file.
-''',
-                          ),
+                          Text("format_instructions".tr(cx)),
                         ],
                       ),
                     ),
@@ -55,7 +47,7 @@ Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag a
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Text('Close'),
+                        child: Text('close'.tr(cx)),
                       ),
                     ],
                   );
@@ -71,8 +63,8 @@ Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag a
           children: [
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(
-                labelText: 'Deck name',
+              decoration: InputDecoration(
+                labelText: 'deck_name'.tr(cx),
               ),
             ),
             const SizedBox(height: 16.0),
@@ -85,11 +77,11 @@ Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag a
                   });
                 });
               },
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(kIsWeb ? 'Pick XML file ' : 'Pick XML or ZIP file '),
-                  Icon(Icons.folder_copy_rounded),
+                  Text(kIsWeb ? 'pick_xml'.tr(cx) : 'pick_xml_or_zip'.tr(cx)),
+                  const Icon(Icons.folder_copy_rounded),
                 ],
               ),
             ),
@@ -100,15 +92,15 @@ Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag a
                 itemBuilder: (context, index) {
                   final item = frontsAndBacks[index];
                   if (item.front != '') {
-                    var first = 'Question:';
-                    var second = 'Answer:';
+                    var first = 'question'.tr(cx);
+                    var second = 'answer'.tr(cx);
                     if (index == 0) {
-                      first = 'Deck Name:';
-                      second = 'Number of Cards:';
+                      first = 'deck_name'.tr(cx);
+                      second = 'number_of_cards'.tr(cx);
                     }
                     return ListTile(
-                      title: Text('$first ${item.front}'),
-                      subtitle: Text('$second ${item.back}'),
+                      title: Text('$first: ${item.front}'),
+                      subtitle: Text('$second: ${item.back}'),
                     );
                   }
                   return const SizedBox.shrink();
@@ -121,7 +113,27 @@ Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag a
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (_nameController.text != '') {
-            _addDeck();
+            _addDeck().then((deckId) {
+              if (frontsAndBacks.length > 1) {
+                final List<StudyCard> cards = [];
+                for (var card in frontsAndBacks.sublist(1)) {
+                  cards.add(StudyCard(
+                      deckId: deckId,
+                      front: card.front,
+                      back: card.back,
+                      frontMedia: card.frontMedia,
+                      backMedia: card.backMedia));
+                }
+                _dbHelper.insertDeckCards(cards);
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('deck_add_success'.tr(cx)),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
+              Navigator.pop(context, deckId);
+            });
           }
         },
         child: const Icon(Icons.save),
@@ -130,32 +142,12 @@ Windows: right-click on Explorer > New > Compressed (zipped) folder. Then drag a
   }
 
   /// Adds the deck to the database
-  void _addDeck() {
+  Future<int> _addDeck() {
     final Deck newDeck = Deck(
       name: _nameController.text,
       cards: frontsAndBacks.length - 1,
       creation: DateTime.now(),
     );
-    _dbHelper.insertDeck(newDeck).then((deckId) {
-      if (frontsAndBacks.length > 1) {
-        final List<StudyCard> cards = [];
-        for (var card in frontsAndBacks.sublist(1)) {
-          cards.add(StudyCard(
-              deckId: deckId,
-              front: card.front,
-              back: card.back,
-              frontMedia: card.frontMedia,
-              backMedia: card.backMedia));
-        }
-        _dbHelper.insertDeckCards(cards);
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Deck added successfully'),
-          duration: Duration(seconds: 1),
-        ),
-      );
-      Navigator.pop(context, newDeck);
-    });
+    return _dbHelper.insertDeck(newDeck);
   }
 }
