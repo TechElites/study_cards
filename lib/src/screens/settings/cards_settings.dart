@@ -60,17 +60,12 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
               keyboardType: TextInputType.number,
               controller: _cardsController,
               decoration: InputDecoration(
-                  labelText: 'Cards per review',
+                  labelText: 'cards_per_review'.tr(cx),
                   suffixIcon: InkWell(
                       onTap: () {
-                        _updateReviewCards().then(
-                            (value) => ScaffoldMessenger.of(cx).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Review cards updated'))),
-                            onError: (e) => ScaffoldMessenger.of(cx)
-                                .showSnackBar(const SnackBar(
-                                    content:
-                                        Text('Error updating review cards'))));
+                        _updateReviewCards().then((value) =>
+                            ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
+                                content: Text('review_cards_update'.tr(cx)))));
                       },
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
@@ -78,11 +73,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _exportDeck().then(
-              (value) => ScaffoldMessenger.of(cx).showSnackBar(const SnackBar(
-                  content: Text('Deck saved to Downloads folder'))),
-              onError: (e) => ScaffoldMessenger.of(cx).showSnackBar(
-                  const SnackBar(content: Text('Error saving deck'))));
+          _exportDeck().then((value) => ScaffoldMessenger.of(cx).showSnackBar(
+              const SnackBar(content: Text('Deck saved to Downloads folder'))));
         },
         child: const Icon(Icons.file_download),
       ),
