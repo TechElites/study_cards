@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flash_cards/src/composables/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';

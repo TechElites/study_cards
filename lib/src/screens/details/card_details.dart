@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:flash_cards/src/composables/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';

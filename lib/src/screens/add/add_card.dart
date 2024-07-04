@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:flash_cards/src/composables/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
