@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/composables/ads/ads_review.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
@@ -21,9 +22,11 @@ class _CardsReviewState extends State<ReviewPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   var _index = 0;
   var _reveal = false;
+  final AdsReview _adsReview = AdsReview();
 
   @override
   Widget build(BuildContext cx) {
+    _adsReview.loadAd();
     return AdsScaffold(
       appBar: AppBar(
         title: Text('review'.tr(cx)),
@@ -98,6 +101,7 @@ class _CardsReviewState extends State<ReviewPage> {
                               setState(() {
                                 _index++;
                                 if (_index >= widget.cards.length) {
+                                  _adsReview.showAd();
                                   Navigator.pop(cx);
                                 }
                                 _reveal = false;
