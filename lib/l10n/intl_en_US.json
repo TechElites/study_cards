@@ -1,4 +1,5 @@
 {
+  "ad_rewarded": "No ads for the next five minutes!",
   "add_card": "Add Card",
   "add_cards": "Add Cards",
   "add_deck": "Add Deck",
@@ -16,10 +17,10 @@
   "creation_date": "Creation Date",
   "deck_add_success": "Deck added successfully",
   "deck_deleted": "Deck deleted",
+  "deck_download": "Deck saved in Downloads folder",
   "deck_name": "Deck Name",
   "deck_name_update": "Deck name updated",
   "deck_saved": "Deck saved",
-  "deck_download": "Deck saved in Downloads folder",
   "decks": "Decks",
   "decks_deleted": "Decks deleted",
   "delete_cards": "Delete Cards",
@@ -46,7 +47,7 @@
   "review_cards_update": "Review cards updated",
   "select_rating": "Select rating",
   "select_source": "Select Source",
+  "settings": "Settings",
   "tap_reveal_answer": "Tap to reveal answer",
-  "total_cards": "Total Cards",
-  "settings": "Settings"
+  "total_cards": "Total Cards"
 }

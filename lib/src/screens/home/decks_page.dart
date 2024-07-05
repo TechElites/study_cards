@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+import 'package:flash_cards/src/composables/ads/ads_sandman.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
@@ -26,15 +27,27 @@ class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final ListDeleter _deleter = ListDeleter();
   final AdsFullscreen _adsFullScreen = AdsFullscreen();
+  final AdsSandman _adsSandman = AdsSandman();
 
   @override
   Widget build(BuildContext cx) {
     final decks = _dbHelper.getDecks();
+    _adsSandman.loadAd();
 
     return AdsScaffold(
         appBar: AppBar(
           title: Text('decks'.tr(cx)),
           centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.tv_off),
+            onPressed: () {
+              _adsSandman.showAd(() {
+                ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('ad_rewarded'.tr(cx))));
+                setState(() {});
+              });
+            },
+          ),
           actions: [
             IconButton(
               icon: Icon(

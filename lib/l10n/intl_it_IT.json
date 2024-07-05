@@ -1,4 +1,5 @@
 {
+  "ad_rewarded": "Nessuna pubblicità per i prossimi cinque minuti!",
   "add_card": "Aggiungi carta",
   "add_cards": "Aggiungi carte",
   "add_deck": "Aggiungi mazzo",
@@ -16,10 +17,10 @@
   "creation_date": "Data di creazione",
   "deck_add_success": "Mazzo aggiunto con successo",
   "deck_deleted": "Mazzo eliminato",
+  "deck_download": "Mazzo salvato nella cartella Download",
   "deck_name": "Nome del mazzo",
   "deck_name_update": "Nome del mazzo aggiornato",
   "deck_saved": "Mazzo salvato",
-  "deck_download": "Mazzo salvato nella cartella Download",
   "decks": "Mazzi",
   "decks_deleted": "Mazzi eliminati",
   "delete_cards": "Elimina carte",
@@ -46,7 +47,7 @@
   "review_cards_update": "Carte di revisione aggiornate",
   "select_rating": "Seleziona valutazione",
   "select_source": "Seleziona la fonte",
+  "settings": "Impostazioni",
   "tap_reveal_answer": "Tocca per rivelare la risposta",
-  "total_cards": "Carte totali",
-  "settings": "Impostazioni"
+  "total_cards": "Carte totali"
 }

@@ -37,6 +37,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   @override
   Widget build(BuildContext cx) {
     _adsFullScreen.loadAd();
+    
     return AdsScaffold(
       appBar: AppBar(
         title: Text('settings'.tr(cx)),
