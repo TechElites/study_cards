@@ -1,3 +1,4 @@
+import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flash_cards/src/logic/language/localizations.dart';
 import 'dart:async';
 
@@ -12,6 +13,7 @@ import 'package:provider/provider.dart';
 
 void main() async {
   await DatabaseHelper().init();
+  await RewardService().isRewarded();
   WidgetsFlutterBinding.ensureInitialized();
   unawaited(MobileAds.instance.initialize());
   runApp(

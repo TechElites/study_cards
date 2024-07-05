@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -17,9 +18,16 @@ class AdsFooter extends StatefulWidget {
 
 class _AdsFooterState extends State<AdsFooter> {
   BannerAd? _bannerAd;
+  bool _noAds = false;
 
   @override
   Widget build(BuildContext context) {
+    _checkRewardStatus();
+
+    if (_noAds) {
+      return const SizedBox.shrink();
+    }
+
     return SafeArea(
       child: SizedBox(
         width: AdSize.banner.width.toDouble(),
@@ -43,6 +51,13 @@ class _AdsFooterState extends State<AdsFooter> {
   void dispose() {
     _bannerAd?.dispose();
     super.dispose();
+  }
+
+  void _checkRewardStatus() async {
+    bool rewarded = await RewardService().isRewarded();
+    setState(() {
+      _noAds = rewarded;
+    });
   }
 
   /// Loads a banner ad.

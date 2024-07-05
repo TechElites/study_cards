@@ -4,6 +4,7 @@ import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_sandman.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
+import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
@@ -42,9 +43,11 @@ class _DecksPageState extends State<DecksPage> {
             icon: const Icon(Icons.tv_off),
             onPressed: () {
               _adsSandman.showAd(() {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('ad_rewarded'.tr(cx))));
-                setState(() {});
+                RewardService().setRewarded(true).then((_) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('ad_rewarded'.tr(cx))));
+                  setState(() {});
+                });
               });
             },
           ),

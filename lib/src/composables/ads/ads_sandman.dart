@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdsSandman {
@@ -28,21 +29,23 @@ class AdsSandman {
 
   /// Shows the fullscreen ad, calls the reward function when the user has watched the ad
   void showAd(Function reward) {
-    if (_isAdLoaded && _rewardedAd != null) {
-      _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
-        onAdDismissedFullScreenContent: (RewardedAd ad) {
-          ad.dispose();
-        },
-        onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-          ad.dispose();
-        },
-      );
-      _rewardedAd!.show(
-          onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
-        reward();
-      });
-      _rewardedAd = null;
-      _isAdLoaded = false;
-    }
+    RewardService().isRewarded().then((noAds) {
+      if (!noAds && _isAdLoaded && _rewardedAd != null) {
+        _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+          onAdDismissedFullScreenContent: (RewardedAd ad) {
+            ad.dispose();
+          },
+          onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+            ad.dispose();
+          },
+        );
+        _rewardedAd!.show(
+            onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
+          reward();
+        });
+        _rewardedAd = null;
+        _isAdLoaded = false;
+      }
+    });
   }
 }

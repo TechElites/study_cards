@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdsFullscreen {
@@ -29,18 +30,21 @@ class AdsFullscreen {
 
   /// Shows the fullscreen ad
   void showAd() {
-    if (_isAdLoaded && _interstitialAd != null) {
-      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-        onAdDismissedFullScreenContent: (InterstitialAd ad) {
-          ad.dispose();
-        },
-        onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-          ad.dispose();
-        },
-      );
-      _interstitialAd!.show();
-      _interstitialAd = null;
-      _isAdLoaded = false;
-    }
+    RewardService().isRewarded().then((noAds) {
+      if (!noAds && _isAdLoaded && _interstitialAd != null) {
+        _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+          onAdDismissedFullScreenContent: (InterstitialAd ad) {
+            ad.dispose();
+          },
+          onAdFailedToShowFullScreenContent:
+              (InterstitialAd ad, AdError error) {
+            ad.dispose();
+          },
+        );
+        _interstitialAd!.show();
+        _interstitialAd = null;
+        _isAdLoaded = false;
+      }
+    });
   }
 }
