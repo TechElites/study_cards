@@ -43,7 +43,6 @@ class FileDownloaderMobile {
             await File('${directory.path}/${fileName.split('.xml')[0]}.zip')
                 .writeAsBytes(encodedFile);
           }
-          await outFile.delete();
         }
         break;
       case 'ios':
