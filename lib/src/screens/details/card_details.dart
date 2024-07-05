@@ -52,7 +52,7 @@ class _CardsPageState extends State<CardDetailsPage> {
             });
           }),
           Text(
-              '${'last_reviewed'.tr(cx)}: ${widget.card.lastReviewedFormatted}'),
+              '${'last_reviewed'.tr(cx)}: ${(widget.card.lastReviewedFormatted).tr(cx)}'),
         ]),
         Expanded(
             child: SingleChildScrollView(
