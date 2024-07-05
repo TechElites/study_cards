@@ -18,6 +18,7 @@ class FileDownloaderMobile {
         }
         final path = '${directory.path}/$fileName';
         final outFile = File(path);
+        await outFile.writeAsString(inFile, flush: true);
         final res = await outFile.writeAsString(inFile, flush: true);
         bytes.add(await res.readAsBytes());
         if (mediaMap.isNotEmpty) {

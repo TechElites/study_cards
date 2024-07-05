@@ -40,13 +40,13 @@ class StudyCard {
   final String backMedia;
 
   /// Formats the last reviewed date to a more readable format.
-  get lastReviewedFormatted => lastReviewed == 'Never'
+  get lastReviewedFormatted => lastReviewed == 'never'
       ? lastReviewed
       : lastReviewed.replaceFirst('T', ' ').substring(0, 16);
 
   /// Returns the minutes since the card was last reviewed.
   get minutesSinceReviewed {
-    if (lastReviewed == 'Never') return 0;
+    if (lastReviewed == 'never') return 0;
     final now = DateTime.now();
     final last = DateTime.parse(lastReviewed);
     return now.difference(last).inMinutes;
@@ -57,8 +57,8 @@ class StudyCard {
     this.deckId = -1,
     required this.front,
     required this.back,
-    this.rating = 'None',
-    this.lastReviewed = 'Never',
+    this.rating = 'none',
+    this.lastReviewed = 'never',
     this.frontMedia = '',
     this.backMedia = '',
   });

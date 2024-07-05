@@ -1,3 +1,4 @@
+import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -29,6 +30,7 @@ class _CardsPageState extends State<CardsPage> {
   List<StudyCard>? _shownCards;
   String _filteredRating = "All";
   final ListDeleter _deleter = ListDeleter();
+  final AdsFullscreen _adsFullScreen = AdsFullscreen();
 
   void refresh() {
     setState(() {
@@ -206,19 +208,23 @@ class _CardsPageState extends State<CardsPage> {
                           ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
                               content: Text('no_cards_review'.tr(cx))));
                         } else {
+                          _adsFullScreen.loadAd();
                           final maxCards =
                               _dbHelper.getReviewCards(widget.deckId);
                           Navigator.push(
                             cx,
                             MaterialPageRoute(
                               builder: (context) => ReviewPage(
-                                  cards: _filteredRating == "all".tr(cx)
+                                  cards: _filteredRating == "All"
                                       ? DeckShuffler.shuffleTimedCards(
                                           _shownCards!, maxCards)
                                       : DeckShuffler.shuffleCards(
                                           _shownCards!, maxCards)),
                             ),
-                          ).then((value) => refresh());
+                          ).then((value) {
+                            _adsFullScreen.showAd();
+                            refresh();
+                          });
                         }
                       }
                     })

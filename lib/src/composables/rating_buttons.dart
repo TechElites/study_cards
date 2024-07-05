@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 /// Class to build rating buttons.
 class RatingButtons {
   /// Builds a list of rating buttons.
-  static List<Widget> build(BuildContext cx, Function(String rating) onPressed, {String selected = ''}) {
+  static List<Widget> build(BuildContext cx, Function(String rating) onPressed,
+      {String selected = ''}) {
     return [
       for (var rating
           in Rating.colors.entries.where((e) => e.key != Rating.none))
         ElevatedButton(
-          onPressed: () { onPressed(rating.key); },
+          onPressed: () {
+            onPressed(rating.key);
+          },
           style: ButtonStyle(
             foregroundColor: rating.key == selected
                 ? WidgetStateProperty.all(Colors.white)
@@ -19,7 +22,7 @@ class RatingButtons {
             elevation: rating.key == selected
                 ? WidgetStateProperty.all(5)
                 : WidgetStateProperty.all(0),
-            padding: WidgetStateProperty.all(EdgeInsets.all(8.0)),
+            padding: WidgetStateProperty.all(const EdgeInsets.all(8.0)),
           ),
           child: Text(rating.key.tr(cx)),
         )

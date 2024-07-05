@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
@@ -24,6 +25,7 @@ class DecksPage extends StatefulWidget {
 class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final ListDeleter _deleter = ListDeleter();
+  final AdsFullscreen _adsFullScreen = AdsFullscreen();
 
   @override
   Widget build(BuildContext cx) {
@@ -151,12 +153,16 @@ class _DecksPageState extends State<DecksPage> {
               )
             : FloatingActionButton(
                 onPressed: () {
+                  _adsFullScreen.loadAd();
                   Navigator.push(
                     cx,
                     MaterialPageRoute(
                       builder: (context) => const AddDeck(),
                     ),
-                  ).then((value) => setState(() {}));
+                  ).then((value) {
+                    _adsFullScreen.showAd();
+                    setState(() {});
+                  });
                 },
                 tooltip: 'add_deck'.tr(cx),
                 child: const Icon(Icons.add),
