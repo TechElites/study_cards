@@ -29,30 +29,19 @@ class _DecksPageState extends State<DecksPage> {
   final ListDeleter _deleter = ListDeleter();
   final AdsFullscreen _adsFullScreen = AdsFullscreen();
   final AdsSandman _adsSandman = AdsSandman();
-  bool _noAdsMode = false;
 
   @override
   Widget build(BuildContext cx) {
     final decks = _dbHelper.getDecks();
     _adsSandman.loadAd();
 
-    RewardService().isRewarded().then((value) {
-      setState(() {
-        _noAdsMode = value;
-      });
-    });
-
     return AdsScaffold(
         appBar: AppBar(
           title: Text('decks'.tr(cx)),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(
-              Icons.tv_off,
-              color: _noAdsMode ? Colors.blueGrey : Colors.black,
-            ),
+            icon: const Icon(Icons.tv_off),
             onPressed: () {
-              if (_noAdsMode) return; 
               _adsSandman.showAd(() {
                 RewardService().setRewarded(true).then((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
