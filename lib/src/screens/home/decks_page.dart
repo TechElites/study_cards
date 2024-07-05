@@ -176,8 +176,10 @@ class _DecksPageState extends State<DecksPage> {
                       builder: (context) => const AddDeck(),
                     ),
                   ).then((value) {
-                    _adsFullScreen.showAd();
-                    setState(() {});
+                    if (value != null) {
+                      _adsFullScreen.showAd();
+                      setState(() {});
+                    }
                   });
                 },
                 tooltip: 'add_deck'.tr(cx),
