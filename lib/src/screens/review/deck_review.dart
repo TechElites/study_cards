@@ -90,19 +90,17 @@ class _CardsReviewState extends State<ReviewPage> {
                   Container(
                     padding: const EdgeInsets.only(bottom: 16.0),
                     child: _reveal
-                        ? ButtonBar(
-                            alignment: MainAxisAlignment.center,
-                            children: RatingButtons.build(cx, (rating) {
-                              _dbHelper.updateCardRating(
-                                  widget.cards[_index].id, rating);
-                              setState(() {
-                                _index++;
-                                if (_index >= widget.cards.length) {
-                                  Navigator.pop(cx);
-                                }
-                                _reveal = false;
-                              });
-                            }))
+                        ? RatingButtons.build(cx, (rating) {
+                            _dbHelper.updateCardRating(
+                                widget.cards[_index].id, rating);
+                            setState(() {
+                              _index++;
+                              if (_index >= widget.cards.length) {
+                                Navigator.pop(cx);
+                              }
+                              _reveal = false;
+                            });
+                          })
                         : Text(
                             'tap_reveal_answer'.tr(cx),
                             textAlign: TextAlign.center,

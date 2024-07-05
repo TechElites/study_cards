@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// How long does the reward last
@@ -24,7 +23,6 @@ class RewardService {
     await prefs.setBool(_rewardKey, value);
 
     if (value) {
-      debugPrint('reward: $_rewardTime');
       await _startTimer();
     } else {
       await prefs.remove(_timerStartKey);

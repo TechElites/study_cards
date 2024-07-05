@@ -46,15 +46,11 @@ class _CardsPageState extends State<CardDetailsPage> {
       body: Column(children: [
         Column(children: [
           const SizedBox(height: 16.0),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children:
-                RatingButtons.build(cx, selected: _ratingController, (rating) {
-              setState(() {
-                _ratingController = rating;
-              });
-            }),
-          ),
+          RatingButtons.build(cx, selected: _ratingController, (rating) {
+            setState(() {
+              _ratingController = rating;
+            });
+          }),
           Text(
               '${'last_reviewed'.tr(cx)}: ${widget.card.lastReviewedFormatted}'),
         ]),
