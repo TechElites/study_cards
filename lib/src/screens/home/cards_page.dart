@@ -255,7 +255,7 @@ class _CardsPageState extends State<CardsPage> {
                       for (var rating in ["All", "Ignore rating"]
                           .followedBy(Rating.ratings))
                         ListTile(
-                          title: Text(rating.tr(cx)),
+                          title: Text((rating == "All" ? 'all'.tr(cx) : (rating == "Ignore rating" ? 'ignore_rating'.tr(cx) : rating.tr(cx)))), //rating == "All" ? Text('all'.tr(cx)) :(rating == "Ignore rating" ? 'ignore_rating'.tr(cx) : )// : Text(rating.tr(cx))),
                           selected: rating == _filteredRating,
                           onTap: () {
                             setState(() {
