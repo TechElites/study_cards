@@ -222,7 +222,12 @@ class _CardsPageState extends State<CardsPage> {
                                           _shownCards!, maxCards)),
                             ),
                           ).then((value) {
-                            _adsFullScreen.showAd();
+                            _adsFullScreen.showAd().then((value) {
+                              if (!value) {
+                                ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
+                                    content: Text('no_ads_left'.tr(cx))));
+                              }
+                            });
                             refresh();
                           });
                         }
@@ -255,7 +260,12 @@ class _CardsPageState extends State<CardsPage> {
                       for (var rating in ["All", "Ignore rating"]
                           .followedBy(Rating.ratings))
                         ListTile(
-                          title: Text((rating == "All" ? 'all'.tr(cx) : (rating == "Ignore rating" ? 'ignore_rating'.tr(cx) : rating.tr(cx)))), //rating == "All" ? Text('all'.tr(cx)) :(rating == "Ignore rating" ? 'ignore_rating'.tr(cx) : )// : Text(rating.tr(cx))),
+                          title: Text((rating == "All"
+                              ? 'all'.tr(cx)
+                              : (rating == "Ignore rating"
+                                  ? 'ignore_rating'.tr(cx)
+                                  : rating.tr(
+                                      cx)))), //rating == "All" ? Text('all'.tr(cx)) :(rating == "Ignore rating" ? 'ignore_rating'.tr(cx) : )// : Text(rating.tr(cx))),
                           selected: rating == _filteredRating,
                           onTap: () {
                             setState(() {

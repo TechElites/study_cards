@@ -37,7 +37,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   @override
   Widget build(BuildContext cx) {
     _adsFullScreen.loadAd();
-    
+
     return AdsScaffold(
       appBar: AppBar(
         title: Text('settings'.tr(cx)),
@@ -79,7 +79,12 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            _adsFullScreen.showAd();
+            _adsFullScreen.showAd().then((value) {
+              if (!value) {
+                ScaffoldMessenger.of(cx).showSnackBar(
+                    SnackBar(content: Text('no_ads_left'.tr(cx))));
+              }
+            });
             ScaffoldMessenger.of(cx)
                 .showSnackBar(SnackBar(content: Text('deck_download'.tr(cx))));
             setState(() {});
