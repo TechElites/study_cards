@@ -1,4 +1,4 @@
-import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+// import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -30,7 +30,7 @@ class _CardsPageState extends State<CardsPage> {
   List<StudyCard>? _shownCards;
   String _filteredRating = "All";
   final ListDeleter _deleter = ListDeleter();
-  final AdsFullscreen _adsFullScreen = AdsFullscreen();
+  // final AdsFullscreen _adsFullScreen = AdsFullscreen();
 
   void refresh() {
     setState(() {
@@ -208,7 +208,7 @@ class _CardsPageState extends State<CardsPage> {
                           ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
                               content: Text('no_cards_review'.tr(cx))));
                         } else {
-                          _adsFullScreen.loadAd();
+                          // _adsFullScreen.loadAd();
                           final maxCards =
                               _dbHelper.getReviewCards(widget.deckId);
                           Navigator.push(
@@ -222,12 +222,12 @@ class _CardsPageState extends State<CardsPage> {
                                           _shownCards!, maxCards)),
                             ),
                           ).then((value) {
-                            _adsFullScreen.showAd().then((value) {
-                              if (!value) {
-                                ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
-                                    content: Text('no_ads_left'.tr(cx))));
-                              }
-                            });
+                            // _adsFullScreen.showAd().then((value) {
+                            //   if (!value) {
+                            //     ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
+                            //         content: Text('no_ads_left'.tr(cx))));
+                            //   }
+                            // });
                             refresh();
                           });
                         }

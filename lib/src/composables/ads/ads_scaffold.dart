@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'ads_footer.dart';
+// import 'ads_footer.dart';
 
 class AdsScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;
@@ -50,7 +50,8 @@ class AdsScaffold extends StatelessWidget {
       persistentFooterButtons: persistentFooterButtons,
       drawer: drawer,
       endDrawer: endDrawer,
-      bottomNavigationBar: bottomNavigationBar ?? AdsFooter(),
+      // bottomNavigationBar: bottomNavigationBar ?? AdsFooter(),
+      bottomNavigationBar: bottomNavigationBar,
       backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       primary: primary ?? true,

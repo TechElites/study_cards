@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
-import 'package:flash_cards/src/composables/ads/ads_sandman.dart';
+// import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+// import 'package:flash_cards/src/composables/ads/ads_sandman.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/repositories/reward_service.dart';
+// import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
@@ -27,30 +27,31 @@ class DecksPage extends StatefulWidget {
 class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final ListDeleter _deleter = ListDeleter();
-  final AdsFullscreen _adsFullScreen = AdsFullscreen();
-  final AdsSandman _adsSandman = AdsSandman();
+  // final AdsFullscreen _adsFullScreen = AdsFullscreen();
+  // final AdsSandman _adsSandman = AdsSandman();
 
   @override
   Widget build(BuildContext cx) {
     final decks = _dbHelper.getDecks();
-    _adsSandman.loadAd();
+    // _adsSandman.loadAd();
 
     return AdsScaffold(
         appBar: AppBar(
           title: Text('decks'.tr(cx)),
           centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.tv_off),
-            onPressed: () {
-              _adsSandman.showAd(() {
-                RewardService().setRewarded(true).then((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('ad_rewarded'.tr(cx))));
-                  setState(() {});
-                });
-              });
-            },
-          ),
+          leading: null,
+              // IconButton(
+              //     icon: const Icon(Icons.tv_off),
+              //     onPressed: () {
+              //       _adsSandman.showAd(() {
+              //         RewardService().setRewarded(true).then((_) {
+              //           ScaffoldMessenger.of(context).showSnackBar(
+              //               SnackBar(content: Text('ad_rewarded'.tr(cx))));
+              //           setState(() {});
+              //         });
+              //       });
+              //     },
+              //   ),
           actions: [
             IconButton(
               icon: Icon(
@@ -169,7 +170,7 @@ class _DecksPageState extends State<DecksPage> {
               )
             : FloatingActionButton(
                 onPressed: () {
-                  _adsFullScreen.loadAd();
+                  // _adsFullScreen.loadAd();
                   Navigator.push(
                     cx,
                     MaterialPageRoute(
@@ -177,12 +178,12 @@ class _DecksPageState extends State<DecksPage> {
                     ),
                   ).then((value) {
                     if (value != null) {
-                      _adsFullScreen.showAd().then((value) {
-                        if (!value) {
-                          ScaffoldMessenger.of(cx).showSnackBar(
-                              SnackBar(content: Text('no_ads_left'.tr(cx))));
-                        }
-                      });
+                      // _adsFullScreen.showAd().then((value) {
+                      //   if (!value) {
+                      //     ScaffoldMessenger.of(cx).showSnackBar(
+                      //         SnackBar(content: Text('no_ads_left'.tr(cx))));
+                      //   }
+                      // });
                       setState(() {});
                     }
                   });

@@ -1,4 +1,4 @@
-import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+// import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
@@ -21,7 +21,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _cardsController = TextEditingController();
-  final AdsFullscreen _adsFullScreen = AdsFullscreen();
+  // final AdsFullscreen _adsFullScreen = AdsFullscreen();
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
 
   @override
   Widget build(BuildContext cx) {
-    _adsFullScreen.loadAd();
+    // _adsFullScreen.loadAd();
 
     return AdsScaffold(
       appBar: AppBar(
@@ -79,12 +79,12 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            _adsFullScreen.showAd().then((value) {
-              if (!value) {
-                ScaffoldMessenger.of(cx).showSnackBar(
-                    SnackBar(content: Text('no_ads_left'.tr(cx))));
-              }
-            });
+            // _adsFullScreen.showAd().then((value) {
+            //   if (!value) {
+            //     ScaffoldMessenger.of(cx).showSnackBar(
+            //         SnackBar(content: Text('no_ads_left'.tr(cx))));
+            //   }
+            // });
             ScaffoldMessenger.of(cx)
                 .showSnackBar(SnackBar(content: Text('deck_download'.tr(cx))));
             setState(() {});
