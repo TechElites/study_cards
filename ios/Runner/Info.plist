@@ -53,5 +53,9 @@
 		<string>ca-app-pub-5775467929281127~9737201596</string>
 		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-5775467929281127~3171793245</string>
+		<key>LSSupportsOpeningDocumentsInPlace</key>
+		<true />
+		<key>UIFileSharingEnabled</key>
+		<true />
 	</dict>
 </plist>

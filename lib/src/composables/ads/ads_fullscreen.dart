@@ -13,38 +13,40 @@ class AdsFullscreen {
 
   /// Loads the ad, needs to be called before showing the ad
   void loadAd() {
-    InterstitialAd.load(
-      adUnitId: adUnitId,
-      request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          _interstitialAd = ad;
-          _isAdLoaded = true;
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          _isAdLoaded = false;
-        },
-      ),
-    );
+    if (!_isAdLoaded) {
+      InterstitialAd.load(
+        adUnitId: adUnitId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (InterstitialAd ad) {
+            _interstitialAd = ad;
+            _isAdLoaded = true;
+          },
+          onAdFailedToLoad: (LoadAdError error) {
+            _isAdLoaded = false;
+          },
+        ),
+      );
+    }
   }
 
   /// Shows the fullscreen ad
-  void showAd() {
-    RewardService().isRewarded().then((noAds) {
-      if (!noAds && _isAdLoaded && _interstitialAd != null) {
-        _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-          onAdDismissedFullScreenContent: (InterstitialAd ad) {
-            ad.dispose();
-          },
-          onAdFailedToShowFullScreenContent:
-              (InterstitialAd ad, AdError error) {
-            ad.dispose();
-          },
-        );
-        _interstitialAd!.show();
-        _interstitialAd = null;
-        _isAdLoaded = false;
-      }
-    });
+  Future<bool> showAd() async {
+    final noAds = await RewardService().isRewarded();
+    if (!noAds && _isAdLoaded && _interstitialAd != null) {
+      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (InterstitialAd ad) {
+          ad.dispose();
+        },
+        onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+          ad.dispose();
+        },
+      );
+      _interstitialAd!.show();
+      _interstitialAd = null;
+      _isAdLoaded = false;
+      return true;
+    }
+    return false;
   }
 }

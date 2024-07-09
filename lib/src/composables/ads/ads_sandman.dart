@@ -13,18 +13,20 @@ class AdsSandman {
 
   /// Loads the ad, needs to be called before showing the ad
   void loadAd() {
-    RewardedAd.load(
-        adUnitId: adUnitId,
-        request: const AdRequest(),
-        rewardedAdLoadCallback: RewardedAdLoadCallback(
-          onAdLoaded: (ad) {
-            _rewardedAd = ad;
-            _isAdLoaded = true;
-          },
-          onAdFailedToLoad: (LoadAdError error) {
-            _isAdLoaded = false;
-          },
-        ));
+    if (!_isAdLoaded) {
+      RewardedAd.load(
+          adUnitId: adUnitId,
+          request: const AdRequest(),
+          rewardedAdLoadCallback: RewardedAdLoadCallback(
+            onAdLoaded: (ad) {
+              _rewardedAd = ad;
+              _isAdLoaded = true;
+            },
+            onAdFailedToLoad: (LoadAdError error) {
+              _isAdLoaded = false;
+            },
+          ));
+    }
   }
 
   /// Shows the fullscreen ad, calls the reward function when the user has watched the ad

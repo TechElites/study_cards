@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flash_cards/src/data/repositories/reward_service.dart';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -18,23 +19,25 @@ class AdsFooter extends StatefulWidget {
 
 class _AdsFooterState extends State<AdsFooter> {
   BannerAd? _bannerAd;
-  bool _noAds = false;
+  bool _noAdsReward = false;
+  bool _noAdsLeft = false;
 
   @override
-  Widget build(BuildContext context) {
-    _checkRewardStatus();
-
-    if (_noAds) {
+  Widget build(BuildContext cx) {
+    if (_noAdsReward) {
       return const SizedBox.shrink();
     }
 
     return SafeArea(
-      child: SizedBox(
+      child: Container(
+        alignment: Alignment.center,
         width: AdSize.banner.width.toDouble(),
         height: AdSize.banner.height.toDouble(),
         child: _bannerAd == null
             // Nothing to render yet.
-            ? const SizedBox()
+            ? _noAdsLeft
+                ? Text('no_ads_left'.tr(cx))
+                : const CircularProgressIndicator()
             // The actual ad.
             : AdWidget(ad: _bannerAd!),
       ),
@@ -44,7 +47,10 @@ class _AdsFooterState extends State<AdsFooter> {
   @override
   void initState() {
     super.initState();
-    _loadAd();
+    _checkRewardStatus();
+    if (!_noAdsReward) {
+      _loadAd();
+    }
   }
 
   @override
@@ -56,7 +62,7 @@ class _AdsFooterState extends State<AdsFooter> {
   void _checkRewardStatus() async {
     bool rewarded = await RewardService().isRewarded();
     setState(() {
-      _noAds = rewarded;
+      _noAdsReward = rewarded;
     });
   }
 
@@ -78,6 +84,11 @@ class _AdsFooterState extends State<AdsFooter> {
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
+          if (error.toString().contains('No ad config.')) {
+            setState(() {
+              _noAdsLeft = true;
+            });
+          }
         },
       ),
     );
