@@ -222,12 +222,7 @@ class _CardsPageState extends State<CardsPage> {
                                           _shownCards!, maxCards)),
                             ),
                           ).then((value) {
-                            _adsFullScreen.showAd().then((value) {
-                              if (!value) {
-                                ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
-                                    content: Text('no_ads_left'.tr(cx))));
-                              }
-                            });
+                            _adsFullScreen.showAd();
                             refresh();
                           });
                         }
