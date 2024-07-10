@@ -36,14 +36,20 @@ class FileUploaderMobile {
   /// Unzips the file and returns the xml file.
   static Future<File?> _unzipFile(File zipFile) async {
     try {
-      final hasPermission = await PermissionHelper.requestStoragePermissions();
-      if (!hasPermission) {
-        throw Exception("Permessi di archiviazione non concessi.");
-      }
-      Directory? externalDir = await getExternalStorageDirectory();
-      if (externalDir == null) {
-        throw Exception(
-            "Impossibile trovare la directory di archiviazione esterna.");
+      Directory? externalDir;
+      if (Platform.isAndroid) {
+        final hasPermission =
+            await PermissionHelper.requestStoragePermissions();
+        if (!hasPermission) {
+          throw Exception("Permessi di archiviazione non concessi.");
+        }
+        externalDir = await getExternalStorageDirectory();
+        if (externalDir == null) {
+          throw Exception(
+              "Impossibile trovare la directory di archiviazione esterna.");
+        }
+      } else {
+        externalDir = await getApplicationSupportDirectory();
       }
       final bytes = await zipFile.readAsBytes();
       final archive = ZipDecoder().decodeBytes(bytes);
