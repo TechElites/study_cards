@@ -31,9 +31,15 @@ class _DecksPageState extends State<DecksPage> {
   final AdsSandman _adsSandman = AdsSandman();
 
   @override
+  void initState() {
+    super.initState();
+    _adsSandman.loadAd();
+    _adsFullScreen.loadAd();
+  }
+
+  @override
   Widget build(BuildContext cx) {
     final decks = _dbHelper.getDecks();
-    _adsSandman.loadAd();
 
     return AdsScaffold(
         appBar: AppBar(
@@ -42,7 +48,7 @@ class _DecksPageState extends State<DecksPage> {
           leading: IconButton(
             icon: const Icon(Icons.tv_off),
             onPressed: () {
-              _adsSandman.showAd(() {
+              _adsSandman.showAndReloadAd(() {
                 RewardService().setRewarded(true).then((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('ad_rewarded'.tr(cx))));
@@ -169,7 +175,6 @@ class _DecksPageState extends State<DecksPage> {
               )
             : FloatingActionButton(
                 onPressed: () {
-                  _adsFullScreen.loadAd();
                   Navigator.push(
                     cx,
                     MaterialPageRoute(
@@ -177,7 +182,7 @@ class _DecksPageState extends State<DecksPage> {
                     ),
                   ).then((value) {
                     if (value != null) {
-                      _adsFullScreen.showAd();
+                      _adsFullScreen.showAndReloadAd();
                       setState(() {});
                     }
                   });

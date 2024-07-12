@@ -49,4 +49,12 @@ class AdsFullscreen {
     }
     return false;
   }
+
+  Future<bool> showAndReloadAd() async {
+    final shown = await showAd();
+    if (shown) {
+      loadAd();
+    }
+    return shown;
+  }
 }
