@@ -79,10 +79,15 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            _adsFullScreen.showAd();
-            ScaffoldMessenger.of(cx)
-                .showSnackBar(SnackBar(content: Text('deck_download'.tr(cx))));
-            setState(() {});
+            if (value) {
+              _adsFullScreen.showAd();
+              ScaffoldMessenger.of(cx).showSnackBar(
+                  SnackBar(content: Text('deck_download'.tr(cx))));
+              setState(() {});
+            } else {
+              ScaffoldMessenger.of(cx).showSnackBar(
+                  SnackBar(content: Text('deck_download_error'.tr(cx))));
+            }
           });
         },
         child: const Icon(Icons.file_download),
@@ -91,7 +96,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   }
 
   /// Exports the deck to an XML file
-  Future<void> _exportDeck() async {
+  Future<bool> _exportDeck() async {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);
     final String deckXml = XmlHandler.createXml(cards, deck.name);
@@ -106,7 +111,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
             '${card.id}_back.${card.backMedia.split('.').last}';
       }
     }
-    await XmlHandler.saveXmlToFile(deckXml, '${deck.name}.xml', mediaMap);
+    return await XmlHandler.saveXmlToFile(
+        deckXml, '${deck.name}.xml', mediaMap);
   }
 
   Future<void> _updateReviewCards() async {

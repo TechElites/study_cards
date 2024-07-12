@@ -18,6 +18,7 @@
   "deck_add_success": "Deck added successfully",
   "deck_deleted": "Deck deleted",
   "deck_download": "Deck saved in Downloads folder",
+  "deck_download_error": "Error downloading deck",
   "deck_name": "Deck Name",
   "deck_name_update": "Deck name updated",
   "deck_saved": "Deck saved",

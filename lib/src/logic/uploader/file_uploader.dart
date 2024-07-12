@@ -7,10 +7,8 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 class FileUploader {
   /// Reads a deck file based on the platform.
   static Future<List<StudyCard>> uploadFile() async {
-    if (kIsWeb) {
-      return await FileUploaderWeb.uploadFile();
-    } else {
-      return await FileUploaderMobile.uploadFile();
-    }
+    return kIsWeb
+        ? await FileUploaderWeb.uploadFile()
+        : await FileUploaderMobile.uploadFile();
   }
 }

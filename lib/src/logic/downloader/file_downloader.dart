@@ -5,16 +5,10 @@ import 'package:flash_cards/src/logic/downloader/file_downloader_web.dart';
 /// Class to handle downloading files.
 class FileDownloader {
   /// Saves the deck file on device based on the platform.
-  static Future<void> saveFileOnDevice(
+  static Future<bool> saveFileOnDevice(
       String fileName, String inFile, Map<String, String> mediaMap) async {
-    try {
-      if (kIsWeb) {
-        FileDownloaderWeb.saveFileOnDevice(fileName, inFile);
-      } else {
-        FileDownloaderMobile.saveFileOnDevice(fileName, inFile, mediaMap);
-      }
-    } catch (e) {
-      throw Exception(e);
-    }
+    return kIsWeb
+        ? FileDownloaderWeb.saveFileOnDevice(fileName, inFile)
+        : FileDownloaderMobile.saveFileOnDevice(fileName, inFile, mediaMap);
   }
 }

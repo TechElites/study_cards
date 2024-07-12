@@ -41,12 +41,11 @@ class FileUploaderMobile {
         final hasPermission =
             await PermissionHelper.requestStoragePermissions();
         if (!hasPermission) {
-          throw Exception("Permessi di archiviazione non concessi.");
+          throw Exception("Missing storage permissions.");
         }
         externalDir = await getExternalStorageDirectory();
         if (externalDir == null) {
-          throw Exception(
-              "Impossibile trovare la directory di archiviazione esterna.");
+          throw Exception("Cannot find external storage directory.");
         }
       } else {
         externalDir = await getApplicationSupportDirectory();
@@ -65,17 +64,12 @@ class FileUploaderMobile {
           final filename = file.name;
           final filePath = path.join(destinationDir.path, filename);
 
-          try {
-            final outputFile = File(filePath);
-            await outputFile.create(recursive: true);
-            await outputFile.writeAsBytes(file.content as List<int>);
+          final outputFile = File(filePath);
+          await outputFile.create(recursive: true);
+          await outputFile.writeAsBytes(file.content as List<int>);
 
-            if (path.extension(filename) == '.xml') {
-              xmlFile = outputFile;
-            }
-          } catch (e) {
-            throw Exception(
-                'Errore durante l\'estrazione del file $filename: $e');
+          if (path.extension(filename) == '.xml') {
+            xmlFile = outputFile;
           }
         } else {
           final dirPath = path.join(destinationDir.path, file.name);
@@ -85,7 +79,7 @@ class FileUploaderMobile {
 
       return xmlFile;
     } catch (e) {
-      throw Exception('Errore durante l\'unzip del file: $e');
+      throw Exception('Error while unzipping $e');
     }
   }
 }

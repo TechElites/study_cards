@@ -4,7 +4,7 @@ import 'dart:convert';
 /// Class to handle downloading files on web.
 class FileDownloaderWeb {
   /// Save the deck file on web.
-  static Future<void> saveFileOnDevice(String fileName, String inFile) async {
+  static Future<bool> saveFileOnDevice(String fileName, String inFile) async {
     try {
       final bytes = utf8.encode(inFile);
       final blob = Blob([bytes]);
@@ -13,8 +13,9 @@ class FileDownloaderWeb {
         ..setAttribute("download", fileName)
         ..click();
       Url.revokeObjectUrl(url);
+      return true;
     } catch (e) {
-      throw Exception(e);
+      return false;
     }
   }
 }
