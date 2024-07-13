@@ -30,24 +30,28 @@ class AdsSandman {
   }
 
   /// Shows the fullscreen ad, calls the reward function when the user has watched the ad
-  void showAd(Function reward) {
-    RewardService().isRewarded().then((noAds) {
-      if (!noAds && _isAdLoaded && _rewardedAd != null) {
-        _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
-          onAdDismissedFullScreenContent: (RewardedAd ad) {
-            ad.dispose();
-          },
-          onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
-            ad.dispose();
-          },
-        );
-        _rewardedAd!.show(
-            onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
-          reward();
-        });
-        _rewardedAd = null;
-        _isAdLoaded = false;
-      }
-    });
+  void showAd(Function reward) async {
+    final noAds = await RewardService().isRewarded();
+    if (!noAds && _isAdLoaded && _rewardedAd != null) {
+      _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (RewardedAd ad) {
+          ad.dispose();
+        },
+        onAdFailedToShowFullScreenContent: (RewardedAd ad, AdError error) {
+          ad.dispose();
+        },
+      );
+      _rewardedAd!.show(
+          onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
+        reward();
+      });
+      _rewardedAd = null;
+      _isAdLoaded = false;
+    }
+  }
+
+  void showAndReloadAd(Function reward) {
+    showAd(reward);
+    loadAd();
   }
 }

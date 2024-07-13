@@ -40,6 +40,12 @@ class _CardsPageState extends State<CardsPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _adsFullScreen.loadAd();
+  }
+
+  @override
   Widget build(BuildContext cx) {
     if (_allCards == null) {
       final value = _dbHelper.getCards(widget.deckId);
@@ -208,7 +214,6 @@ class _CardsPageState extends State<CardsPage> {
                           ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
                               content: Text('no_cards_review'.tr(cx))));
                         } else {
-                          _adsFullScreen.loadAd();
                           final maxCards =
                               _dbHelper.getReviewCards(widget.deckId);
                           Navigator.push(
@@ -222,7 +227,7 @@ class _CardsPageState extends State<CardsPage> {
                                           _shownCards!, maxCards)),
                             ),
                           ).then((value) {
-                            _adsFullScreen.showAd();
+                            _adsFullScreen.showAndReloadAd();
                             refresh();
                           });
                         }

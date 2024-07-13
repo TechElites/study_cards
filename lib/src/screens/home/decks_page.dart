@@ -29,18 +29,17 @@ class _DecksPageState extends State<DecksPage> {
   final ListDeleter _deleter = ListDeleter();
   final AdsFullscreen _adsFullScreen = AdsFullscreen();
   final AdsSandman _adsSandman = AdsSandman();
-  bool _noAdsMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _adsSandman.loadAd();
+    _adsFullScreen.loadAd();
+  }
 
   @override
   Widget build(BuildContext cx) {
     final decks = _dbHelper.getDecks();
-    _adsSandman.loadAd();
-
-    RewardService().isRewarded().then((value) {
-      setState(() {
-        _noAdsMode = value;
-      });
-    });
 
     return AdsScaffold(
         appBar: AppBar(
@@ -52,8 +51,7 @@ class _DecksPageState extends State<DecksPage> {
               color: _noAdsMode ? Colors.blueGrey : Colors.black,
             ),
             onPressed: () {
-              if (_noAdsMode) return; 
-              _adsSandman.showAd(() {
+              _adsSandman.showAndReloadAd(() {
                 RewardService().setRewarded(true).then((_) {
                   ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('ad_rewarded'.tr(cx))));
@@ -180,7 +178,6 @@ class _DecksPageState extends State<DecksPage> {
               )
             : FloatingActionButton(
                 onPressed: () {
-                  _adsFullScreen.loadAd();
                   Navigator.push(
                     cx,
                     MaterialPageRoute(
@@ -188,7 +185,7 @@ class _DecksPageState extends State<DecksPage> {
                     ),
                   ).then((value) {
                     if (value != null) {
-                      _adsFullScreen.showAd();
+                      _adsFullScreen.showAndReloadAd();
                       setState(() {});
                     }
                   });

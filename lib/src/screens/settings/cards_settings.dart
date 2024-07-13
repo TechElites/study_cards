@@ -28,6 +28,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     super.initState();
     final revC = _dbHelper.getReviewCards(widget.deckId);
     final d = _dbHelper.getDeck(widget.deckId);
+    _adsFullScreen.loadAd();
     setState(() {
       _nameController.text = d.name;
       _cardsController.text = revC.toString();
@@ -36,8 +37,6 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
 
   @override
   Widget build(BuildContext cx) {
-    _adsFullScreen.loadAd();
-
     return AdsScaffold(
       appBar: AppBar(
         title: Text('settings'.tr(cx)),
@@ -79,15 +78,10 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            if (value) {
-              _adsFullScreen.showAd();
-              ScaffoldMessenger.of(cx).showSnackBar(
-                  SnackBar(content: Text('deck_download'.tr(cx))));
-              setState(() {});
-            } else {
-              ScaffoldMessenger.of(cx).showSnackBar(
-                  SnackBar(content: Text('deck_download_error'.tr(cx))));
-            }
+            _adsFullScreen.showAndReloadAd();
+            ScaffoldMessenger.of(cx)
+                .showSnackBar(SnackBar(content: Text('deck_download'.tr(cx))));
+            setState(() {});
           });
         },
         child: const Icon(Icons.file_download),
