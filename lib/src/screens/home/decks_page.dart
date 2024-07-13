@@ -46,10 +46,7 @@ class _DecksPageState extends State<DecksPage> {
           title: Text('decks'.tr(cx)),
           centerTitle: true,
           leading: IconButton(
-            icon: Icon(
-              Icons.tv_off,
-              color: _noAdsMode ? Colors.blueGrey : Colors.black,
-            ),
+            icon: const Icon(Icons.tv_off),
             onPressed: () {
               _adsSandman.showAndReloadAd(() {
                 RewardService().setRewarded(true).then((_) {

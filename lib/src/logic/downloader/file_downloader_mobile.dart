@@ -12,21 +12,16 @@ class FileDownloaderMobile {
       final directory = Platform.isAndroid
           ? Directory("/storage/emulated/0/Download")
           : await getApplicationDocumentsDirectory();
-      if (mediaMap.isEmpty) {
-        final path = '${directory.path}/$fileName';
-        final file = File(path);
-        await file.writeAsString(inFile, flush: true);
-      } else {
+      final path = '${directory.path}/$fileName';
+      final file = File(path);
+      final res = await file.writeAsString(inFile, flush: true);
+      if (mediaMap.isNotEmpty) {
         List bytes = [];
+        bytes.add(await res.readAsBytes());
         for (var i = 0; i < mediaMap.length; i++) {
           bytes
               .add(await File(mediaMap.entries.elementAt(i).key).readAsBytes());
         }
-        final tmpDir = await getTemporaryDirectory();
-        final tmpPath = '${tmpDir.path}/$fileName';
-        final file = File(tmpPath);
-        final res = await file.writeAsString(inFile, flush: true);
-        bytes.add(await res.readAsBytes());
         final archive = Archive();
         for (var i = 0; i < bytes.length; i++) {
           if (i == 0) {
