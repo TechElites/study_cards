@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_sandman.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
@@ -50,8 +51,7 @@ class _DecksPageState extends State<DecksPage> {
             onPressed: () {
               _adsSandman.showAndReloadAd(() {
                 RewardService().setRewarded(true).then((_) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('ad_rewarded'.tr(cx))));
+                  FloatingBar.show('ad_rewarded'.tr(cx), cx);
                   setState(() {});
                 });
               });
@@ -95,11 +95,7 @@ class _DecksPageState extends State<DecksPage> {
                         decks.removeAt(index);
                       });
                       _dbHelper.deleteDeck(deck.id).then((_) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text(
-                                  '${'deck_deleted'.tr(cx)}: ${deck.name}')),
-                        );
+                        FloatingBar.show('deck_deleted'.tr(cx), cx);
                         deleteFolder(List.of([deck.name]));
                       });
                     },
@@ -166,9 +162,7 @@ class _DecksPageState extends State<DecksPage> {
                     setState(() {});
                     deleteFolder(list.values.toList());
                   });
-                  ScaffoldMessenger.of(cx).showSnackBar(
-                    SnackBar(content: Text('decks_deleted'.tr(cx))),
-                  );
+                  FloatingBar.show('decks_deleted'.tr(cx), cx);
                 },
                 tooltip: 'delete_decks'.tr(cx),
                 child: const Icon(Icons.delete),
@@ -182,8 +176,10 @@ class _DecksPageState extends State<DecksPage> {
                     ),
                   ).then((value) {
                     if (value != null) {
-                      _adsFullScreen.showAndReloadAd();
-                      setState(() {});
+                      _adsFullScreen.showAndReloadAd(() {
+                        FloatingBar.show('deck_add_success'.tr(cx), cx);
+                        setState(() {});
+                      });
                     }
                   });
                 },

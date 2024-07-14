@@ -1,5 +1,6 @@
 import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
@@ -102,9 +103,7 @@ class _CardsPageState extends State<CardsPage> {
                             _shownCards?.removeAt(index);
                           });
                           _dbHelper.deleteCard(card.id).then((_) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('card_deleted'.tr(cx))),
-                            );
+                            FloatingBar.show('card_deleted'.tr(cx), cx);
                           });
                         },
                         background: Container(
@@ -178,9 +177,7 @@ class _CardsPageState extends State<CardsPage> {
                   _dbHelper
                       .deleteCards(_deleter.dumpList().keys.toList())
                       .then((value) => refresh());
-                  ScaffoldMessenger.of(cx).showSnackBar(
-                    SnackBar(content: Text('cards_deleted'.tr(cx))),
-                  );
+                  FloatingBar.show('cards_deleted'.tr(cx), cx);
                 },
                 tooltip: 'delete_cards'.tr(cx),
                 child: const Icon(Icons.delete),
@@ -211,8 +208,7 @@ class _CardsPageState extends State<CardsPage> {
                     onTap: () {
                       if (_shownCards != null) {
                         if (_shownCards!.isEmpty) {
-                          ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
-                              content: Text('no_cards_review'.tr(cx))));
+                          FloatingBar.show('no_cards_review'.tr(cx), cx);
                         } else {
                           final maxCards =
                               _dbHelper.getReviewCards(widget.deckId);
@@ -227,8 +223,9 @@ class _CardsPageState extends State<CardsPage> {
                                           _shownCards!, maxCards)),
                             ),
                           ).then((value) {
-                            _adsFullScreen.showAndReloadAd();
-                            refresh();
+                            _adsFullScreen.showAndReloadAd(() {
+                              refresh();
+                            });
                           });
                         }
                       }

@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
@@ -189,12 +190,7 @@ class _CardsPageState extends State<CardDetailsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _modifyCard().then((id) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('card_modify_success'.tr(cx)),
-                duration: const Duration(seconds: 1),
-              ),
-            );
+            FloatingBar.show('card_modify_success'.tr(cx), cx);
             Navigator.pop(context);
           });
         },
