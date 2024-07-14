@@ -1,5 +1,6 @@
 import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -53,9 +54,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                       onTap: () {
                         _dbHelper
                             .updateDeckName(widget.deckId, _nameController.text)
-                            .then((value) => ScaffoldMessenger.of(cx)
-                                .showSnackBar(SnackBar(
-                                    content: Text('deck_name_update'.tr(cx)))));
+                            .then((value) => FloatingBar.show(
+                                'deck_name_update'.tr(cx), cx));
                       },
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
@@ -68,8 +68,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                   suffixIcon: InkWell(
                       onTap: () {
                         _updateReviewCards().then((value) =>
-                            ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
-                                content: Text('review_cards_update'.tr(cx)))));
+                            FloatingBar.show('review_cards_update'.tr(cx), cx));
                       },
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
@@ -78,10 +77,10 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            _adsFullScreen.showAndReloadAd();
-            ScaffoldMessenger.of(cx)
-                .showSnackBar(SnackBar(content: Text('deck_download'.tr(cx))));
-            setState(() {});
+            _adsFullScreen.showAndReloadAd(() {
+              FloatingBar.show('deck_download'.tr(cx), cx);
+              setState(() {});
+            });
           });
         },
         child: const Icon(Icons.file_download),

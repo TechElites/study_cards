@@ -127,12 +127,6 @@ class _AddDeckState extends State<AddDeck> {
                 }
                 _dbHelper.insertDeckCards(cards);
               }
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('deck_add_success'.tr(cx)),
-                  duration: const Duration(seconds: 1),
-                ),
-              );
               Navigator.pop(context, deckId);
             });
           }

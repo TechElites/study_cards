@@ -27,6 +27,10 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
     color: Colors.black,
     fontSize: 24,
   )),
+  snackBarTheme: const SnackBarThemeData(
+    backgroundColor: Colors.blue,
+    contentTextStyle: TextStyle(color: Colors.white),
+  ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.blue[300]!, foregroundColor: Colors.black),
 );
@@ -59,6 +63,10 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
     color: Colors.white,
     fontSize: 24,
   )),
+  snackBarTheme: const SnackBarThemeData(
+    backgroundColor: Colors.lightBlue,
+    contentTextStyle: TextStyle(color: Colors.black),
+  ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.blue[700]!, foregroundColor: Colors.white),
 );
