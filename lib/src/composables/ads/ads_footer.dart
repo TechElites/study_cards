@@ -8,7 +8,7 @@ class AdsFooter extends StatefulWidget {
   /// The AdMob ad unit to show.
   final String adUnitId = Platform.isAndroid
       ? 'ca-app-pub-5775467929281127/6518558616'
-      : 'ca-app-pub-5775467929281127/6518558616';
+      : 'ca-app-pub-5775467929281127/1266231938';
 
   AdsFooter({super.key});
 
