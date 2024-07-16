@@ -17,7 +17,7 @@
   "creation_date": "Data di creazione",
   "deck_add_success": "Mazzo aggiunto con successo",
   "deck_deleted": "Mazzo eliminato",
-  "deck_download": "Mazzo salvato nella cartella Download",
+  "deck_download": "Mazzo salvato nella memoria del dispositivo",
   "deck_download_error": "Errore durante il download del mazzo",
   "deck_name": "Nome del mazzo",
   "deck_name_update": "Nome del mazzo aggiornato",

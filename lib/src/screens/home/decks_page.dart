@@ -8,6 +8,7 @@ import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
+import 'package:flash_cards/src/logic/permission_helper.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
@@ -96,7 +97,7 @@ class _DecksPageState extends State<DecksPage> {
                       });
                       _dbHelper.deleteDeck(deck.id).then((_) {
                         FloatingBar.show('deck_deleted'.tr(cx), cx);
-                        deleteFolder(List.of([deck.name]));
+                        _deleteFolder(List.of([deck.name]));
                       });
                     },
                     background: Container(
@@ -160,7 +161,7 @@ class _DecksPageState extends State<DecksPage> {
                   final list = _deleter.dumpList();
                   _dbHelper.deleteDecks(list.keys.toList()).then((value) {
                     setState(() {});
-                    deleteFolder(list.values.toList());
+                    _deleteFolder(list.values.toList());
                   });
                   FloatingBar.show('decks_deleted'.tr(cx), cx);
                 },
@@ -189,16 +190,24 @@ class _DecksPageState extends State<DecksPage> {
   }
 
   /// Deletes the folders associated to a deck
-  void deleteFolder(List<String> list) {
+  Future<void> _deleteFolder(List<String> list) async {
     var appPath = '';
-    getExternalStorageDirectory().then((directory) {
-      appPath = directory!.path;
-      for (var deckName in list) {
-        final folder = Directory(path.join(appPath.toString(), deckName));
-        if (folder.existsSync()) {
-          folder.deleteSync(recursive: true);
-        }
+    Directory? externalDir;
+    if (Platform.isAndroid) {
+      final hasPermission = await PermissionHelper.requestStoragePermissions();
+      if (!hasPermission) {
+        throw Exception("Missing storage permissions.");
       }
-    });
+      externalDir = await getExternalStorageDirectory();
+    } else {
+      externalDir = await getApplicationSupportDirectory();
+    }
+    appPath = externalDir!.path;
+    for (var deckName in list) {
+      final folder = Directory(path.join(appPath.toString(), deckName));
+      if (folder.existsSync()) {
+        folder.deleteSync(recursive: true);
+      }
+    }
   }
 }

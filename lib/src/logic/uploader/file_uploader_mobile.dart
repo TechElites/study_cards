@@ -27,6 +27,14 @@ class FileUploaderMobile {
       } else {
         fileContent = await file.readAsString();
       }
+      /*final s = StudyCard(front: file.toString(), back: fileContent);
+      StudyCard s1 = StudyCard(front: "niente", back: "niente");
+      final a = await XmlHandler.parseXml(fileContent).then( (value) {
+        s1 = StudyCard(front: "niente", back: value.toString());
+      });
+      final s1 = StudyCard(front: "niente", back: a.toString());
+      final r = [s, s1];
+      return r;*/
       return await XmlHandler.parseXml(fileContent);
     }
 
@@ -44,18 +52,15 @@ class FileUploaderMobile {
           throw Exception("Missing storage permissions.");
         }
         externalDir = await getExternalStorageDirectory();
-        if (externalDir == null) {
-          throw Exception("Cannot find external storage directory.");
-        }
       } else {
-        externalDir = await getApplicationSupportDirectory();
+        externalDir = await getApplicationDocumentsDirectory();
       }
       final bytes = await zipFile.readAsBytes();
       final archive = ZipDecoder().decodeBytes(bytes);
 
       String zipFileName = path.basenameWithoutExtension(zipFile.path);
       Directory destinationDir =
-          Directory(path.join(externalDir.path, zipFileName));
+          Directory(path.join(externalDir!.path, zipFileName));
       await destinationDir.create(recursive: true);
 
       File? xmlFile;

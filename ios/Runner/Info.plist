@@ -50,8 +50,6 @@
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>Per favore concedi l'accesso alla galleria.</string>
 		<key>GADApplicationIdentifier</key>
-		<string>ca-app-pub-5775467929281127~9737201596</string>
-		<key>GADApplicationIdentifier</key>
 		<string>ca-app-pub-5775467929281127~3171793245</string>
 		<key>UISupportsDocumentBrowser</key>
 		<true />
@@ -59,5 +57,9 @@
 		<true />
 		<key>UIFileSharingEnabled</key>
 		<true />
+		<key>NSDocumentsFolderUsageDescription</key>
+		<string>App needs access to documents folder.</string>
+		<key>NSFileProviderDomainUsageDescription</key>
+		<string>App needs access to files.</string>
 	</dict>
 </plist>
