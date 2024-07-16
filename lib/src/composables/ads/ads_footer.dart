@@ -22,6 +22,8 @@ class _AdsFooterState extends State<AdsFooter> {
 
   @override
   Widget build(BuildContext cx) {
+    _checkRewardStatus();
+
     if (_noAdsReward) {
       return const SizedBox.shrink();
     }
