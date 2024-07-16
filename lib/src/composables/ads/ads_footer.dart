@@ -33,7 +33,7 @@ class _AdsFooterState extends State<AdsFooter> {
         height: AdSize.banner.height.toDouble(),
         child: _bannerAd == null
             // Nothing to render yet.
-            ? const LinearProgressIndicator()
+            ? const Text('. . .')
             // The actual ad.
             : AdWidget(ad: _bannerAd!),
       ),
