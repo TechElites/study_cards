@@ -9,6 +9,7 @@ import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
 import 'package:flash_cards/src/logic/permission_helper.dart';
+import 'package:flash_cards/src/screens/settings/feedback.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
@@ -68,7 +69,17 @@ class _DecksPageState extends State<DecksPage> {
             onPressed: () {
               Provider.of<ThemeProvider>(cx, listen: false).toggleTheme();
             },
-          )
+          ),
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FeedbackPage(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.feedback))
         ],
       ),
       body: RefreshIndicator(
