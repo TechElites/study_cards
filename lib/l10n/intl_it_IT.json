@@ -13,6 +13,7 @@
   "cards": "Carte",
   "cards_deleted": "Carte eliminate",
   "cards_per_review": "Carte per revisione",
+  "changeLanguage": "Cambia lingua",
   "close": "Chiudi",
   "creation_date": "Data di creazione",
   "deck_add_success": "Mazzo aggiunto con successo",
@@ -47,11 +48,14 @@
   "pick_xml": "Scegli il file XML ",
   "pick_xml_or_zip": "Scegli il file XML o ZIP ",
   "question": "Domanda",
+  "removeAds": "Rimuovi pubblicità",
   "review": "Ripasso",
   "review_cards_update": "Carte di revisione aggiornate",
   "select_rating": "Seleziona valutazione",
   "select_source": "Seleziona la fonte",
   "settings": "Impostazioni",
+  "sendFeedback": "Inviaci un feedback",
   "tap_reveal_answer": "Tocca per rivelare la risposta",
+  "toggleTheme": "Cambia tema",
   "total_cards": "Carte totali"
 }

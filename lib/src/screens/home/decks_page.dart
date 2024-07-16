@@ -19,6 +19,8 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:vibration/vibration.dart';
 
+
+
 /// Creates a page to display the list of all the decks
 class DecksPage extends StatefulWidget {
   const DecksPage({super.key});
@@ -48,30 +50,46 @@ class _DecksPageState extends State<DecksPage> {
       appBar: AppBar(
         title: Text('decks'.tr(cx)),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.tv_off),
-          onPressed: () {
-            _adsSandman.showAndReloadAd(() {
-              RewardService().setRewarded(true).then((_) {
-                FloatingBar.show('ad_rewarded'.tr(cx), cx);
-                setState(() {});
-              });
-            });
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Provider.of<ThemeProvider>(cx).isDarkMode
-                  ? Icons.light_mode
-                  : Icons.dark_mode,
+      ),
+      drawer: Drawer(
+        child: ListView(
+          // Important: Remove any padding from the ListView.
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Color(0xFFE3F2FD),
+              ),
+              child: Text('Study Cards', style: TextStyle(fontSize: 30), textAlign: TextAlign.center),
+              
             ),
-            onPressed: () {
-              Provider.of<ThemeProvider>(cx, listen: false).toggleTheme();
-            },
-          ),
-          IconButton(
-              onPressed: () {
+            ListTile(
+              title: Text('removeAds'.tr(cx)),
+              leading: const Icon(Icons.tv_off),
+              onTap: () {
+                _adsSandman.showAndReloadAd(() {
+                  RewardService().setRewarded(true).then((_) {
+                    FloatingBar.show('ad_rewarded'.tr(cx), cx);
+                    setState(() {});
+                  });
+                });
+              },
+            ),
+            ListTile(
+              title: Text('toggleTheme'.tr(cx)),
+              leading: Icon(
+                Provider.of<ThemeProvider>(cx).isDarkMode
+                    ? Icons.light_mode
+                    : Icons.dark_mode,
+              ),
+              onTap: () {
+                Provider.of<ThemeProvider>(cx, listen: false).toggleTheme();
+              },
+            ),
+            ListTile(
+              title: Text('sendFeedback'.tr(cx)),
+              leading: const Icon(Icons.feedback),
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -79,8 +97,46 @@ class _DecksPageState extends State<DecksPage> {
                   ),
                 );
               },
-              icon: const Icon(Icons.feedback))
-        ],
+            ),
+            ListTile(
+              title: Text('changeLanguage'.tr(cx)),
+              leading: const Icon(Icons.language),
+              onTap: () {
+                // open a selection menu to change language with ita and eng flags icons
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('selectLanguage'.tr(cx)),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ListTile(
+                            title: Text('italian'.tr(cx)),
+                            leading: Image.asset('assets/flags/ita.png'),
+                            onTap: () {
+                              //_changeLanguage(const Locale('it'));
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ListTile(
+                            title: Text('english'.tr(cx)),
+                            leading: Image.asset('assets/flags/eng.png'),
+                            onTap: () {
+                              //context.setLocale(const Locale('en'));
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                );
+
+              },
+            ),
+          ],
+        ), // Populate the Drawer in the next step.
       ),
       body: RefreshIndicator(
           onRefresh: () async {
@@ -223,3 +279,4 @@ class _DecksPageState extends State<DecksPage> {
     }
   }
 }
+

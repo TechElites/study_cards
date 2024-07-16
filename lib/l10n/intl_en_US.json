@@ -13,6 +13,7 @@
   "cards": "Cards",
   "cards_deleted": "Cards deleted",
   "cards_per_review": "Cards per review",
+  "changeLanguage" : "Change Language",
   "close": "Close",
   "creation_date": "Creation Date",
   "deck_add_success": "Deck added successfully",
@@ -47,11 +48,14 @@
   "pick_xml": "Pick XML file ",
   "pick_xml_or_zip": "Pick XML or ZIP file ",
   "question": "Question",
+  "removeAds": "Remove Ads",
   "review": "Review",
   "review_cards_update": "Review cards updated",
   "select_rating": "Select rating",
   "select_source": "Select Source",
+  "sendFeedback": "Send Feedback",
   "settings": "Settings",
   "tap_reveal_answer": "Tap to reveal answer",
+  "toggleTheme": "Toggle Theme",
   "total_cards": "Total Cards"
 }
