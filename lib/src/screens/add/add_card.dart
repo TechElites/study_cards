@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -106,12 +107,7 @@ class _AddCardState extends State<AddCard> {
               ElevatedButton(
                 onPressed: () {
                   _addCard().then((_) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('card_add_success'.tr(cx)),
-                        duration: const Duration(seconds: 1),
-                      ),
-                    );
+                    FloatingBar.show('card_add_success'.tr(cx), cx);
                     setState(() {
                       _frontController.clear();
                       _backController.clear();

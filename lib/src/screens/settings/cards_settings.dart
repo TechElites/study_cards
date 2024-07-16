@@ -1,5 +1,6 @@
 // import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -28,6 +29,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     super.initState();
     final revC = _dbHelper.getReviewCards(widget.deckId);
     final d = _dbHelper.getDeck(widget.deckId);
+    // _adsFullScreen.loadAd();
     setState(() {
       _nameController.text = d.name;
       _cardsController.text = revC.toString();
@@ -36,8 +38,6 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
 
   @override
   Widget build(BuildContext cx) {
-    // _adsFullScreen.loadAd();
-
     return AdsScaffold(
       appBar: AppBar(
         title: Text('settings'.tr(cx)),
@@ -54,9 +54,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                       onTap: () {
                         _dbHelper
                             .updateDeckName(widget.deckId, _nameController.text)
-                            .then((value) => ScaffoldMessenger.of(cx)
-                                .showSnackBar(SnackBar(
-                                    content: Text('deck_name_update'.tr(cx)))));
+                            .then((value) => FloatingBar.show(
+                                'deck_name_update'.tr(cx), cx));
                       },
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
@@ -69,8 +68,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                   suffixIcon: InkWell(
                       onTap: () {
                         _updateReviewCards().then((value) =>
-                            ScaffoldMessenger.of(cx).showSnackBar(SnackBar(
-                                content: Text('review_cards_update'.tr(cx)))));
+                            FloatingBar.show('review_cards_update'.tr(cx), cx));
                       },
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
@@ -79,14 +77,10 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            // _adsFullScreen.showAd().then((value) {
-            //   if (!value) {
-            //     ScaffoldMessenger.of(cx).showSnackBar(
-            //         SnackBar(content: Text('no_ads_left'.tr(cx))));
-            //   }
+            // _adsFullScreen.showAndReloadAd(() {
+            //   FloatingBar.show('deck_download'.tr(cx), cx);
+            //   setState(() {});
             // });
-            ScaffoldMessenger.of(cx)
-                .showSnackBar(SnackBar(content: Text('deck_download'.tr(cx))));
             setState(() {});
           });
         },
@@ -96,7 +90,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   }
 
   /// Exports the deck to an XML file
-  Future<void> _exportDeck() async {
+  Future<bool> _exportDeck() async {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);
     final String deckXml = XmlHandler.createXml(cards, deck.name);
@@ -111,7 +105,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
             '${card.id}_back.${card.backMedia.split('.').last}';
       }
     }
-    await XmlHandler.saveXmlToFile(deckXml, '${deck.name}.xml', mediaMap);
+    return await XmlHandler.saveXmlToFile(
+        deckXml, '${deck.name}.xml', mediaMap);
   }
 
   Future<void> _updateReviewCards() async {

@@ -27,6 +27,14 @@ class FileUploaderMobile {
       } else {
         fileContent = await file.readAsString();
       }
+      /*final s = StudyCard(front: file.toString(), back: fileContent);
+      StudyCard s1 = StudyCard(front: "niente", back: "niente");
+      final a = await XmlHandler.parseXml(fileContent).then( (value) {
+        s1 = StudyCard(front: "niente", back: value.toString());
+      });
+      final s1 = StudyCard(front: "niente", back: a.toString());
+      final r = [s, s1];
+      return r;*/
       return await XmlHandler.parseXml(fileContent);
     }
 
@@ -36,21 +44,23 @@ class FileUploaderMobile {
   /// Unzips the file and returns the xml file.
   static Future<File?> _unzipFile(File zipFile) async {
     try {
-      final hasPermission = await PermissionHelper.requestStoragePermissions();
-      if (!hasPermission) {
-        throw Exception("Permessi di archiviazione non concessi.");
-      }
-      Directory? externalDir = await getExternalStorageDirectory();
-      if (externalDir == null) {
-        throw Exception(
-            "Impossibile trovare la directory di archiviazione esterna.");
+      Directory? externalDir;
+      if (Platform.isAndroid) {
+        final hasPermission =
+            await PermissionHelper.requestStoragePermissions();
+        if (!hasPermission) {
+          throw Exception("Missing storage permissions.");
+        }
+        externalDir = await getExternalStorageDirectory();
+      } else {
+        externalDir = await getApplicationDocumentsDirectory();
       }
       final bytes = await zipFile.readAsBytes();
       final archive = ZipDecoder().decodeBytes(bytes);
 
       String zipFileName = path.basenameWithoutExtension(zipFile.path);
       Directory destinationDir =
-          Directory(path.join(externalDir.path, zipFileName));
+          Directory(path.join(externalDir!.path, zipFileName));
       await destinationDir.create(recursive: true);
 
       File? xmlFile;
@@ -59,17 +69,12 @@ class FileUploaderMobile {
           final filename = file.name;
           final filePath = path.join(destinationDir.path, filename);
 
-          try {
-            final outputFile = File(filePath);
-            await outputFile.create(recursive: true);
-            await outputFile.writeAsBytes(file.content as List<int>);
+          final outputFile = File(filePath);
+          await outputFile.create(recursive: true);
+          await outputFile.writeAsBytes(file.content as List<int>);
 
-            if (path.extension(filename) == '.xml') {
-              xmlFile = outputFile;
-            }
-          } catch (e) {
-            throw Exception(
-                'Errore durante l\'estrazione del file $filename: $e');
+          if (path.extension(filename) == '.xml') {
+            xmlFile = outputFile;
           }
         } else {
           final dirPath = path.join(destinationDir.path, file.name);
@@ -79,7 +84,7 @@ class FileUploaderMobile {
 
       return xmlFile;
     } catch (e) {
-      throw Exception('Errore durante l\'unzip del file: $e');
+      throw Exception('Error while unzipping $e');
     }
   }
 }

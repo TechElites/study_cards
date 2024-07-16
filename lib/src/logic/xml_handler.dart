@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/downloader/file_downloader.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,7 +15,7 @@ class XmlHandler {
     final document = xml.XmlDocument.parse(xmlString);
     final cards = document.findAllElements('card');
 
-    List<StudyCard> parsedData = [];
+    List<StudyCard> parsedData = [/*StudyCard(front: "front", back: "back")*/];
 
     final deckName =
         document.findAllElements('deck').first.attributes.first.value;
@@ -47,7 +49,12 @@ class XmlHandler {
               orElse: () => xml.XmlElement(xml.XmlName('media'), [], []))
           .getAttribute('src');
       var appPath = '';
-      final directory = await getExternalStorageDirectory();
+      final Directory? directory;
+      if (Platform.isAndroid) {
+        directory = await getExternalStorageDirectory();
+      } else {
+        directory = await getApplicationDocumentsDirectory();
+      }
       appPath = directory!.path;
       frontMedia = frontMedia != null
           ? path.join(appPath.toString(), deckName, frontMedia)
@@ -150,8 +157,8 @@ class XmlHandler {
   }
 
   /// Saves the XML string to a file.
-  static Future<void> saveXmlToFile(
+  static Future<bool> saveXmlToFile(
       String xmlString, String fileName, Map<String, String> mediaMap) async {
-    FileDownloader.saveFileOnDevice(fileName, xmlString, mediaMap);
+    return FileDownloader.saveFileOnDevice(fileName, xmlString, mediaMap);
   }
 }

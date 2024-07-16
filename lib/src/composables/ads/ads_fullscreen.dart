@@ -31,14 +31,16 @@ class AdsFullscreen {
   }
 
   /// Shows the fullscreen ad
-  Future<bool> showAd() async {
+  Future<bool> showAd(Function onDismiss) async {
     final noAds = await RewardService().isRewarded();
     if (!noAds && _isAdLoaded && _interstitialAd != null) {
       _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (InterstitialAd ad) {
+          onDismiss();
           ad.dispose();
         },
         onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
+          onDismiss();
           ad.dispose();
         },
       );
@@ -47,6 +49,15 @@ class AdsFullscreen {
       _isAdLoaded = false;
       return true;
     }
+    onDismiss();
     return false;
+  }
+
+  Future<bool> showAndReloadAd(Function onDismiss) async {
+    final shown = await showAd(onDismiss);
+    if (shown) {
+      loadAd();
+    }
+    return shown;
   }
 }
