@@ -15,7 +15,8 @@ void main() async {
   await DatabaseHelper().init();
   await RewardService().isRewarded();
   WidgetsFlutterBinding.ensureInitialized();
-  unawaited(MobileAds.instance.initialize());
+  //unawaited(MobileAds.instance.initialize());
+  MobileAds.instance.initialize();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
