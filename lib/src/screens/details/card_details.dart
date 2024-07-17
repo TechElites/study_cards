@@ -189,7 +189,7 @@ class _CardsPageState extends State<CardDetailsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _modifyCard().then((id) {
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           });
         },
         child: const Icon(Icons.check),
