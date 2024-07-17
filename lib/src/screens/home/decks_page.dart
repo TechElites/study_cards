@@ -9,7 +9,8 @@ import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
 import 'package:flash_cards/src/logic/permission_helper.dart';
-import 'package:flash_cards/src/screens/settings/feedback.dart';
+import 'package:flash_cards/src/screens/feedback/feedback.dart';
+import 'package:flash_cards/src/screens/guide/guide.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
@@ -102,8 +103,20 @@ class _DecksPageState extends State<DecksPage> {
                 );
               },
             ),
+            ListTile(
+              title: Text('guide'.tr(cx)),
+              leading: const Icon(Icons.menu_book_rounded),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const GuidePage(),
+                  ),
+                );
+              },
+            ),
           ],
-        ), // Populate the Drawer in the next step.
+        ),
       ),
       body: RefreshIndicator(
           onRefresh: () async {

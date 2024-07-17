@@ -30,7 +30,6 @@ class _AddDeckState extends State<AddDeck> {
           IconButton(
             icon: const Icon(Icons.info),
             onPressed: () {
-              // Show a scrollable dialog with information about how to format the XML file and Zip file
               showDialog(
                 context: cx,
                 builder: (context) {

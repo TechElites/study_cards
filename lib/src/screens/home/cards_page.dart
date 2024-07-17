@@ -153,7 +153,11 @@ class _CardsPageState extends State<CardsPage> {
                                       builder: (context) =>
                                           CardDetailsPage(card: card),
                                     ),
-                                  ).then((value) => refresh());
+                                  ).then((value) {
+                                    FloatingBar.show(
+                                        'card_modify_success'.tr(cx), cx);
+                                    refresh();
+                                  });
                                 },
                                 onLongPress: () {
                                   setState(() {
