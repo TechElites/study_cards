@@ -154,9 +154,11 @@ class _CardsPageState extends State<CardsPage> {
                                           CardDetailsPage(card: card),
                                     ),
                                   ).then((value) {
-                                    FloatingBar.show(
-                                        'card_modify_success'.tr(cx), cx);
-                                    refresh();
+                                    if (value != null) {
+                                      FloatingBar.show(
+                                          'card_modify_success'.tr(cx), cx);
+                                      refresh();
+                                    }
                                   });
                                 },
                                 onLongPress: () {
