@@ -30,7 +30,40 @@ class _FeedbackPageState extends State<FeedbackPage> {
   @override
   Widget build(BuildContext cx) {
     return Scaffold(
-      appBar: AppBar(title: Text('feedback'.tr(cx)), centerTitle: true),
+      appBar: AppBar(
+        title: Text('feedback'.tr(cx)),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.info),
+            onPressed: () {
+              showDialog(
+                context: cx,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text('how_to_feedback'.tr(cx)),
+                    content: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Text("feedback_instructions".tr(cx)),
+                        ],
+                      ),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('close'.tr(cx)),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
