@@ -18,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
 
 /// Creates a page to display the list of all the decks
@@ -115,6 +116,15 @@ class _DecksPageState extends State<DecksPage> {
                 );
               },
             ),
+            ListTile(
+                title: Text('download_apk'.tr(cx)),
+                leading: const Icon(Icons.android),
+                onTap: () => launchUrl(Uri.parse(
+                    "https://studycards.altervista.org/studycards.apk"))),
+            ListTile(
+                title: Text('ios_coming_soon'.tr(cx)),
+                leading: const Icon(Icons.apple),
+            )
           ],
         ),
       ),
