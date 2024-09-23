@@ -33,6 +33,16 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.blue[300]!, foregroundColor: Colors.black),
+  sliderTheme: SliderThemeData(
+    activeTrackColor: Colors.blue[300]!,
+    inactiveTrackColor: Colors.blue[50]!,
+    thumbColor: Colors.blue[300]!,
+    overlayColor: Colors.blue[300]!.withOpacity(0.3),
+    valueIndicatorColor: Colors.blue[300]!,
+    valueIndicatorTextStyle: const TextStyle(
+      color: Colors.white,
+    ),
+  )
 );
 
 final ThemeData customDarkTheme = ThemeData.dark().copyWith(
@@ -69,4 +79,14 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
   ),
   floatingActionButtonTheme: FloatingActionButtonThemeData(
       backgroundColor: Colors.blue[700]!, foregroundColor: Colors.white),
+  sliderTheme: SliderThemeData(
+    activeTrackColor: Colors.blue[700]!,
+    inactiveTrackColor: Colors.blue[400]!,
+    thumbColor: Colors.blue[700]!,
+    overlayColor: Colors.blue[700]!.withOpacity(0.3),
+    valueIndicatorColor: Colors.blue[700]!,
+    valueIndicatorTextStyle: const TextStyle(
+      color: Colors.white,
+    ),
+  )
 );
