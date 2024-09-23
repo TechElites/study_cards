@@ -1,4 +1,4 @@
-// import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
@@ -21,18 +21,20 @@ class CardsSettingsPage extends StatefulWidget {
 class _CardsSettingsPageState extends State<CardsSettingsPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _cardsController = TextEditingController();
-  // final AdsFullscreen _adsFullScreen = AdsFullscreen();
+  double cardsPerReview = 0;
+  int maxCards = 10;
+  final AdsFullscreen _adsFullScreen = AdsFullscreen();
 
   @override
   void initState() {
     super.initState();
     final revC = _dbHelper.getReviewCards(widget.deckId);
     final d = _dbHelper.getDeck(widget.deckId);
-    // _adsFullScreen.loadAd();
+    _adsFullScreen.loadAd();
     setState(() {
       _nameController.text = d.name;
-      _cardsController.text = revC.toString();
+      maxCards = d.cards > 10 ? d.cards : 10;
+      cardsPerReview = revC.toDouble();
     });
   }
 
@@ -45,7 +47,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(children: [
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           TextField(
               controller: _nameController,
               decoration: InputDecoration(
@@ -60,28 +62,48 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
           const SizedBox(height: 16.0),
-          TextField(
-              keyboardType: TextInputType.number,
-              controller: _cardsController,
-              decoration: InputDecoration(
-                  labelText: 'cards_per_review'.tr(cx),
-                  suffixIcon: InkWell(
-                      onTap: () {
-                        _updateReviewCards().then((value) =>
-                            FloatingBar.show('review_cards_update'.tr(cx), cx));
-                      },
-                      child: const Icon(Icons.check,
-                          color: Colors.grey, size: 32.0)))),
+          Text(
+            'cards_per_review'.tr(cx),
+            style: const TextStyle(fontSize: 13)),
+          Row(
+            children: [
+              Expanded(
+                child: Slider(
+                  value: cardsPerReview,
+                  min: 0,
+                  max: maxCards.toDouble(),
+                  divisions: maxCards - 1,
+                  label: cardsPerReview.round().toString(),
+                  onChanged: (double value) {
+                    setState(() {
+                      cardsPerReview = value;
+                    });
+                  },
+                  onChangeEnd: (double value) {
+                    _updateReviewCards(cardsPerReview.round()).then((_) =>
+                        FloatingBar.show('review_cards_update'.tr(cx), cx));
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 50,
+                child: Text(
+                  cardsPerReview.round().toString(),
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
         ]),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            // _adsFullScreen.showAndReloadAd(() {
-            //   FloatingBar.show('deck_download'.tr(cx), cx);
-            //   setState(() {});
-            // });
-            setState(() {});
+            _adsFullScreen.showAndReloadAd(() {
+              FloatingBar.show('deck_download'.tr(cx), cx);
+              setState(() {});
+            });
           });
         },
         child: const Icon(Icons.file_download),
@@ -109,8 +131,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
         deckXml, '${deck.name}.xml', mediaMap);
   }
 
-  Future<void> _updateReviewCards() async {
-    final int reviewCards = int.parse(_cardsController.text);
+  Future<void> _updateReviewCards(int cards) async {
+    final int reviewCards = cards;
     await _dbHelper.setReviewCards(widget.deckId, reviewCards);
   }
 }
