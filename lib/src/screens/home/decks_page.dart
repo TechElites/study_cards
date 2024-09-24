@@ -122,8 +122,10 @@ class _DecksPageState extends State<DecksPage> {
                 onTap: () => launchUrl(Uri.parse(
                     "https://studycards.altervista.org/studycards.apk"))),
             ListTile(
-                title: Text('ios_coming_soon'.tr(cx)),
-                leading: const Icon(Icons.apple),
+              title: Text('download_ios'.tr(cx)),
+              leading: const Icon(Icons.apple),
+              onTap: () => launchUrl(Uri.parse(
+                  "https://studycards.altervista.org/studycards.ipa")),
             )
           ],
         ),
