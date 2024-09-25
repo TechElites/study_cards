@@ -20,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:vibration/vibration.dart';
+import 'package:http/http.dart' as http;
 
 /// Creates a page to display the list of all the decks
 class DecksPage extends StatefulWidget {
@@ -119,13 +120,19 @@ class _DecksPageState extends State<DecksPage> {
             ListTile(
                 title: Text('download_apk'.tr(cx)),
                 leading: const Icon(Icons.android),
-                onTap: () => launchUrl(Uri.parse(
-                    "https://studycards.altervista.org/studycards.apk"))),
+                onTap: () => {
+                      _countDownload('android'),
+                      launchUrl(Uri.parse(
+                          "https://studycards.altervista.org/studycards.apk"))
+                    }),
             ListTile(
               title: Text('download_ipa'.tr(cx)),
               leading: const Icon(Icons.apple),
-              onTap: () => launchUrl(Uri.parse(
-                  "https://studycards.altervista.org/studycards.ipa")),
+              onTap: () => {
+                _countDownload('ios'),
+                launchUrl(Uri.parse(
+                    "https://studycards.altervista.org/studycards.ipa"))
+              },
             )
           ],
         ),
@@ -286,5 +293,12 @@ class _DecksPageState extends State<DecksPage> {
         folder.deleteSync(recursive: true);
       }
     }
+  }
+
+  Future<void> _countDownload(String os) async {
+    http.post(
+      Uri.parse('http://studycards.altervista.org/count_download.php'),
+      body: {'content': os},
+    );
   }
 }
