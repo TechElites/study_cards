@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/rating_buttons.dart';
@@ -25,6 +26,7 @@ class _CardsReviewState extends State<ReviewPage>
   final DatabaseHelper _dbHelper = DatabaseHelper();
   var _index = 0;
   var _reveal = false;
+  var _ready = true;
   late AnimationController _revealController;
   late AnimationController _nextCardController;
   late AnimationController _ratingController;
@@ -84,18 +86,20 @@ class _CardsReviewState extends State<ReviewPage>
     }
   }
 
-  void _nextCard(String rating) {
-    _dbHelper.updateCardRating(widget.cards[_index].id, rating);
+  void _nextCard() {
     _nextCardController.forward().then((_) {
       _ratingController.reverse().then((_) {
         setState(() {
           _index++;
           _reveal = false;
+          _ready = false;
         });
         if (_index >= widget.cards.length) {
           Navigator.pop(context);
         }
-        _nextCardController.reverse().then((_) => _revealController.reverse());
+        _nextCardController.reverse().then((_) => _revealController
+            .reverse()
+            .then((_) => setState(() => _ready = true)));
       });
     });
   }
@@ -161,57 +165,66 @@ class _CardsReviewState extends State<ReviewPage>
                                   ],
                                 ),
                                 child: SingleChildScrollView(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        widget.cards[_index].front,
-                                        style: const TextStyle(fontSize: 24),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      if (widget.cards[_index].frontMedia != '')
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 16.0),
-                                          child: Image.file(
-                                            File(widget
-                                                .cards[_index].frontMedia),
-                                            height: 200.0,
-                                            width: 200.0,
-                                            fit: BoxFit.cover,
-                                            alignment: Alignment.center,
-                                          ),
+                                  child: ImageFiltered(
+                                    imageFilter: _ready
+                                        ? ImageFilter.blur(sigmaX: 0, sigmaY: 0)
+                                        : ImageFilter.blur(
+                                            sigmaX: 5, sigmaY: 5),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          widget.cards[_index].front,
+                                          style: const TextStyle(fontSize: 24),
+                                          textAlign: TextAlign.center,
                                         ),
-                                      const Divider(
-                                        color: Colors.blue,
-                                        height: 20,
-                                        thickness: 1,
-                                        indent: 20,
-                                        endIndent: 20,
-                                      ),
-                                      Text(
-                                        widget.cards[_index].back,
-                                        style: const TextStyle(fontSize: 24),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      if (widget.cards[_index].backMedia != '')
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 16.0),
-                                          child: Image.file(
-                                            File(
-                                                widget.cards[_index].backMedia),
-                                            height: 200.0,
-                                            width: 200.0,
-                                            fit: BoxFit.cover,
-                                            alignment: Alignment.center,
+                                        if (widget.cards[_index].frontMedia !=
+                                            '')
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 16.0),
+                                            child: Image.file(
+                                              File(widget
+                                                  .cards[_index].frontMedia),
+                                              height: 200.0,
+                                              width: 200.0,
+                                              fit: BoxFit.cover,
+                                              alignment: Alignment.center,
+                                            ),
                                           ),
+                                        const Divider(
+                                          color: Colors.blue,
+                                          height: 20,
+                                          thickness: 1,
+                                          indent: 20,
+                                          endIndent: 20,
                                         ),
-                                    ],
+                                        Text(
+                                          widget.cards[_index].back,
+                                          style: const TextStyle(fontSize: 24),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        if (widget.cards[_index].backMedia !=
+                                            '')
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 16.0),
+                                            child: Image.file(
+                                              File(widget
+                                                  .cards[_index].backMedia),
+                                              height: 200.0,
+                                              width: 200.0,
+                                              fit: BoxFit.cover,
+                                              alignment: Alignment.center,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
+                            )
                           ],
                         ),
                       ),
@@ -277,10 +290,12 @@ class _CardsReviewState extends State<ReviewPage>
                         ? SlideTransition(
                             position: _ratingAnimation,
                             child: RatingButtons.build(cx, (rating) {
-                              _nextCard(rating);
+                              _dbHelper.updateCardRating(
+                                  widget.cards[_index].id, rating);
+                              _nextCard();
                             }))
                         : Text(
-                            'tap_reveal_answer'.tr(cx),
+                            _ready ? 'tap_reveal_answer'.tr(cx) : "",
                             style: const TextStyle(fontSize: 16),
                           ),
                   ),
