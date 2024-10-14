@@ -83,9 +83,12 @@ class _DecksPageState extends State<DecksPage> {
             ListTile(
               title: Text('toggle_theme'.tr(cx)),
               leading: Icon(
-                Provider.of<ThemeProvider>(cx).isDarkMode
+                Provider.of<ThemeProvider>(cx).currentTheme == ThemeMode.light
                     ? Icons.light_mode
-                    : Icons.dark_mode,
+                    : (Provider.of<ThemeProvider>(cx).currentTheme ==
+                            ThemeMode.dark
+                        ? Icons.dark_mode
+                        : Icons.phone_android),
               ),
               onTap: () {
                 Provider.of<ThemeProvider>(cx, listen: false).toggleTheme();
@@ -130,9 +133,10 @@ class _DecksPageState extends State<DecksPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add_circle_outline_outlined,
-                                size: 80, color: Colors.blueGrey.withOpacity(0.5)),
+                                size: 80,
+                                color: Colors.blueGrey.withOpacity(0.5)),
                             Text('no_decks'.tr(cx),
-                            textAlign: TextAlign.center,
+                                textAlign: TextAlign.center,
                                 style: const TextStyle(fontSize: 20)),
                           ])))
               : ListView.builder(
