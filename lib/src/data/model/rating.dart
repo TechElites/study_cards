@@ -13,10 +13,10 @@ class Rating {
   /// Rating colors based on the rating value.
   static Map<String, Color> colors = {
     'none': Colors.transparent,
-    'fail': Colors.red,
-    'hard': Colors.orange,
-    'good': Colors.yellow,
-    'easy': Colors.green,
+    'fail': Colors.red[400]!,
+    'hard': Colors.orange[400]!,
+    'good': Colors.yellow[400]!,
+    'easy': Colors.green[400]!,
   };
 
   /// times before a new review based on the rating value.
