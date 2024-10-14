@@ -54,14 +54,18 @@ class _DecksPageState extends State<DecksPage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
+            DrawerHeader(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.blue, Colors.lightBlueAccent],
+                  colors: [
+                    Theme.of(cx).colorScheme.primary,
+                    Theme.of(cx).colorScheme.secondary
+                  ],
+                  transform: GradientRotation(0.5),
                 ),
               ),
-              padding: EdgeInsets.only(top: 50),
-              child: Text('Study Cards',
+              padding: const EdgeInsets.only(top: 50),
+              child: const Text('Study Cards',
                   style: TextStyle(
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
@@ -133,8 +137,7 @@ class _DecksPageState extends State<DecksPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add_circle_outline_outlined,
-                                size: 80,
-                                color: Colors.blueGrey.withOpacity(0.5)),
+                                size: 80, color: Colors.grey.withOpacity(0.5)),
                             Text('no_decks'.tr(cx),
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(fontSize: 20)),
@@ -174,7 +177,10 @@ class _DecksPageState extends State<DecksPage> {
                         child: Container(
                             padding: const EdgeInsets.all(8.0),
                             color: _deleter.isInList(deck.id)
-                                ? Colors.blue.withOpacity(0.1)
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.1)
                                 : null,
                             child: Card(
                               elevation: _deleter.isInList(deck.id) ? 5 : 1,

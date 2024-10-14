@@ -115,7 +115,7 @@ class _CardsPageState extends State<CardsPage> {
                         child: Container(
                             padding: const EdgeInsets.all(8.0),
                             color: _deleter.isInList(card.id)
-                                ? Colors.blue.withOpacity(0.1)
+                                ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
                                 : null,
                             child: Card(
                               elevation: _deleter.isInList(card.id) ? 5 : 1,

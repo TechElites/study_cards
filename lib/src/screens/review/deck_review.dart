@@ -153,7 +153,7 @@ class _CardsReviewState extends State<ReviewPage>
                                 decoration: BoxDecoration(
                                   color: Theme.of(cx).scaffoldBackgroundColor,
                                   border: Border.all(
-                                    color: Colors.blue,
+                                    color: Theme.of(context).colorScheme.primary,
                                     width: 2.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),
@@ -193,8 +193,8 @@ class _CardsReviewState extends State<ReviewPage>
                                               alignment: Alignment.center,
                                             ),
                                           ),
-                                        const Divider(
-                                          color: Colors.blue,
+                                        Divider(
+                                          color: Theme.of(cx).colorScheme.primary,
                                           height: 20,
                                           thickness: 1,
                                           indent: 20,
@@ -239,7 +239,7 @@ class _CardsReviewState extends State<ReviewPage>
                                 decoration: BoxDecoration(
                                   color: Theme.of(cx).scaffoldBackgroundColor,
                                   border: Border.all(
-                                    color: Colors.blue,
+                                    color: Theme.of(context).colorScheme.primary,
                                     width: 2.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),
