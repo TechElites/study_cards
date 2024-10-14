@@ -87,21 +87,22 @@ class _CardsReviewState extends State<ReviewPage>
   }
 
   void _nextCard() {
-    _nextCardController.forward().then((_) {
-      _ratingController.reverse().then((_) {
-        setState(() {
-          _index++;
-          _reveal = false;
-          _ready = false;
+    _index++;
+    if (_index >= widget.cards.length) {
+      Navigator.pop(context);
+    } else {
+      _nextCardController.forward().then((_) {
+        _ratingController.reverse().then((_) {
+          setState(() {
+            _reveal = false;
+            _ready = false;
+          });
+          _nextCardController.reverse().then((_) => _revealController
+              .reverse()
+              .then((_) => setState(() => _ready = true)));
         });
-        if (_index >= widget.cards.length) {
-          Navigator.pop(context);
-        }
-        _nextCardController.reverse().then((_) => _revealController
-            .reverse()
-            .then((_) => setState(() => _ready = true)));
       });
-    });
+    }
   }
 
   @override
@@ -153,7 +154,7 @@ class _CardsReviewState extends State<ReviewPage>
                                 decoration: BoxDecoration(
                                   color: Theme.of(cx).scaffoldBackgroundColor,
                                   border: Border.all(
-                                    color: Colors.blue,
+                                    color: Theme.of(cx).colorScheme.primary,
                                     width: 2.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),
@@ -193,8 +194,9 @@ class _CardsReviewState extends State<ReviewPage>
                                               alignment: Alignment.center,
                                             ),
                                           ),
-                                        const Divider(
-                                          color: Colors.blue,
+                                        Divider(
+                                          color:
+                                              Theme.of(cx).colorScheme.primary,
                                           height: 20,
                                           thickness: 1,
                                           indent: 20,
@@ -239,7 +241,8 @@ class _CardsReviewState extends State<ReviewPage>
                                 decoration: BoxDecoration(
                                   color: Theme.of(cx).scaffoldBackgroundColor,
                                   border: Border.all(
-                                    color: Colors.blue,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     width: 2.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),

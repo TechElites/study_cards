@@ -111,9 +111,9 @@ class _CardsPageState extends State<CardDetailsPage> {
                                   });
                                 });
                               },
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.edit_square,
-                                color: Colors.blue,
+                                color: Theme.of(cx).colorScheme.primary,
                               )),
                         ],
                       ),
@@ -173,9 +173,9 @@ class _CardsPageState extends State<CardDetailsPage> {
                                   });
                                 });
                               },
-                              icon: const Icon(
+                              icon: Icon(
                                 Icons.edit_square,
-                                color: Colors.blue,
+                                color: Theme.of(cx).colorScheme.primary,
                               )),
                         ],
                       ),
