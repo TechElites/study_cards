@@ -62,7 +62,7 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
       secondary: season.dark.secondaryColor,
       surface: Colors.grey[800]!,
     ),
-    scaffoldBackgroundColor: Color(0xFF424242),
+    scaffoldBackgroundColor: Colors.grey[800]!,
     appBarTheme: AppBarTheme(
       color: season.dark.primaryColor,
     ),

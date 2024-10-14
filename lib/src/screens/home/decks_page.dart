@@ -61,7 +61,7 @@ class _DecksPageState extends State<DecksPage> {
                     Theme.of(cx).colorScheme.primary,
                     Theme.of(cx).colorScheme.secondary
                   ],
-                  transform: GradientRotation(0.5),
+                  transform: const GradientRotation(0.5),
                 ),
               ),
               padding: const EdgeInsets.only(top: 50),
