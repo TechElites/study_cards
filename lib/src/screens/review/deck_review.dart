@@ -87,21 +87,22 @@ class _CardsReviewState extends State<ReviewPage>
   }
 
   void _nextCard() {
-    _nextCardController.forward().then((_) {
-      _ratingController.reverse().then((_) {
-        setState(() {
-          _index++;
-          _reveal = false;
-          _ready = false;
+    _index++;
+    if (_index >= widget.cards.length) {
+      Navigator.pop(context);
+    } else {
+      _nextCardController.forward().then((_) {
+        _ratingController.reverse().then((_) {
+          setState(() {
+            _reveal = false;
+            _ready = false;
+          });
+          _nextCardController.reverse().then((_) => _revealController
+              .reverse()
+              .then((_) => setState(() => _ready = true)));
         });
-        if (_index >= widget.cards.length) {
-          Navigator.pop(context);
-        }
-        _nextCardController.reverse().then((_) => _revealController
-            .reverse()
-            .then((_) => setState(() => _ready = true)));
       });
-    });
+    }
   }
 
   @override
