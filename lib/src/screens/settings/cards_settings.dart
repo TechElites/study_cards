@@ -27,6 +27,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   final TextEditingController _nameController = TextEditingController();
   double cardsPerReview = 0;
   int maxCards = 10;
+  
+  /// ads
   late AdsFullscreen _adsFullScreen;
 
   @override
@@ -69,7 +71,9 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
           const SizedBox(height: 16.0),
-          Text('cards_per_review'.tr(cx), style: const TextStyle(fontSize: 13)),
+          Text(
+            'cards_per_review'.tr(cx),
+            style: const TextStyle(fontSize: 13)),
           Row(
             children: [
               Expanded(

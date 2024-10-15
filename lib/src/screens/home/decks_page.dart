@@ -72,6 +72,7 @@ class _DecksPageState extends State<DecksPage> {
                     Theme.of(cx).colorScheme.primary,
                     Theme.of(cx).colorScheme.secondary
                   ],
+                  transform: const GradientRotation(0.5),
                 ),
               ),
               padding: const EdgeInsets.only(top: 50),
@@ -100,10 +101,10 @@ class _DecksPageState extends State<DecksPage> {
               leading: Icon(
                 Provider.of<ThemeProvider>(cx).currentTheme == ThemeMode.light
                     ? Icons.light_mode
-                    : Provider.of<ThemeProvider>(cx).currentTheme ==
+                    : (Provider.of<ThemeProvider>(cx).currentTheme ==
                             ThemeMode.dark
                         ? Icons.dark_mode
-                        : Icons.phone_android,
+                        : Icons.phone_android),
               ),
               onTap: () {
                 Provider.of<ThemeProvider>(cx, listen: false).toggleTheme();

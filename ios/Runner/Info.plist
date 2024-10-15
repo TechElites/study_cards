@@ -55,11 +55,16 @@
 		<true />
 		<key>LSSupportsOpeningDocumentsInPlace</key>
 		<true />
-		<key>UIFileSharingEnabled</key>
-		<true />
 		<key>NSDocumentsFolderUsageDescription</key>
 		<string>App needs access to documents folder.</string>
 		<key>NSFileProviderDomainUsageDescription</key>
 		<string>App needs access to files.</string>
+		<key>NSAppTransportSecurity</key>
+		<dict>
+			<key>NSAllowsArbitraryLoadsForMedia</key>
+			<true />
+			<key>NSAllowsArbitraryLoadsInWebContent</key>
+			<true />
+		</dict>
 	</dict>
 </plist>

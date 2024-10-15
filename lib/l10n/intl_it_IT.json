@@ -34,7 +34,7 @@
   "feedback": "Feedback",
   "feedback_success": "Feedback inviato con successo",
   "feedback_fail": "Errore nell'invio del feedback",
-  "feedback_instructions": "Apprezziamo se ci vengono forniti feedbacks su come possiamo migliorare l'app.\n Se hai riscontrato un errore, ti preghiamo di fornire il maggior numero di dettagli possibile per aiutarci a risolverlo. \nSe invece vuoi darci consigli sù nuove funzionalità saremo felici di sentirli\n Grazie!",
+  "feedback_instructions": "Apprezziamo se ci vengono forniti feedbacks su come possiamo migliorare l'app.\n Se hai riscontrato un errore, ti preghiamo di fornire il maggior numero di dettagli possibile per aiutarci a risolverlo. \nSe invece vuoi darci consigli sù nuove funzionalità saremo felici di sentirli\n Grazie!\nNota: Niente di ciò che scirvi verrà condiviso con terze parti.",
   "filter_cards": "Filtra carte",
   "format_instructions": "Nota che se stai utilizzando la versione web di questa app, solo i file xml sono abilitati, poiché le immagini nelle carte non sono supportate per ora.\nPer vedere un esempio di come formattare il file XML, prova a creare un mazzo ed esportarlo. Per aggiungere più righe allo stesso lato della carta, utilizza il tag <br/>.\nIl file ZIP dovrebbe contenere un file XML con lo stesso formato e i file multimediali nella stessa directory. Il file Zip non deve contenere sottocartelle. Per creare un file ZIP senza sottocartelle: Windows: fai clic con il pulsante destro del mouse su Esplora > Nuovo > Cartella compressa (zippata). Quindi trascina e rilascia (o copia e incolla) il file XML e i file multimediali nel file ZIP.",
   "front": "Fronte",
