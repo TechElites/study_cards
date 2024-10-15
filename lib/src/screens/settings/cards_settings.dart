@@ -1,4 +1,8 @@
-// import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+/// Imports for ads
+import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
@@ -23,14 +27,17 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   final TextEditingController _nameController = TextEditingController();
   double cardsPerReview = 0;
   int maxCards = 10;
-  // final AdsFullscreen _adsFullScreen = AdsFullscreen();
+  late AdsFullscreen _adsFullScreen;
 
   @override
   void initState() {
     super.initState();
     final revC = _dbHelper.getReviewCards(widget.deckId);
     final d = _dbHelper.getDeck(widget.deckId);
-    // _adsFullScreen.loadAd();
+    if (!kIsWeb) {
+      _adsFullScreen = AdsFullscreen();
+      _adsFullScreen.loadAd();
+    }
     setState(() {
       _nameController.text = d.name;
       maxCards = d.cards > 10 ? d.cards : 10;
@@ -98,11 +105,14 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            // _adsFullScreen.showAndReloadAd(() {
-            //   FloatingBar.show('deck_download'.tr(cx), cx);
-            //   setState(() {});
-            // });
-            setState(() {});
+            if (kIsWeb) {
+              _adsFullScreen.showAndReloadAd(() {
+                FloatingBar.show('deck_download'.tr(cx), cx);
+                setState(() {});
+              });
+            } else {
+              setState(() {});
+            }
           });
         },
         child: const Icon(Icons.file_download),

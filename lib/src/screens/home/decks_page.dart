@@ -1,11 +1,14 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
-// import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
-// import 'package:flash_cards/src/composables/ads/ads_sandman.dart';
+/// Import for mobile ads
+import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+import 'package:flash_cards/src/composables/ads/ads_sandman.dart';
+import 'package:flash_cards/src/data/repositories/reward_service.dart';
+
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
-// import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/list_deleter.dart';
 import 'package:flash_cards/src/logic/permission_helper.dart';
@@ -33,15 +36,21 @@ class DecksPage extends StatefulWidget {
 class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final ListDeleter _deleter = ListDeleter();
-  // final AdsFullscreen _adsFullScreen = AdsFullscreen();
-  // final AdsSandman _adsSandman = AdsSandman();
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _adsSandman.loadAd();
-  //   _adsFullScreen.loadAd();
-  // }
+  /// ads
+  late AdsFullscreen _adsFullScreen;
+  late AdsSandman _adsSandman;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!kIsWeb) {
+      _adsFullScreen = AdsFullscreen();
+      _adsSandman = AdsSandman();
+      _adsFullScreen.loadAd();
+      _adsSandman.loadAd();
+    }
+  }
 
   @override
   Widget build(BuildContext cx) {
@@ -59,7 +68,10 @@ class _DecksPageState extends State<DecksPage> {
             DrawerHeader(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Theme.of(cx).colorScheme.primary, Theme.of(cx).colorScheme.secondary],
+                  colors: [
+                    Theme.of(cx).colorScheme.primary,
+                    Theme.of(cx).colorScheme.secondary
+                  ],
                 ),
               ),
               padding: const EdgeInsets.only(top: 50),
@@ -70,24 +82,26 @@ class _DecksPageState extends State<DecksPage> {
                   ),
                   textAlign: TextAlign.center),
             ),
-            // ListTile(
-            //   title: Text('remove_ads'.tr(cx)),
-            //   leading: const Icon(Icons.tv_off),
-            //   onTap: () {
-            //     _adsSandman.showAndReloadAd(() {
-            //       RewardService().setRewarded(true).then((_) {
-            //         FloatingBar.show('ad_rewarded'.tr(cx), cx);
-            //         setState(() {});
-            //       });
-            //     });
-            //   },
-            // ),
+            if (!kIsWeb)
+              ListTile(
+                title: Text('remove_ads'.tr(cx)),
+                leading: const Icon(Icons.tv_off),
+                onTap: () {
+                  _adsSandman.showAndReloadAd(() {
+                    RewardService().setRewarded(true).then((_) {
+                      FloatingBar.show('ad_rewarded'.tr(cx), cx);
+                      setState(() {});
+                    });
+                  });
+                },
+              ),
             ListTile(
               title: Text('toggle_theme'.tr(cx)),
               leading: Icon(
                 Provider.of<ThemeProvider>(cx).currentTheme == ThemeMode.light
                     ? Icons.light_mode
-                    : Provider.of<ThemeProvider>(cx).currentTheme == ThemeMode.dark
+                    : Provider.of<ThemeProvider>(cx).currentTheme ==
+                            ThemeMode.dark
                         ? Icons.dark_mode
                         : Icons.phone_android,
               ),
@@ -119,23 +133,25 @@ class _DecksPageState extends State<DecksPage> {
                 );
               },
             ),
-            ListTile(
-                title: Text('download_apk'.tr(cx)),
-                leading: const Icon(Icons.android),
+            if (kIsWeb)
+              ListTile(
+                  title: Text('download_apk'.tr(cx)),
+                  leading: const Icon(Icons.android),
+                  onTap: () => {
+                        _countDownload('android'),
+                        launchUrl(Uri.parse(
+                            "https://studycards.altervista.org/studycards.apk"))
+                      }),
+            if (kIsWeb)
+              ListTile(
+                title: Text('download_ipa'.tr(cx)),
+                leading: const Icon(Icons.apple),
                 onTap: () => {
-                      _countDownload('android'),
-                      launchUrl(Uri.parse(
-                          "https://studycards.altervista.org/studycards.apk"))
-                    }),
-            ListTile(
-              title: Text('download_ipa'.tr(cx)),
-              leading: const Icon(Icons.apple),
-              onTap: () => {
-                _countDownload('ios'),
-                launchUrl(Uri.parse(
-                    "https://studycards.altervista.org/studycards.ipa"))
-              },
-            )
+                  _countDownload('ios'),
+                  launchUrl(Uri.parse(
+                      "https://studycards.altervista.org/studycards.ipa"))
+                },
+              )
           ],
         ),
       ),
@@ -151,8 +167,7 @@ class _DecksPageState extends State<DecksPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add_circle_outline_outlined,
-                                size: 80,
-                                color: Colors.grey.withOpacity(0.5)),
+                                size: 80, color: Colors.grey.withOpacity(0.5)),
                             Text('no_decks'.tr(cx),
                                 textAlign: TextAlign.center,
                                 style: const TextStyle(fontSize: 20)),
@@ -192,7 +207,10 @@ class _DecksPageState extends State<DecksPage> {
                         child: Container(
                             padding: const EdgeInsets.all(8.0),
                             color: _deleter.isInList(deck.id)
-                                ? Theme.of(cx).colorScheme.primary.withOpacity(0.1)
+                                ? Theme.of(cx)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.1)
                                 : null,
                             child: Card(
                               elevation: _deleter.isInList(deck.id) ? 5 : 1,
@@ -261,11 +279,14 @@ class _DecksPageState extends State<DecksPage> {
                   ),
                 ).then((value) {
                   if (value != null) {
-                    // _adsFullScreen.showAndReloadAd(() {
-                    //   FloatingBar.show('deck_add_success'.tr(cx), cx);
-                    //   setState(() {});
-                    // });
-                    setState(() {});
+                    if (!kIsWeb) {
+                      _adsFullScreen.showAndReloadAd(() {
+                        FloatingBar.show('deck_add_success'.tr(cx), cx);
+                        setState(() {});
+                      });
+                    } else {
+                      setState(() {});
+                    }
                   }
                 });
               },
