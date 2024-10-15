@@ -3,14 +3,13 @@ import 'package:flutter/material.dart';
 
 final currentMonth = DateTime.now().month;
 
-final Season season = winter;
-// final Season season = currentMonth >= 3 && currentMonth <= 5
-//     ? spring
-//     : currentMonth >= 6 && currentMonth <= 8
-//         ? summer
-//         : currentMonth >= 9 && currentMonth <= 11
-//             ? autumn
-//             : winter;
+final Season season = currentMonth >= 3 && currentMonth <= 5
+    ? spring
+    : currentMonth >= 6 && currentMonth <= 8
+        ? summer
+        : currentMonth >= 9 && currentMonth <= 11
+            ? autumn
+            : winter;
 
 final ThemeData customLightTheme = ThemeData.light().copyWith(
     colorScheme: ColorScheme.light(
