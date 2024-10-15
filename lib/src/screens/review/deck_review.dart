@@ -160,6 +160,7 @@ class _CardsReviewState extends State<ReviewPage>
                                   borderRadius: BorderRadius.circular(16.0),
                                   boxShadow: const [
                                     BoxShadow(
+                                      offset: Offset(-0.5, 0.5),
                                       color: Colors.black,
                                       blurRadius: 2,
                                     ),
@@ -242,12 +243,13 @@ class _CardsReviewState extends State<ReviewPage>
                                 decoration: BoxDecoration(
                                   color: Theme.of(cx).scaffoldBackgroundColor,
                                   border: Border.all(
-                                    color: Theme.of(cx).colorScheme.primary,
+                                    color: Theme.of(cx).colorScheme.secondary,
                                     width: 2.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),
                                   boxShadow: const [
                                     BoxShadow(
+                                      offset: Offset(-0.5, 0.5),
                                       color: Colors.black,
                                       blurRadius: 2,
                                     ),
