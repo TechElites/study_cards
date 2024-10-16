@@ -88,11 +88,16 @@ class _DecksPageState extends State<DecksPage> {
                 title: Text('remove_ads'.tr(cx)),
                 leading: const Icon(Icons.tv_off),
                 onTap: () {
+                  Navigator.pop(cx);
                   _adsSandman.showAndReloadAd(() {
                     RewardService().setRewarded(true).then((_) {
                       FloatingBar.show('ad_rewarded'.tr(cx), cx);
                       setState(() {});
                     });
+                  }).then((showed) {
+                    if (!showed) {
+                      FloatingBar.show('no_ads_left'.tr(cx), cx);
+                    }
                   });
                 },
               ),
