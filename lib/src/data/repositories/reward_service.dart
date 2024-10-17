@@ -1,4 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// How long does the reward last
 const _rewardTime = 5;
@@ -31,12 +32,16 @@ class RewardService {
 
   /// Returns true if the user has been rewarded
   Future<bool> isRewarded() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isRewarded = prefs.getBool(_rewardKey) ?? false;
-    if (isRewarded) {
-      await _checkAndExpireReward();
+    if (!kIsWeb) {
+      final prefs = await SharedPreferences.getInstance();
+      final isRewarded = prefs.getBool(_rewardKey) ?? false;
+      if (isRewarded) {
+        await _checkAndExpireReward();
+      }
+      return isRewarded;
+    } else {
+      return true;
     }
-    return isRewarded;
   }
 
   /// Starts a timer to expire the reward in 5 minutes

@@ -18,6 +18,9 @@ class DatabaseHelper {
     Hive.registerAdapter(HiveStudyCardAdapter());
     await Hive.openBox<HiveDeck>('decks');
     await Hive.openBox<HiveStudyCard>('cards');
+    // clear cards and decks
+    await Hive.box<HiveDeck>('decks').clear();
+    await Hive.box<HiveStudyCard>('cards').clear();
   }
 
   Box<HiveDeck> get decksBox => Hive.box<HiveDeck>('decks');

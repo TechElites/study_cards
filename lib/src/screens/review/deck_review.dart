@@ -154,12 +154,13 @@ class _CardsReviewState extends State<ReviewPage>
                                 decoration: BoxDecoration(
                                   color: Theme.of(cx).scaffoldBackgroundColor,
                                   border: Border.all(
-                                    color: Theme.of(context).colorScheme.secondary,
+                                    color: Theme.of(cx).colorScheme.secondary,
                                     width: 2.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),
                                   boxShadow: const [
                                     BoxShadow(
+                                      offset: Offset(-0.5, 0.5),
                                       color: Colors.black,
                                       blurRadius: 2,
                                     ),
@@ -195,7 +196,9 @@ class _CardsReviewState extends State<ReviewPage>
                                             ),
                                           ),
                                         Divider(
-                                          color: Theme.of(cx).colorScheme.secondary,
+                                          color: Theme.of(cx)
+                                              .colorScheme
+                                              .secondary,
                                           height: 20,
                                           thickness: 1,
                                           indent: 20,
@@ -240,12 +243,13 @@ class _CardsReviewState extends State<ReviewPage>
                                 decoration: BoxDecoration(
                                   color: Theme.of(cx).scaffoldBackgroundColor,
                                   border: Border.all(
-                                    color: Theme.of(context).colorScheme.secondary,
+                                    color: Theme.of(cx).colorScheme.secondary,
                                     width: 2.0,
                                   ),
                                   borderRadius: BorderRadius.circular(16.0),
                                   boxShadow: const [
                                     BoxShadow(
+                                      offset: Offset(-0.5, 0.5),
                                       color: Colors.black,
                                       blurRadius: 2,
                                     ),

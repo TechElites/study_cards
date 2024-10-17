@@ -30,7 +30,7 @@ class AdsSandman {
   }
 
   /// Shows the fullscreen ad, calls the reward function when the user has watched the ad
-  void showAd(Function reward) async {
+  Future<bool> showAd(Function reward) async {
     final noAds = await RewardService().isRewarded();
     if (!noAds && _isAdLoaded && _rewardedAd != null) {
       _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
@@ -47,11 +47,16 @@ class AdsSandman {
       });
       _rewardedAd = null;
       _isAdLoaded = false;
+      return true;
     }
+    return false;
   }
 
-  void showAndReloadAd(Function reward) {
-    showAd(reward);
-    loadAd();
+  Future<bool> showAndReloadAd(Function reward) async {
+    final shown = await showAd(reward);
+    if (shown) {
+      loadAd();
+    }
+    return shown;
   }
 }

@@ -113,7 +113,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                               },
                               icon: Icon(
                                 Icons.edit_square,
-                                color: Theme.of(context).colorScheme.primary,
+                                color: Theme.of(cx).colorScheme.primary,
                               )),
                         ],
                       ),
@@ -175,7 +175,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                               },
                               icon: Icon(
                                 Icons.edit_square,
-                                color: Theme.of(context).colorScheme.primary
+                                color: Theme.of(cx).colorScheme.primary,
                               )),
                         ],
                       ),

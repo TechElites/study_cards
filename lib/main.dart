@@ -1,21 +1,26 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+/// Import for mobile ads
 import 'package:flash_cards/src/data/repositories/reward_service.dart';
-import 'package:flash_cards/src/logic/language/localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:async';
 
+import 'package:flash_cards/src/logic/language/localizations.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/theme/theme_data.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
 import 'package:flash_cards/src/screens/home/decks_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   await DatabaseHelper().init();
-  await RewardService().isRewarded();
   WidgetsFlutterBinding.ensureInitialized();
-  unawaited(MobileAds.instance.initialize());
+  if (!kIsWeb) {
+    await RewardService().isRewarded();
+    unawaited(MobileAds.instance.initialize());
+  }
   runApp(
     ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
