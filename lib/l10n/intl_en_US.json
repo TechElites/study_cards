@@ -9,6 +9,7 @@
   "camera": "Camera",
   "card_add_success": "Card added successfully",
   "card_deleted": "Card deleted",
+  "card_deletion": "Deleting card...",
   "card_modify_success": "Card modified successfully",
   "cards": "Cards",
   "cards_deleted": "Cards deleted",
@@ -17,6 +18,7 @@
   "creation_date": "Creation Date",
   "deck_add_success": "Deck added successfully",
   "deck_deleted": "Deck deleted",
+  "deck_deletion": "Deleting deck...",
   "deck_download": "Deck saved to device memory",
   "deck_download_error": "Error downloading deck",
   "deck_name": "Deck Name",
@@ -68,5 +70,6 @@
   "settings": "Settings",
   "tap_reveal_answer": "Tap to reveal answer",
   "toggle_theme": "Toggle Theme",
-  "total_cards": "Total Cards"
+  "total_cards": "Total Cards",
+  "undo": "Undo"
 }

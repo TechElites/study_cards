@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flash_cards/src/composables/home_drawer.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -89,6 +90,21 @@ class _DecksPageState extends State<DecksPage> {
                               }
                             });
                           }
+                        },
+                        confirmDismiss: (direction) async {
+                          int deletionTime = 3;
+                          Completer<bool?> completer = Completer<bool?>();
+                          Timer deletionTimer =
+                              Timer(Duration(seconds: deletionTime), () {
+                            completer.complete(true);
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          });
+                          FloatingBar.showWithAction(
+                              'deck_deletion'.tr(cx), 'undo'.tr(cx), () {
+                            completer.complete(false);
+                            deletionTimer.cancel();
+                          }, cx);
+                          return completer.future;
                         },
                         onDismissed: (direction) {
                           setState(() {
