@@ -20,6 +20,9 @@ void main() async {
   if (!kIsWeb) {
     await RewardService().isRewarded();
     unawaited(MobileAds.instance.initialize());
+  } else {
+    // this is needed since it's only a trial version on web
+    await DatabaseHelper().clear();
   }
   runApp(
     ChangeNotifierProvider(

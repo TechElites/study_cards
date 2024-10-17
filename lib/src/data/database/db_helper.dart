@@ -2,7 +2,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 
-/// DatabaseHelper class is a singleton class that provides methods 
+/// DatabaseHelper class is a singleton class that provides methods
 /// to interact with the Hive database.
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -18,13 +18,16 @@ class DatabaseHelper {
     Hive.registerAdapter(HiveStudyCardAdapter());
     await Hive.openBox<HiveDeck>('decks');
     await Hive.openBox<HiveStudyCard>('cards');
-    // clear cards and decks
-    await Hive.box<HiveDeck>('decks').clear();
-    await Hive.box<HiveStudyCard>('cards').clear();
   }
 
   Box<HiveDeck> get decksBox => Hive.box<HiveDeck>('decks');
   Box<HiveStudyCard> get cardsBox => Hive.box<HiveStudyCard>('cards');
+
+  /// Clear the database.
+  Future<void> clear() async {
+    await decksBox.clear();
+    await cardsBox.clear();
+  }
 
   /// Insert a new deck into the database.
   Future<int> insertDeck(Deck deck) async {
