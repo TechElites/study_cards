@@ -1,3 +1,4 @@
+import 'package:flash_cards/src/logic/json_handler.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Imports for ads
@@ -129,7 +130,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   Future<bool> _exportDeck() async {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);
-    final String deckXml = XmlHandler.createXml(cards, deck.name);
+    //final String deckXml = XmlHandler.createXml(cards, deck.name);
+    final String deckJson = JsonHandler.convertToJson(cards);
     final Map<String, String> mediaMap = {}; //path;name
     for (final card in cards) {
       if (card.frontMedia.isNotEmpty) {
@@ -141,8 +143,11 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
             '${card.id}_back.${card.backMedia.split('.').last}';
       }
     }
-    return await XmlHandler.saveXmlToFile(
-        deckXml, '${deck.name}.xml', mediaMap);
+    /*return await XmlHandler.saveXmlToFile(
+        deckXml, '${deck.name}.xml', mediaMap);*/
+    return await JsonHandler.saveJSONToFile(
+        deckJson, '${deck.name}.json', mediaMap);
+
   }
 
   Future<void> _updateReviewCards(int cards) async {

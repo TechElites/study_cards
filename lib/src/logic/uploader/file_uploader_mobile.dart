@@ -4,6 +4,7 @@ import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/logic/json_handler.dart';
 import 'package:flash_cards/src/logic/xml_handler.dart';
 import 'package:flash_cards/src/logic/permission_helper.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,7 +16,7 @@ class FileUploaderMobile {
   static Future<List<StudyCard>> uploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['xml', 'zip'],
+      allowedExtensions: ['xml', 'zip', 'json'],
     );
 
     if (result != null && result.files.isNotEmpty) {
@@ -35,7 +36,9 @@ class FileUploaderMobile {
       final s1 = StudyCard(front: "niente", back: a.toString());
       final r = [s, s1];
       return r;*/
-      return await XmlHandler.parseXml(fileContent);
+      file.path.endsWith('.json')
+          ? await JsonHandler().parseJson(fileContent)
+          : await XmlHandler.parseXml(fileContent);
     }
 
     return [];
