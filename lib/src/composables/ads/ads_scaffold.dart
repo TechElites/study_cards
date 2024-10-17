@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+/// Imports for ads
 import 'ads_footer.dart';
 
 class AdsScaffold extends StatelessWidget {
@@ -50,7 +53,7 @@ class AdsScaffold extends StatelessWidget {
       persistentFooterButtons: persistentFooterButtons,
       drawer: drawer,
       endDrawer: endDrawer,
-      bottomNavigationBar: bottomNavigationBar ?? AdsFooter(),
+      bottomNavigationBar: kIsWeb ? bottomNavigationBar : AdsFooter(),
       backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       primary: primary ?? true,

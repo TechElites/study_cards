@@ -1,4 +1,8 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+
+/// Imports for mobile ads
 import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
@@ -31,7 +35,7 @@ class _CardsPageState extends State<CardsPage> {
   List<StudyCard>? _shownCards;
   String _filteredRating = "All";
   final ListDeleter _deleter = ListDeleter();
-  final AdsFullscreen _adsFullScreen = AdsFullscreen();
+  late AdsFullscreen _adsFullScreen;
 
   void refresh() {
     setState(() {
@@ -43,7 +47,10 @@ class _CardsPageState extends State<CardsPage> {
   @override
   void initState() {
     super.initState();
-    _adsFullScreen.loadAd();
+    if (!kIsWeb) {
+      _adsFullScreen = AdsFullscreen();
+      _adsFullScreen.loadAd();
+    }
   }
 
   @override
@@ -115,7 +122,10 @@ class _CardsPageState extends State<CardsPage> {
                         child: Container(
                             padding: const EdgeInsets.all(8.0),
                             color: _deleter.isInList(card.id)
-                                ? Colors.blue.withOpacity(0.1)
+                                ? Theme.of(cx)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.1)
                                 : null,
                             child: Card(
                               elevation: _deleter.isInList(card.id) ? 5 : 1,
@@ -229,9 +239,13 @@ class _CardsPageState extends State<CardsPage> {
                                           _shownCards!, maxCards)),
                             ),
                           ).then((value) {
-                            _adsFullScreen.showAndReloadAd(() {
+                            if (!kIsWeb) {
+                              _adsFullScreen.showAndReloadAd(() {
+                                refresh();
+                              });
+                            } else {
                               refresh();
-                            });
+                            }
                           });
                         }
                       }
@@ -267,8 +281,7 @@ class _CardsPageState extends State<CardsPage> {
                               ? 'all'.tr(cx)
                               : (rating == "Ignore rating"
                                   ? 'ignore_rating'.tr(cx)
-                                  : rating.tr(
-                                      cx)))), //rating == "All" ? Text('all'.tr(cx)) :(rating == "Ignore rating" ? 'ignore_rating'.tr(cx) : )// : Text(rating.tr(cx))),
+                                  : rating.tr(cx)))),
                           selected: rating == _filteredRating,
                           onTap: () {
                             setState(() {
