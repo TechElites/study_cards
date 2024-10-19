@@ -40,6 +40,7 @@ class _DecksPageState extends State<DecksPage> {
   /// ads
   late AdsFullscreen _adsFullScreen;
   late AdsSandman _adsSandman;
+  bool _isAdLoaded = false;
 
   @override
   void initState() {
@@ -48,7 +49,7 @@ class _DecksPageState extends State<DecksPage> {
       _adsFullScreen = AdsFullscreen();
       _adsSandman = AdsSandman();
       _adsFullScreen.loadAd();
-      _adsSandman.loadAd();
+      _isAdLoaded = _adsSandman.loadAd();
     }
   }
 
@@ -83,7 +84,7 @@ class _DecksPageState extends State<DecksPage> {
                   ),
                   textAlign: TextAlign.center),
             ),
-            if (!kIsWeb)
+            if (!kIsWeb && _isAdLoaded)
               ListTile(
                 title: Text('remove_ads'.tr(cx)),
                 leading: const Icon(Icons.tv_off),

@@ -12,7 +12,7 @@ class AdsSandman {
       : 'ca-app-pub-5775467929281127/8808382862';
 
   /// Loads the ad, needs to be called before showing the ad
-  void loadAd() {
+  bool loadAd() {
     if (!_isAdLoaded) {
       RewardedAd.load(
           adUnitId: adUnitId,
@@ -27,6 +27,7 @@ class AdsSandman {
             },
           ));
     }
+    return _isAdLoaded;
   }
 
   /// Shows the fullscreen ad, calls the reward function when the user has watched the ad
