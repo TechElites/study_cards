@@ -7,33 +7,36 @@ class AdsSandman {
   RewardedAd? _rewardedAd;
   bool _isAdLoaded = false;
 
+  bool get isReady => _isAdLoaded;
+
   final adUnitId = Platform.isAndroid
       ? 'ca-app-pub-5775467929281127/7879063124'
       : 'ca-app-pub-5775467929281127/8808382862';
 
   /// Loads the ad, needs to be called before showing the ad
-  bool loadAd() {
-    if (!_isAdLoaded) {
-      RewardedAd.load(
+  Future<void> loadAd(Function onLoad) async {
+    final noAds = await RewardService().isRewarded();
+    if (!_isAdLoaded && !noAds) {
+      await RewardedAd.load(
           adUnitId: adUnitId,
           request: const AdRequest(),
           rewardedAdLoadCallback: RewardedAdLoadCallback(
             onAdLoaded: (ad) {
               _rewardedAd = ad;
               _isAdLoaded = true;
+              onLoad();
             },
             onAdFailedToLoad: (LoadAdError error) {
               _isAdLoaded = false;
             },
           ));
     }
-    return _isAdLoaded;
   }
 
   /// Shows the fullscreen ad, calls the reward function when the user has watched the ad
   Future<bool> showAd(Function reward) async {
-    final noAds = await RewardService().isRewarded();
-    if (!noAds && _isAdLoaded && _rewardedAd != null) {
+    if (_isAdLoaded && _rewardedAd != null) {
+      _isAdLoaded = false;
       _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
         onAdDismissedFullScreenContent: (RewardedAd ad) {
           ad.dispose();
@@ -44,20 +47,13 @@ class AdsSandman {
       );
       _rewardedAd!.show(
           onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) {
-        reward();
+        RewardService().setRewarded(true).then((_) {
+          reward();
+        });
       });
       _rewardedAd = null;
-      _isAdLoaded = false;
       return true;
     }
     return false;
-  }
-
-  Future<bool> showAndReloadAd(Function reward) async {
-    final shown = await showAd(reward);
-    if (shown) {
-      loadAd();
-    }
-    return shown;
   }
 }
