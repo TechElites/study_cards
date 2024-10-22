@@ -1,6 +1,3 @@
-import 'package:flash_cards/src/composables/ads/ads_sandman.dart';
-import 'package:flash_cards/src/composables/floating_bar.dart';
-import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/screens/feedback/feedback.dart';
 import 'package:flash_cards/src/screens/guide/guide.dart';
@@ -11,7 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class HomeDrawer {
-  static Widget build(BuildContext cx, bool kIsWeb, AdsSandman adsSandman) {
+  static Widget build(
+      BuildContext cx, bool kIsWeb, bool isSandmanReady, Function adsRewarded) {
     return Drawer(
         child: ListView(
       padding: EdgeInsets.zero,
@@ -34,21 +32,13 @@ class HomeDrawer {
               ),
               textAlign: TextAlign.center),
         ),
-        if (!kIsWeb && adsSandman.isReady)
+        if (!kIsWeb && isSandmanReady)
           ListTile(
             title: Text('remove_ads'.tr(cx)),
             leading: const Icon(Icons.tv_off),
             onTap: () {
               Navigator.pop(cx);
-              adsSandman.showAndReloadAd(() {
-                RewardService().setRewarded(true).then((_) {
-                  FloatingBar.show('ad_rewarded'.tr(cx), cx);
-                });
-              }).then((showed) {
-                if (!showed) {
-                  FloatingBar.show('no_ads_left'.tr(cx), cx);
-                }
-              });
+              adsRewarded();
             },
           ),
         ListTile(

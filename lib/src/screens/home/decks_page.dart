@@ -49,14 +49,23 @@ class _DecksPageState extends State<DecksPage> {
   @override
   Widget build(BuildContext cx) {
     final decks = _dbHelper.getDecks();
-    _adsSandman.loadAd();
+    _adsSandman.loadAd(() => setState(() {}));
 
     return AdsScaffold(
       appBar: AppBar(
         title: Text('decks'.tr(cx)),
         centerTitle: true,
       ),
-      drawer: HomeDrawer.build(cx, kIsWeb, _adsSandman),
+      drawer: HomeDrawer.build(cx, kIsWeb, _adsSandman.isReady, () {
+        _adsSandman.showAd(() {
+          FloatingBar.show('ad_rewarded'.tr(cx), cx);
+          setState(() {});
+        }).then((showed) {
+          if (!showed) {
+            FloatingBar.show('no_ads_left'.tr(cx), cx);
+          }
+        });
+      }),
       body: RefreshIndicator(
           onRefresh: () async {
             setState(() {});
