@@ -7,6 +7,8 @@ class AdsSandman {
   RewardedAd? _rewardedAd;
   bool _isAdLoaded = false;
 
+  bool get isReady => _isAdLoaded;
+
   final adUnitId = Platform.isAndroid
       ? 'ca-app-pub-5775467929281127/7879063124'
       : 'ca-app-pub-5775467929281127/8808382862';

@@ -43,13 +43,13 @@ class _DecksPageState extends State<DecksPage> {
       _adsFullScreen = AdsFullscreen();
       _adsSandman = AdsSandman();
       _adsFullScreen.loadAd();
-      _adsSandman.loadAd();
     }
   }
 
   @override
   Widget build(BuildContext cx) {
     final decks = _dbHelper.getDecks();
+    _adsSandman.loadAd();
 
     return AdsScaffold(
       appBar: AppBar(

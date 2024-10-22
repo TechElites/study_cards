@@ -34,7 +34,7 @@ class HomeDrawer {
               ),
               textAlign: TextAlign.center),
         ),
-        if (!kIsWeb)
+        if (!kIsWeb && adsSandman.isReady)
           ListTile(
             title: Text('remove_ads'.tr(cx)),
             leading: const Icon(Icons.tv_off),
