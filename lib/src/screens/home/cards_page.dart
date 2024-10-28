@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Imports for mobile ads
@@ -104,6 +106,21 @@ class _CardsPageState extends State<CardsPage> {
                               }
                             });
                           }
+                        },
+                        confirmDismiss: (direction) async {
+                          int deletionTime = 3;
+                          Completer<bool?> completer = Completer<bool?>();
+                          Timer deletionTimer =
+                              Timer(Duration(seconds: deletionTime), () {
+                            completer.complete(true);
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          });
+                          FloatingBar.showWithAction(
+                              'card_deletion'.tr(cx), 'undo'.tr(cx), () {
+                            completer.complete(false);
+                            deletionTimer.cancel();
+                          }, cx);
+                          return completer.future;
                         },
                         onDismissed: (direction) {
                           setState(() {
