@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flash_cards/src/composables/home_drawer.dart';
+import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Import for mobile ads
@@ -31,6 +32,7 @@ class DecksPage extends StatefulWidget {
 class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final ListDeleter _deleter = ListDeleter();
+  List<Deck> decks = [];
 
   /// ads
   late AdsFullscreen _adsFullScreen;
@@ -39,6 +41,7 @@ class _DecksPageState extends State<DecksPage> {
   @override
   void initState() {
     super.initState();
+    decks = _dbHelper.getDecks();
     if (!kIsWeb) {
       _adsFullScreen = AdsFullscreen();
       _adsSandman = AdsSandman();
@@ -46,9 +49,14 @@ class _DecksPageState extends State<DecksPage> {
     }
   }
 
+  void refreshList() {
+    setState(() {
+      decks = _dbHelper.getDecks();
+    });
+  }
+
   @override
   Widget build(BuildContext cx) {
-    final decks = _dbHelper.getDecks();
     _adsSandman.loadAd(() => setState(() {}));
 
     return AdsScaffold(
@@ -68,7 +76,7 @@ class _DecksPageState extends State<DecksPage> {
       }),
       body: RefreshIndicator(
           onRefresh: () async {
-            setState(() {});
+            refreshList();
           },
           child: decks.isEmpty
               ? Center(
@@ -166,7 +174,7 @@ class _DecksPageState extends State<DecksPage> {
                                       builder: (context) =>
                                           CardsPage(deckId: deck.id),
                                     ),
-                                  ).then((value) => setState(() {}));
+                                  ).then((value) => refreshList());
                                 },
                                 onLongPress: () {
                                   setState(() {
@@ -188,7 +196,7 @@ class _DecksPageState extends State<DecksPage> {
               onPressed: () {
                 final list = _deleter.dumpList();
                 _dbHelper.deleteDecks(list.keys.toList()).then((value) {
-                  setState(() {});
+                  refreshList();
                   _deleteFolder(list.values.toList());
                 });
                 FloatingBar.show('decks_deleted'.tr(cx), cx);
@@ -208,10 +216,10 @@ class _DecksPageState extends State<DecksPage> {
                     if (!kIsWeb) {
                       _adsFullScreen.showAndReloadAd(() {
                         FloatingBar.show('deck_add_success'.tr(cx), cx);
-                        setState(() {});
+                        refreshList();
                       });
                     } else {
-                      setState(() {});
+                      refreshList();
                     }
                   }
                 });

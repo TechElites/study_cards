@@ -33,37 +33,34 @@ class CardsPage extends StatefulWidget {
 
 class _CardsPageState extends State<CardsPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
-  List<StudyCard>? _allCards;
-  List<StudyCard>? _shownCards;
-  String _filteredRating = "All";
+  List<StudyCard> shownCards = [];
+  List<StudyCard> _allCards = [];
+  final List<String> _filteredRatings = ['all'];
   final ListDeleter _deleter = ListDeleter();
   late AdsFullscreen _adsFullScreen;
-
-  void refresh() {
-    setState(() {
-      _allCards = null;
-      _shownCards = null;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
+    final cards = _dbHelper.getCards(widget.deckId);
+    _allCards = cards;
+    shownCards = cards;
     if (!kIsWeb) {
       _adsFullScreen = AdsFullscreen();
       _adsFullScreen.loadAd();
     }
   }
 
+  void refreshList() {
+    setState(() {
+      final cards = _dbHelper.getCards(widget.deckId);
+      _allCards = cards;
+      shownCards = cards;
+    });
+  }
+
   @override
   Widget build(BuildContext cx) {
-    if (_allCards == null) {
-      final value = _dbHelper.getCards(widget.deckId);
-      setState(() {
-        _allCards = value;
-        _shownCards = value;
-      });
-    }
     return AdsScaffold(
         appBar: AppBar(
           title: Text('cards'.tr(cx)),
@@ -77,139 +74,132 @@ class _CardsPageState extends State<CardsPage> {
                     builder: (context) =>
                         CardsSettingsPage(deckId: widget.deckId),
                   ),
-                ).then((value) => refresh());
+                );
               },
               icon: const Icon(Icons.settings),
             )
           ],
         ),
-        body: _shownCards == null
-            ? const Center(child: CircularProgressIndicator())
-            : RefreshIndicator(
-                onRefresh: () async {
-                  refresh();
-                },
-                child: ListView.builder(
-                  itemCount: _shownCards?.length,
-                  itemBuilder: (context, index) {
-                    final card = _shownCards?.elementAt(index) ??
-                        StudyCard(front: '', back: '');
-                    return Dismissible(
-                        key: Key(card.id.toString()),
-                        direction: DismissDirection.endToStart,
-                        onUpdate: (details) {
-                          if (details.progress >= 0.5 &&
-                              details.progress <= 0.55) {
+        body: RefreshIndicator(
+          onRefresh: () async {
+            refreshList();
+          },
+          child: ListView.builder(
+            itemCount: shownCards.length,
+            itemBuilder: (context, index) {
+              final card = shownCards.elementAt(index);
+              return Dismissible(
+                  key: Key(card.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  onUpdate: (details) {
+                    if (details.progress >= 0.5 && details.progress <= 0.55) {
+                      Vibration.hasVibrator().then((value) {
+                        if (value ?? false) {
+                          Vibration.vibrate(duration: 10);
+                        }
+                      });
+                    }
+                  },
+                  confirmDismiss: (direction) async {
+                    int deletionTime = 3;
+                    Completer<bool?> completer = Completer<bool?>();
+                    Timer deletionTimer =
+                        Timer(Duration(seconds: deletionTime), () {
+                      completer.complete(true);
+                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                    });
+                    FloatingBar.showWithAction(
+                        'card_deletion'.tr(cx), 'undo'.tr(cx), () {
+                      completer.complete(false);
+                      deletionTimer.cancel();
+                    }, cx);
+                    return completer.future;
+                  },
+                  onDismissed: (direction) {
+                    setState(() {
+                      shownCards.removeAt(index);
+                    });
+                    _dbHelper.deleteCard(card.id).then((_) {
+                      FloatingBar.show('card_deleted'.tr(cx), cx);
+                    });
+                  },
+                  background: Container(
+                    color: Colors.red[400],
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      color: _deleter.isInList(card.id)
+                          ? Theme.of(cx).colorScheme.primary.withOpacity(0.1)
+                          : null,
+                      child: Card(
+                        elevation: _deleter.isInList(card.id) ? 5 : 1,
+                        margin: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(card.front),
+                          selected: _deleter.isInList(card.id),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                height:
+                                    6, // Height of the colored bar/ Color of the bar
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                    width: 0.5,
+                                  ),
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: Rating.colors[card.rating],
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            if (_deleter.isDeleting) {
+                              setState(() {
+                                _deleter.toggleItem(card.id);
+                              });
+                              return;
+                            }
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    CardDetailsPage(card: card),
+                              ),
+                            ).then((value) {
+                              if (value != null) {
+                                FloatingBar.show(
+                                    'card_modify_success'.tr(cx), cx);
+                                refreshList();
+                              }
+                            });
+                          },
+                          onLongPress: () {
+                            setState(() {
+                              _deleter.isDeleting = true;
+                              _deleter.toggleItem(card.id);
+                            });
                             Vibration.hasVibrator().then((value) {
                               if (value ?? false) {
                                 Vibration.vibrate(duration: 10);
                               }
                             });
-                          }
-                        },
-                        confirmDismiss: (direction) async {
-                          int deletionTime = 3;
-                          Completer<bool?> completer = Completer<bool?>();
-                          Timer deletionTimer =
-                              Timer(Duration(seconds: deletionTime), () {
-                            completer.complete(true);
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          });
-                          FloatingBar.showWithAction(
-                              'card_deletion'.tr(cx), 'undo'.tr(cx), () {
-                            completer.complete(false);
-                            deletionTimer.cancel();
-                          }, cx);
-                          return completer.future;
-                        },
-                        onDismissed: (direction) {
-                          setState(() {
-                            _shownCards?.removeAt(index);
-                          });
-                          _dbHelper.deleteCard(card.id).then((_) {
-                            FloatingBar.show('card_deleted'.tr(cx), cx);
-                          });
-                        },
-                        background: Container(
-                          color: Colors.red[400],
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: const Icon(Icons.delete, color: Colors.white),
+                          },
                         ),
-                        child: Container(
-                            padding: const EdgeInsets.all(8.0),
-                            color: _deleter.isInList(card.id)
-                                ? Theme.of(cx)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.1)
-                                : null,
-                            child: Card(
-                              elevation: _deleter.isInList(card.id) ? 5 : 1,
-                              margin: const EdgeInsets.all(8.0),
-                              child: ListTile(
-                                title: Text(card.front),
-                                selected: _deleter.isInList(card.id),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      height:
-                                          6, // Height of the colored bar/ Color of the bar
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                          color: Colors.grey,
-                                          width: 0.5,
-                                        ),
-                                        borderRadius: BorderRadius.circular(4),
-                                        color: Rating.colors[card.rating],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                onTap: () {
-                                  if (_deleter.isDeleting) {
-                                    setState(() {
-                                      _deleter.toggleItem(card.id);
-                                    });
-                                    return;
-                                  }
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          CardDetailsPage(card: card),
-                                    ),
-                                  ).then((value) {
-                                    if (value != null) {
-                                      FloatingBar.show(
-                                          'card_modify_success'.tr(cx), cx);
-                                      refresh();
-                                    }
-                                  });
-                                },
-                                onLongPress: () {
-                                  setState(() {
-                                    _deleter.isDeleting = true;
-                                    _deleter.toggleItem(card.id);
-                                  });
-                                  Vibration.hasVibrator().then((value) {
-                                    if (value ?? false) {
-                                      Vibration.vibrate(duration: 10);
-                                    }
-                                  });
-                                },
-                              ),
-                            )));
-                  },
-                ),
-              ),
+                      )));
+            },
+          ),
+        ),
         floatingActionButton: _deleter.isDeleting
             ? FloatingActionButton(
                 onPressed: () {
                   _dbHelper
                       .deleteCards(_deleter.dumpList().keys.toList())
-                      .then((value) => refresh());
+                      .then((value) => refreshList());
                   FloatingBar.show('cards_deleted'.tr(cx), cx);
                 },
                 tooltip: 'delete_cards'.tr(cx),
@@ -232,39 +222,37 @@ class _CardsPageState extends State<CardsPage> {
                       MaterialPageRoute(
                         builder: (context) => AddCard(deckId: widget.deckId),
                       ),
-                    ).then((value) => refresh());
+                    ).then((value) => refreshList());
                   },
                 ),
                 SpeedDialChild(
                     child: const Icon(Icons.rate_review),
                     label: 'review'.tr(cx),
                     onTap: () {
-                      if (_shownCards != null) {
-                        if (_shownCards!.isEmpty) {
-                          FloatingBar.show('no_cards_review'.tr(cx), cx);
-                        } else {
-                          final maxCards =
-                              _dbHelper.getReviewCards(widget.deckId);
-                          Navigator.push(
-                            cx,
-                            MaterialPageRoute(
-                              builder: (context) => ReviewPage(
-                                  cards: _filteredRating == "All"
-                                      ? DeckShuffler.shuffleTimedCards(
-                                          _shownCards!, maxCards)
-                                      : DeckShuffler.shuffleCards(
-                                          _shownCards!, maxCards)),
-                            ),
-                          ).then((value) {
-                            if (!kIsWeb) {
-                              _adsFullScreen.showAndReloadAd(() {
-                                refresh();
-                              });
-                            } else {
-                              refresh();
-                            }
-                          });
-                        }
+                      if (shownCards.isEmpty) {
+                        FloatingBar.show('no_cards_review'.tr(cx), cx);
+                      } else {
+                        final maxCards =
+                            _dbHelper.getReviewCards(widget.deckId);
+                        Navigator.push(
+                          cx,
+                          MaterialPageRoute(
+                            builder: (context) => ReviewPage(
+                                cards: _filteredRatings.contains("no_timing")
+                                    ? DeckShuffler.shuffleCards(
+                                        shownCards, maxCards)
+                                    : DeckShuffler.shuffleTimedCards(
+                                        shownCards, maxCards)),
+                          ),
+                        ).then((value) {
+                          if (!kIsWeb) {
+                            _adsFullScreen.showAndReloadAd(() {
+                              refreshList();
+                            });
+                          } else {
+                            refreshList();
+                          }
+                        });
                       }
                     })
               ]));
@@ -273,57 +261,74 @@ class _CardsPageState extends State<CardsPage> {
   /// Opens a dialog to filter the cards by rating
   void _openRatingFilter(BuildContext cx) {
     showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Wrap(
-            children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'select_rating'.tr(cx),
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Column(
-                    children: [
-                      for (var rating in ["All", "Ignore rating"]
-                          .followedBy(Rating.ratings))
-                        ListTile(
-                          title: Text((rating == "All"
-                              ? 'all'.tr(cx)
-                              : (rating == "Ignore rating"
-                                  ? 'ignore_rating'.tr(cx)
-                                  : rating.tr(cx)))),
-                          selected: rating == _filteredRating,
-                          onTap: () {
-                            setState(() {
-                              _filteredRating = rating;
-                              if (rating != "All" &&
-                                  rating != "Ignore rating") {
-                                _shownCards = _allCards!
-                                    .where(
-                                        (element) => element.rating == rating)
-                                    .toList();
-                              } else {
-                                _shownCards = _allCards;
-                              }
-                            });
-                            Navigator.pop(context);
-                          },
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (BuildContext context, StateSetter modalSetState) {
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Wrap(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'select_rating'.tr(cx),
+                          style: const TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 16),
+                        Column(
+                          children: [
+                            for (var rating in ['all', 'no_timing']
+                                .followedBy(Rating.ratings))
+                              CheckboxListTile(
+                                value: _filteredRatings.contains(rating),
+                                title: Text(rating.tr(cx)),
+                                checkColor: Theme.of(cx).colorScheme.primary,
+                                fillColor: WidgetStateProperty.all(
+                                    Theme.of(cx).scaffoldBackgroundColor),
+                                onChanged: (bool? selected) {
+                                  setState(() {
+                                    String r = rating;
+                                    if (_filteredRatings.contains(r)) {
+                                      _filteredRatings.remove(r);
+                                    } else {
+                                      _filteredRatings.add(r);
+                                    }
+                                    if (_filteredRatings.isEmpty) {
+                                      r = 'all';
+                                    }
+                                    switch (r) {
+                                      case 'all':
+                                        _filteredRatings.clear();
+                                        _filteredRatings.add('all');
+                                        shownCards = _allCards;
+                                        break;
+                                      case 'no_timing':
+                                        break;
+                                      default:
+                                        _filteredRatings.remove('all');
+                                        shownCards = _allCards
+                                            .where((card) => _filteredRatings
+                                                .contains(card.rating))
+                                            .toList();
+                                        break;
+                                    }
+                                    modalSetState(() {});
+                                  });
+                                },
+                              )
+                          ],
                         )
-                    ],
-                  )
-                ],
-              )
-            ],
-          ),
-        );
-      },
-    );
+                      ],
+                    )
+                  ],
+                ),
+              );
+            },
+          );
+        });
   }
 }
