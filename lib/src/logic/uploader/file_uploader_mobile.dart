@@ -22,21 +22,16 @@ class FileUploaderMobile {
     if (result != null && result.files.isNotEmpty) {
       File file = File(result.files.single.path!);
       String fileContent = '';
+      String fileExtension = file.path.endsWith('.json') ? 'json' : 'xml';
       if (file.path.endsWith('.zip')) {
-        fileContent =
-            await _unzipFile(file).then((value) => value!.readAsString());
+        fileContent = await _unzipFile(file).then((value) {
+          fileExtension = value!.path.endsWith('.json') ? 'json' : 'xml';
+          return value.readAsString();
+        });
       } else {
         fileContent = await file.readAsString();
       }
-      /*final s = StudyCard(front: file.toString(), back: fileContent);
-      StudyCard s1 = StudyCard(front: "niente", back: "niente");
-      final a = await XmlHandler.parseXml(fileContent).then( (value) {
-        s1 = StudyCard(front: "niente", back: value.toString());
-      });
-      final s1 = StudyCard(front: "niente", back: a.toString());
-      final r = [s, s1];
-      return r;*/
-      file.path.endsWith('.json')
+      return fileExtension == 'json'
           ? await JsonHandler().parseJson(fileContent)
           : await XmlHandler.parseXml(fileContent);
     }

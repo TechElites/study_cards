@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -53,23 +52,32 @@ class JsonHandler {
           : '';
     */
     }
+    //print("back 1: " + parsedData[0].back);
     return parsedData;
   }
 
-  // convert a list of StudyCard objects to a json string
-  static String convertToJson(List<StudyCard> cards) {
-    List<Map<String, dynamic>> jsonData = [];
-    jsonData.add({'deckName': cards[0].front});
-    jsonData.add({'length': cards.length});
-    for (var card in cards) {
-      jsonData.add({
-        'front': card.front,
-        'back': card.back,
-        'frontMedia': card.frontMedia,
-        'backMedia': card.backMedia
-      });
+  // convert a list of StudyCard objects to a json string using the format:
+  // {"deckName": "name", "length": 1, "cards": [{"front_text": "","back_text": "","front_media": [],"back_media": []}, ...]}
+  static String convertToJson(String deck_name, List<StudyCard> cards) {
+    final deckName = deck_name;
+    final deckLength = cards.length - 1;
+    final List<Map<String, dynamic>> cardList = [];
+    for (var i = 1; i < cards.length; i++) {
+      final card = cards[i];
+      final Map<String, dynamic> cardMap = {
+        'front_text': card.front,
+        'back_text': card.back,
+        'front_media': card.frontMedia.isNotEmpty ? [card.frontMedia] : [],
+        'back_media': card.backMedia.isNotEmpty ? [card.backMedia] : []
+      };
+      cardList.add(cardMap);
     }
-    return prettifyJsonEncode(jsonData);
+    final Map<String, dynamic> deckMap = {
+      'deckName': deckName,
+      'length': deckLength,
+      'cards': cardList
+    };
+    return prettifyJsonEncode(deckMap);
   }
 
   /// Saves the XML string to a file.

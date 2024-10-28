@@ -60,7 +60,7 @@
   "none": "Nessuno",
   "number_of_cards": "Numero di carte",
   "pick_xml": "Scegli il file XML ",
-  "pick_xml_or_zip": "Scegli il file XML o ZIP ",
+  "pick_xml_or_zip": "Scegli un file XML, JSON o ZIP ",
   "question": "Domanda",
   "remove_ads": "Rimuovi pubblicità",
   "review": "Ripasso",

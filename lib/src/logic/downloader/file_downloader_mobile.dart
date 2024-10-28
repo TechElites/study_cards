@@ -34,7 +34,7 @@ class FileDownloaderMobile {
         final zipEncoder = ZipEncoder();
         final encodedFile = zipEncoder.encode(archive);
         if (encodedFile != null) {
-          await File('${directory.path}/${fileName.split('.xml')[0]}.zip')
+          await File('${directory.path}/${fileName.split('.json')[0]}.zip')
               .writeAsBytes(encodedFile);
         } else {
           return false;
