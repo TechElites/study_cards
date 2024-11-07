@@ -57,14 +57,14 @@ class _DecksPageState extends State<DecksPage> {
 
   @override
   Widget build(BuildContext cx) {
-    _adsSandman.loadAd(() => setState(() {}));
+    if (!kIsWeb) _adsSandman.loadAd(() => setState(() {}));
 
     return AdsScaffold(
       appBar: AppBar(
         title: Text('decks'.tr(cx)),
         centerTitle: true,
       ),
-      drawer: HomeDrawer.build(cx, kIsWeb, _adsSandman.isReady, () {
+      drawer: HomeDrawer.build(cx, kIsWeb, kIsWeb ? false : _adsSandman.isReady, () {
         _adsSandman.showAd(() {
           FloatingBar.show('ad_rewarded'.tr(cx), cx);
           setState(() {});
