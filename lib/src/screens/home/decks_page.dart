@@ -12,7 +12,7 @@ import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flash_cards/src/logic/list_deleter.dart';
+import 'package:flash_cards/src/logic/deck/list_deleter.dart';
 import 'package:flash_cards/src/logic/permission_helper.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';

@@ -1,41 +1,43 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:convert';
 import 'dart:io';
 
-import 'package:archive/archive.dart';
-import 'package:archive/archive_io.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/xml_handler.dart';
+import 'package:flash_cards/src/logic/load/xml_handler.dart';
+import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 import 'package:flash_cards/src/logic/permission_helper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
-/// Class to handle uploading files on mobile devices.
-class FileUploaderMobile {
-  /// Reads a deck file on mobile devices.
+/// Class to handle uploading files.
+class FileUploader {
+  /// Reads a deck file based on the platform.
   static Future<List<StudyCard>> uploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['xml', 'zip'],
     );
 
-    if (result != null && result.files.isNotEmpty) {
-      File file = File(result.files.single.path!);
-      String fileContent = '';
-      if (file.path.endsWith('.zip')) {
-        fileContent =
-            await _unzipFile(file).then((value) => value!.readAsString());
+    if (result != null) {
+      if (!kIsWeb) {
+        if (result.files.isNotEmpty) {
+          File file = File(result.files.single.path!);
+          String fileContent = '';
+          if (file.path.endsWith('.zip')) {
+            fileContent =
+                await _unzipFile(file).then((value) => value!.readAsString());
+          } else {
+            fileContent = await file.readAsString();
+          }
+          return await XmlHandler.parseXml(fileContent);
+        }
       } else {
-        fileContent = await file.readAsString();
+        final file = result.files.first;
+        final fileContent = utf8.decode(file.bytes!);
+        return await XmlHandler.parseSimpleXml(fileContent);
       }
-      /*final s = StudyCard(front: file.toString(), back: fileContent);
-      StudyCard s1 = StudyCard(front: "niente", back: "niente");
-      final a = await XmlHandler.parseXml(fileContent).then( (value) {
-        s1 = StudyCard(front: "niente", back: value.toString());
-      });
-      final s1 = StudyCard(front: "niente", back: a.toString());
-      final r = [s, s1];
-      return r;*/
-      return await XmlHandler.parseXml(fileContent);
     }
 
     return [];
