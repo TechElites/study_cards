@@ -81,119 +81,149 @@ class _CardsPageState extends State<CardsPage> {
           ],
         ),
         body: RefreshIndicator(
-          onRefresh: () async {
-            refreshList();
-          },
-          child: ListView.builder(
-            itemCount: shownCards.length,
-            itemBuilder: (context, index) {
-              final card = shownCards.elementAt(index);
-              return Dismissible(
-                  key: Key(card.id.toString()),
-                  direction: DismissDirection.endToStart,
-                  onUpdate: (details) {
-                    if (details.progress >= 0.5 && details.progress <= 0.55) {
-                      Vibration.hasVibrator().then((value) {
-                        if (value ?? false) {
-                          Vibration.vibrate(duration: 10);
-                        }
-                      });
-                    }
-                  },
-                  confirmDismiss: (direction) async {
-                    int deletionTime = 3;
-                    Completer<bool?> completer = Completer<bool?>();
-                    Timer deletionTimer =
-                        Timer(Duration(seconds: deletionTime), () {
-                      completer.complete(true);
-                      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    });
-                    FloatingBar.showWithAction(
-                        'card_deletion'.tr(cx), 'undo'.tr(cx), () {
-                      completer.complete(false);
-                      deletionTimer.cancel();
-                    }, cx);
-                    return completer.future;
-                  },
-                  onDismissed: (direction) {
-                    setState(() {
-                      shownCards.removeAt(index);
-                    });
-                    _dbHelper.deleteCard(card.id).then((_) {
-                      FloatingBar.show('card_deleted'.tr(cx), cx);
-                    });
-                  },
-                  background: Container(
-                    color: Colors.red[400],
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: const Icon(Icons.delete, color: Colors.white),
+            onRefresh: () async {
+              refreshList();
+            },
+            // search textbox to filter cards by front text or back text
+            child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'search'.tr(cx),
                   ),
-                  child: Container(
-                      padding: const EdgeInsets.all(8.0),
-                      color: _deleter.isInList(card.id)
-                          ? Theme.of(cx).colorScheme.primary.withOpacity(0.1)
-                          : null,
-                      child: Card(
-                        elevation: _deleter.isInList(card.id) ? 5 : 1,
-                        margin: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          title: Text(card.front),
-                          selected: _deleter.isInList(card.id),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                height:
-                                    6, // Height of the colored bar/ Color of the bar
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.grey,
-                                    width: 0.5,
-                                  ),
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: Rating.colors[card.rating],
-                                ),
-                              ),
-                            ],
-                          ),
-                          onTap: () {
-                            if (_deleter.isDeleting) {
-                              setState(() {
-                                _deleter.toggleItem(card.id);
-                              });
-                              return;
-                            }
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    CardDetailsPage(card: card),
-                              ),
-                            ).then((value) {
-                              if (value != null) {
-                                FloatingBar.show(
-                                    'card_modify_success'.tr(cx), cx);
-                                refreshList();
-                              }
-                            });
-                          },
-                          onLongPress: () {
-                            setState(() {
-                              _deleter.isDeleting = true;
-                              _deleter.toggleItem(card.id);
-                            });
+                  onChanged: (value) {
+                    setState(() {
+                      shownCards = _allCards
+                          .where((card) =>
+                              card.front
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()) ||
+                              card.back
+                                  .toLowerCase()
+                                  .contains(value.toLowerCase()))
+                          .toList();
+                    });
+                  },
+                ),
+              ),
+              //const Divider(),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: shownCards.length,
+                  itemBuilder: (context, index) {
+                    final card = shownCards.elementAt(index);
+                    return Dismissible(
+                        key: Key(card.id.toString()),
+                        direction: DismissDirection.endToStart,
+                        onUpdate: (details) {
+                          if (details.progress >= 0.5 &&
+                              details.progress <= 0.55) {
                             Vibration.hasVibrator().then((value) {
                               if (value ?? false) {
                                 Vibration.vibrate(duration: 10);
                               }
                             });
-                          },
+                          }
+                        },
+                        confirmDismiss: (direction) async {
+                          int deletionTime = 3;
+                          Completer<bool?> completer = Completer<bool?>();
+                          Timer deletionTimer =
+                              Timer(Duration(seconds: deletionTime), () {
+                            completer.complete(true);
+                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          });
+                          FloatingBar.showWithAction(
+                              'card_deletion'.tr(cx), 'undo'.tr(cx), () {
+                            completer.complete(false);
+                            deletionTimer.cancel();
+                          }, cx);
+                          return completer.future;
+                        },
+                        onDismissed: (direction) {
+                          setState(() {
+                            shownCards.removeAt(index);
+                          });
+                          _dbHelper.deleteCard(card.id).then((_) {
+                            FloatingBar.show('card_deleted'.tr(cx), cx);
+                          });
+                        },
+                        background: Container(
+                          color: Colors.red[400],
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                          child: const Icon(Icons.delete, color: Colors.white),
                         ),
-                      )));
-            },
-          ),
-        ),
+                        child: Container(
+                            padding: const EdgeInsets.all(8.0),
+                            color: _deleter.isInList(card.id)
+                                ? Theme.of(cx)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.1)
+                                : null,
+                            child: Card(
+                              elevation: _deleter.isInList(card.id) ? 5 : 1,
+                              margin: const EdgeInsets.all(8.0),
+                              child: ListTile(
+                                title: Text(card.front),
+                                selected: _deleter.isInList(card.id),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      height:
+                                          6, // Height of the colored bar/ Color of the bar
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                          width: 0.5,
+                                        ),
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: Rating.colors[card.rating],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  if (_deleter.isDeleting) {
+                                    setState(() {
+                                      _deleter.toggleItem(card.id);
+                                    });
+                                    return;
+                                  }
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          CardDetailsPage(card: card),
+                                    ),
+                                  ).then((value) {
+                                    if (value != null) {
+                                      FloatingBar.show(
+                                          'card_modify_success'.tr(cx), cx);
+                                      refreshList();
+                                    }
+                                  });
+                                },
+                                onLongPress: () {
+                                  setState(() {
+                                    _deleter.isDeleting = true;
+                                    _deleter.toggleItem(card.id);
+                                  });
+                                  Vibration.hasVibrator().then((value) {
+                                    if (value ?? false) {
+                                      Vibration.vibrate(duration: 10);
+                                    }
+                                  });
+                                },
+                              ),
+                            )));
+                  },
+                ),
+              )
+            ])),
         floatingActionButton: _deleter.isDeleting
             ? FloatingActionButton(
                 onPressed: () {
