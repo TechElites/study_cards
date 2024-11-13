@@ -33,6 +33,7 @@ class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final ListDeleter _deleter = ListDeleter();
   List<Deck> decks = [];
+  String search = '';
 
   /// ads
   late AdsFullscreen _adsFullScreen;
@@ -64,7 +65,8 @@ class _DecksPageState extends State<DecksPage> {
         title: Text('decks'.tr(cx)),
         centerTitle: true,
       ),
-      drawer: HomeDrawer.build(cx, kIsWeb, kIsWeb ? false : _adsSandman.isReady, () {
+      drawer: HomeDrawer.build(cx, kIsWeb, kIsWeb ? false : _adsSandman.isReady,
+          () {
         _adsSandman.showAd(() {
           FloatingBar.show('ad_rewarded'.tr(cx), cx);
           setState(() {});
@@ -75,23 +77,45 @@ class _DecksPageState extends State<DecksPage> {
         });
       }),
       body: RefreshIndicator(
-          onRefresh: () async {
-            refreshList();
-          },
-          child: decks.isEmpty
-              ? Center(
-                  child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add_circle_outline_outlined,
-                                size: 80, color: Colors.grey.withOpacity(0.5)),
-                            Text('no_decks'.tr(cx),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 20)),
-                          ])))
-              : ListView.builder(
+        onRefresh: () async {
+          refreshList();
+        },
+        child: decks.isEmpty && search.isEmpty
+            ? Center(
+                child: Container(
+                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add_circle_outline_outlined,
+                              size: 80, color: Colors.grey.withOpacity(0.5)),
+                          Text('no_decks'.tr(cx),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 20)),
+                        ])))
+            :
+            // search textbox to filter decks by name
+            Column(children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TextField(
+                    decoration: InputDecoration(
+                      labelText: 'search'.tr(cx),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        decks = _dbHelper.getDecks().where((deck) {
+                          search = value;
+                          return deck.name
+                              .toLowerCase()
+                              .contains(value.toLowerCase());
+                        }).toList();
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                    child: ListView.builder(
                   itemCount: decks.length,
                   itemBuilder: (context, index) {
                     final deck = decks[index];
@@ -191,6 +215,8 @@ class _DecksPageState extends State<DecksPage> {
                             )));
                   },
                 )),
+              ]),
+      ),
       floatingActionButton: _deleter.isDeleting
           ? FloatingActionButton(
               onPressed: () {
