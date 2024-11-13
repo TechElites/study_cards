@@ -17,6 +17,9 @@ class HiveDeck extends HiveObject {
 
   @HiveField(3)
   late String creation;
+
+  @HiveField(4)
+  late String shared;
 }
 
 /// Deck class is a model class to rapresent a deck
@@ -27,6 +30,7 @@ class Deck {
   final int cards;
   final int reviewCards;
   final DateTime creation;
+  final String shared;
 
   Deck({
     this.id = -1,
@@ -34,6 +38,7 @@ class Deck {
     required this.cards,
     this.reviewCards = 10,
     required this.creation,
+    this.shared = '',
   });
 
   /// Converts the Deck object to a HiveDeck object.
@@ -42,7 +47,8 @@ class Deck {
       ..name = name
       ..cards = cards
       ..reviewCards = reviewCards
-      ..creation = creation.toIso8601String();
+      ..creation = creation.toIso8601String()
+      ..shared = shared;
   }
 
   /// Converts a HiveDeck object to a Deck object.
@@ -53,6 +59,7 @@ class Deck {
       cards: hiveDeck.cards,
       reviewCards: hiveDeck.reviewCards,
       creation: DateTime.parse(hiveDeck.creation),
+      shared: hiveDeck.shared,
     );
   }
 }

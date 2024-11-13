@@ -42,7 +42,7 @@ class DatabaseHelper {
     await deck.save();
   }
 
-  /// Insert multiple decks into the database.
+  /// Insert multiple cards into the database.
   Future<void> insertDeckCards(List<StudyCard> cards) async {
     for (var card in cards) {
       await cardsBox.add(card.toHiveStudyCard());

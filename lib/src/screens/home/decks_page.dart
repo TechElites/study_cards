@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flash_cards/src/composables/home_drawer.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
+import 'package:flash_cards/src/data/remote/supabase_helper.dart';
+import 'package:flash_cards/src/logic/load/file_reader.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Import for mobile ads
@@ -31,6 +34,7 @@ class DecksPage extends StatefulWidget {
 
 class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
+  final SupabaseHelper _supa = SupabaseHelper();
   final ListDeleter _deleter = ListDeleter();
   List<Deck> decks = [];
 
@@ -64,7 +68,8 @@ class _DecksPageState extends State<DecksPage> {
         title: Text('decks'.tr(cx)),
         centerTitle: true,
       ),
-      drawer: HomeDrawer.build(cx, kIsWeb, kIsWeb ? false : _adsSandman.isReady, () {
+      drawer: HomeDrawer.build(cx, kIsWeb, kIsWeb ? false : _adsSandman.isReady,
+          () {
         _adsSandman.showAd(() {
           FloatingBar.show('ad_rewarded'.tr(cx), cx);
           setState(() {});
@@ -161,6 +166,18 @@ class _DecksPageState extends State<DecksPage> {
                                         '${'creation_date'.tr(cx)}: ${deck.creation.toString().substring(0, 10)}'),
                                   ],
                                 ),
+                                trailing: deck.shared == ''
+                                    ? null
+                                    : IconButton(
+                                        icon: const Icon(
+                                            Icons.cloud_download_outlined),
+                                        onPressed: () {
+                                          _mergeDeck(deck, () {
+                                            refreshList();
+                                            FloatingBar.show(
+                                                'deck_merged'.tr(cx), cx);
+                                          });
+                                        }),
                                 onTap: () {
                                   if (_deleter.isDeleting) {
                                     setState(() {
@@ -250,5 +267,33 @@ class _DecksPageState extends State<DecksPage> {
         folder.deleteSync(recursive: true);
       }
     }
+  }
+
+  /// Merges a deck from the Supabase storage with the local deck
+  void _mergeDeck(Deck deck, Function onMerge) {
+    _supa.downloadDeck(deck.shared).then((list) {
+      FileReader.readFromList(list, deck.shared).then((sharedCards) {
+        final deckCards = _dbHelper.getCards(deck.id);
+        _dbHelper.deleteCards(deckCards.map((c) => c.id).toList());
+        final merged = <StudyCard>[];
+        for (var shC in sharedCards) {
+          StudyCard mergedCard = shC;
+          if (deckCards.any((c) => c.front == shC.front)) {
+            final oldCard = deckCards.firstWhere((c) => c.front == shC.front);
+            mergedCard = StudyCard(
+              deckId: oldCard.deckId,
+              rating: oldCard.rating,
+              front: shC.front,
+              back: shC.back,
+              frontMedia: shC.frontMedia,
+              backMedia: shC.backMedia,
+            );
+          }
+          merged.add(mergedCard);
+        }
+        _dbHelper.insertDeckCards(merged);
+        onMerge();
+      });
+    });
   }
 }

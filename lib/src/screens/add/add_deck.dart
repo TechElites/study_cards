@@ -25,6 +25,7 @@ class _AddDeckState extends State<AddDeck> {
   final SupabaseHelper _supabaseHelper = SupabaseHelper();
   List<FileObject> sharedDecks = [];
   bool _sharedDecksLoaded = false;
+  String _sharedDeck = '';
 
   @override
   void initState() {
@@ -91,6 +92,7 @@ class _AddDeckState extends State<AddDeck> {
                   setState(() {
                     frontsAndBacks = value;
                     _nameController.text = frontsAndBacks[0].front;
+                    _sharedDeck = '';
                   });
                 });
               },
@@ -130,6 +132,8 @@ class _AddDeckState extends State<AddDeck> {
                                         frontsAndBacks = value;
                                         _nameController.text =
                                             frontsAndBacks[0].front;
+                                        _sharedDeck = shDeck.name.substring(
+                                            shDeck.name.length - 4);
                                       });
                                     });
                                   });
@@ -192,6 +196,7 @@ class _AddDeckState extends State<AddDeck> {
       name: _nameController.text,
       cards: frontsAndBacks.length - 1,
       creation: DateTime.now(),
+      shared: _sharedDeck,
     );
     return _dbHelper.insertDeck(newDeck);
   }

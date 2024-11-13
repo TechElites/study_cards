@@ -24,6 +24,7 @@
   "deck_download_error": "Error downloading deck",
   "deck_upload": "Deck uploaded successfully",
   "deck_upload_error": "Error uploading deck",
+  "deck_merged": "Deck updated successfully",
   "deck_name": "Deck Name",
   "deck_name_update": "Deck name updated",
   "deck_saved": "Deck saved",

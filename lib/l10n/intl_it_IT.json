@@ -25,6 +25,7 @@
   "deck_download_error": "Errore durante il download del mazzo",
   "deck_upload": "Mazzo caricato con successo",
   "deck_upload_error": "Errore durante il caricamento del mazzo",
+  "deck_merged": "Mazzo aggiornato con successo",
   "deck_name": "Nome del mazzo",
   "deck_name_update": "Nome del mazzo aggiornato",
   "deck_saved": "Mazzo salvato",
