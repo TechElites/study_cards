@@ -48,4 +48,10 @@ class SupabaseHelper {
     final response = await _supabase?.storage.from('decks').download(deck);
     return response ?? Uint8List(0);
   }
+
+  /// Delete a list of deck from the Supabase storage.
+  Future<bool> deleteDeck(List<String> deck) async {
+    final response = await _supabase?.storage.from('decks').remove(deck);
+    return response != null;
+  }
 }
