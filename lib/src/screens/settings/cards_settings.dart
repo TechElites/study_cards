@@ -1,3 +1,5 @@
+import 'package:flash_cards/src/data/remote/supabase_helper.dart';
+import 'package:flash_cards/src/logic/load/file_downloader.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Imports for ads
@@ -11,6 +13,7 @@ import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/load/xml_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 /// Creates a page to handle the settings of a deck
 class CardsSettingsPage extends StatefulWidget {
@@ -24,6 +27,7 @@ class CardsSettingsPage extends StatefulWidget {
 
 class _CardsSettingsPageState extends State<CardsSettingsPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
+  final SupabaseHelper _supabaseHelper = SupabaseHelper();
   final TextEditingController _nameController = TextEditingController();
   double cardsPerReview = 0;
   int maxCards = 10;
@@ -104,29 +108,48 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
           ),
         ]),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          _exportDeck().then((value) {
-            if (!kIsWeb) {
-              _adsFullScreen.showAndReloadAd(() {
-                FloatingBar.show('deck_download'.tr(cx), cx);
-              }).then((showed) {
-                if (!showed) {
+      floatingActionButton:
+          SpeedDial(icon: Icons.menu, activeIcon: Icons.close, children: [
+        SpeedDialChild(
+          child: const Icon(Icons.file_download),
+          label: 'export_deck'.tr(cx),
+          onTap: () {
+            _exportDeck().then((value) {
+              if (!kIsWeb) {
+                _adsFullScreen.showAndReloadAd(() {
                   FloatingBar.show('deck_download'.tr(cx), cx);
-                }
-              });
-            } else {
-              setState(() {});
-            }
-          });
-        },
-        child: const Icon(Icons.file_download),
-      ),
+                }).then((showed) {
+                  if (!showed) {
+                    FloatingBar.show('deck_download'.tr(cx), cx);
+                  }
+                });
+              } else {
+                setState(() {});
+              }
+            });
+          },
+        ),
+        if (!kIsWeb)
+          SpeedDialChild(
+            child: const Icon(Icons.file_upload),
+            label: 'upload_deck'.tr(cx),
+            onTap: () {
+              _uploadDeck().then((value) => FloatingBar.show(
+                  value ? 'deck_upload'.tr(cx) : 'deck_upload_error', cx));
+            },
+          )
+      ]),
     );
   }
 
+  Future<bool> _uploadDeck() async {
+    final fileName = await _exportDeck();
+    final file = await FileDownloader.getFile(fileName);
+    return await _supabaseHelper.uploadDeck(file);
+  }
+
   /// Exports the deck to an XML file
-  Future<bool> _exportDeck() async {
+  Future<String> _exportDeck() async {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);
     final String deckXml = XmlHandler.createXml(cards, deck.name);

@@ -1,11 +1,13 @@
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/data/remote/supabase_helper.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
-import 'package:flash_cards/src/logic/load/file_uploader.dart';
+import 'package:flash_cards/src/logic/load/file_reader.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Creates a page to handle the creation of a new deck
 class AddDeck extends StatefulWidget {
@@ -19,6 +21,21 @@ class _AddDeckState extends State<AddDeck> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _nameController = TextEditingController();
   List<StudyCard> frontsAndBacks = [StudyCard(front: '', back: '')];
+
+  final SupabaseHelper _supabaseHelper = SupabaseHelper();
+  List<FileObject> sharedDecks = [];
+  bool _sharedDecksLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _supabaseHelper.listDecks().then((decks) {
+      setState(() {
+        sharedDecks = decks;
+        _sharedDecksLoaded = true;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext cx) {
@@ -70,7 +87,7 @@ class _AddDeckState extends State<AddDeck> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                FileUploader.uploadFile().then((value) {
+                FileReader.readFile().then((value) {
                   setState(() {
                     frontsAndBacks = value;
                     _nameController.text = frontsAndBacks[0].front;
@@ -86,6 +103,40 @@ class _AddDeckState extends State<AddDeck> {
               ),
             ),
             const SizedBox(height: 16.0),
+            Text('shared_decks'.tr(cx),
+                style: Theme.of(cx).textTheme.bodyMedium),
+            !_sharedDecksLoaded
+                ? const Center(child: LinearProgressIndicator())
+                : Flexible(
+                    flex: 0,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: sharedDecks.length,
+                      itemBuilder: (context, index) {
+                        final shDeck = sharedDecks[index];
+                        return Card(
+                            child: ListTile(
+                                title: Text(shDeck.name),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                onTap: () {
+                                  _supabaseHelper
+                                      .downloadDeck(shDeck.name)
+                                      .then((list) {
+                                    FileReader.readFromList(list, shDeck.name)
+                                        .then((value) {
+                                      setState(() {
+                                        frontsAndBacks = value;
+                                        _nameController.text =
+                                            frontsAndBacks[0].front;
+                                      });
+                                    });
+                                  });
+                                }));
+                      },
+                    ),
+                  ),
             Expanded(
               child: ListView.builder(
                 itemCount: frontsAndBacks.length,

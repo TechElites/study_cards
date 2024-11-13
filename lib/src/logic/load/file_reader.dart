@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show Uint8List, kIsWeb;
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,9 +12,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
 /// Class to handle uploading files.
-class FileUploader {
+class FileReader {
   /// Reads a deck file based on the platform.
-  static Future<List<StudyCard>> uploadFile() async {
+  static Future<List<StudyCard>> readFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['xml', 'zip'],
@@ -26,8 +26,11 @@ class FileUploader {
           File file = File(result.files.single.path!);
           String fileContent = '';
           if (file.path.endsWith('.zip')) {
-            fileContent =
-                await _unzipFile(file).then((value) => value!.readAsString());
+            final bytes = await file.readAsBytes();
+            final archive = ZipDecoder().decodeBytes(bytes);
+            String zipFileName = path.basenameWithoutExtension(file.path);
+            fileContent = await unzipFile(archive, zipFileName)
+                .then((value) => value!.readAsString());
           } else {
             fileContent = await file.readAsString();
           }
@@ -44,7 +47,7 @@ class FileUploader {
   }
 
   /// Unzips the file and returns the xml file.
-  static Future<File?> _unzipFile(File zipFile) async {
+  static Future<File?> unzipFile(Archive archive, String name) async {
     try {
       Directory? externalDir;
       if (Platform.isAndroid) {
@@ -57,12 +60,8 @@ class FileUploader {
       } else {
         externalDir = await getApplicationDocumentsDirectory();
       }
-      final bytes = await zipFile.readAsBytes();
-      final archive = ZipDecoder().decodeBytes(bytes);
 
-      String zipFileName = path.basenameWithoutExtension(zipFile.path);
-      Directory destinationDir =
-          Directory(path.join(externalDir!.path, zipFileName));
+      Directory destinationDir = Directory(path.join(externalDir!.path, name));
       await destinationDir.create(recursive: true);
 
       File? xmlFile;
@@ -88,5 +87,19 @@ class FileUploader {
     } catch (e) {
       throw Exception('Error while unzipping $e');
     }
+  }
+
+  /// Retrieves the file from a Int list.
+  static Future<List<StudyCard>> readFromList(
+      Uint8List list, String name) async {
+    String fileContent = '';
+    if (name.contains('.zip')) {
+      final archive = ZipDecoder().decodeBytes(list);
+      fileContent = await FileReader.unzipFile(archive, name)
+          .then((value) => value!.readAsString());
+    } else {
+      fileContent = String.fromCharCodes(list);
+    }
+    return await XmlHandler.parseXml(fileContent);
   }
 }

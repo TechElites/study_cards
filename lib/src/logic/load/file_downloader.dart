@@ -10,7 +10,7 @@ import 'package:universal_html/html.dart';
 /// Class to handle downloading files.
 class FileDownloader {
   /// Saves the deck file on device based on the platform.
-  static Future<bool> saveFileOnDevice(
+  static Future<String> saveFileOnDevice(
       String fileName, String inFile, Map<String, String> mediaMap) async {
     try {
       if (!kIsWeb) {
@@ -41,13 +41,14 @@ class FileDownloader {
           final zipEncoder = ZipEncoder();
           final encodedFile = zipEncoder.encode(archive);
           if (encodedFile != null) {
-            await io.File('${directory.path}/${fileName.split('.xml')[0]}.zip')
+            fileName = '${fileName.split('.xml')[0]}.zip';
+            await io.File('${directory.path}/$fileName')
                 .writeAsBytes(encodedFile);
           } else {
-            return false;
+            return 'error';
           }
         }
-        return true;
+        return fileName;
       } else {
         final bytes = cv.utf8.encode(inFile);
         final blob = Blob([bytes]);
@@ -56,10 +57,19 @@ class FileDownloader {
           ..setAttribute("download", fileName)
           ..click();
         Url.revokeObjectUrl(url);
-        return true;
+        return fileName;
       }
     } catch (e) {
-      return false;
+      return 'error';
     }
+  }
+
+  /// retrieves the file from the downloads folder
+  static Future<io.File> getFile(String name) async {
+    final directory = io.Platform.isAndroid
+        ? io.Directory("/storage/emulated/0/Download")
+        : await getApplicationDocumentsDirectory();
+    final filePath = "${directory.path}/$name";
+    return io.File(filePath);
   }
 }

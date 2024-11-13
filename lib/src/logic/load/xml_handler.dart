@@ -157,7 +157,7 @@ class XmlHandler {
   }
 
   /// Saves the XML string to a file.
-  static Future<bool> saveXmlToFile(
+  static Future<String> saveXmlToFile(
       String xmlString, String fileName, Map<String, String> mediaMap) async {
     return FileDownloader.saveFileOnDevice(fileName, xmlString, mediaMap);
   }

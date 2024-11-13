@@ -1,3 +1,4 @@
+import 'package:flash_cards/src/data/remote/supabase_helper.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Import for mobile ads
@@ -20,6 +21,7 @@ void main() async {
   if (!kIsWeb) {
     await RewardService().isRewarded();
     unawaited(MobileAds.instance.initialize());
+    await SupabaseHelper().init();
   } else {
     // this is needed since it's only a trial version on web
     await DatabaseHelper().clear();
