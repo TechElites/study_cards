@@ -36,7 +36,8 @@ class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final SupabaseHelper _supa = SupabaseHelper();
   final ListDeleter _deleter = ListDeleter();
-  List<Deck> decks = [];
+  List<Deck> _allDecks = [];
+  List<Deck> shownDecks = [];
   final TextEditingController _searchController = TextEditingController();
 
   /// ads
@@ -46,18 +47,20 @@ class _DecksPageState extends State<DecksPage> {
   @override
   void initState() {
     super.initState();
-    decks = _dbHelper.getDecks();
+    _allDecks = _dbHelper.getDecks();
+    shownDecks = _allDecks;
+    _searchController.text = '';
     if (!kIsWeb) {
       _adsFullScreen = AdsFullscreen();
       _adsSandman = AdsSandman();
       _adsFullScreen.loadAd();
     }
-    _searchController.text = '';
   }
 
   void refreshList() {
     setState(() {
-      decks = _dbHelper.getDecks();
+      _allDecks = _dbHelper.getDecks();
+      shownDecks = _allDecks;
     });
   }
 
@@ -85,7 +88,7 @@ class _DecksPageState extends State<DecksPage> {
         onRefresh: () async {
           refreshList();
         },
-        child: decks.isEmpty && _searchController.text.isEmpty
+        child: _allDecks.isEmpty && _searchController.text.isEmpty
             ? Center(
                 child: Container(
                     padding: const EdgeInsets.all(16.0),
@@ -110,15 +113,17 @@ class _DecksPageState extends State<DecksPage> {
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          setState(() {
-                            _searchController.clear();
-                          });
+                          setState(() => _searchController.clear());
                         },
                       ),
                     ),
                     onChanged: (value) {
                       setState(() {
-                        decks = _dbHelper.getDecks().where((deck) {
+                        if (value == '') {
+                          shownDecks = _allDecks;
+                          return;
+                        }
+                        shownDecks = _allDecks.where((deck) {
                           return deck.name
                               .toLowerCase()
                               .contains(value.toLowerCase());
@@ -129,9 +134,9 @@ class _DecksPageState extends State<DecksPage> {
                 ),
                 Expanded(
                     child: ListView.builder(
-                  itemCount: decks.length,
+                  itemCount: shownDecks.length,
                   itemBuilder: (context, index) {
-                    final deck = decks[index];
+                    final deck = shownDecks[index];
                     return Dismissible(
                         key: Key(deck.id.toString()),
                         direction: DismissDirection.endToStart,
@@ -162,7 +167,7 @@ class _DecksPageState extends State<DecksPage> {
                         },
                         onDismissed: (direction) {
                           setState(() {
-                            decks.removeAt(index);
+                            shownDecks.removeAt(index);
                           });
                           _dbHelper.deleteDeck(deck.id).then((_) {
                             FloatingBar.show('deck_deleted'.tr(cx), cx);

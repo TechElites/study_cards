@@ -35,7 +35,7 @@ class _CardsPageState extends State<CardsPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   List<StudyCard> shownCards = [];
   List<StudyCard> _allCards = [];
-  final TextEditingController _searchController = TextEditingController(); 
+  final TextEditingController _searchController = TextEditingController();
   final List<String> _filteredRatings = ['all'];
   final ListDeleter _deleter = ListDeleter();
   late AdsFullscreen _adsFullScreen;
@@ -43,21 +43,19 @@ class _CardsPageState extends State<CardsPage> {
   @override
   void initState() {
     super.initState();
-    final cards = _dbHelper.getCards(widget.deckId);
-    _allCards = cards;
-    shownCards = cards;
+    _allCards = _dbHelper.getCards(widget.deckId);
+    shownCards = _allCards;
+    _searchController.text = '';
     if (!kIsWeb) {
       _adsFullScreen = AdsFullscreen();
       _adsFullScreen.loadAd();
     }
-    _searchController.text = '';
   }
 
   void refreshList() {
     setState(() {
-      final cards = _dbHelper.getCards(widget.deckId);
-      _allCards = cards;
-      shownCards = cards;
+      _allCards = _dbHelper.getCards(widget.deckId);
+      shownCards = _allCards;
     });
   }
 
@@ -104,6 +102,10 @@ class _CardsPageState extends State<CardsPage> {
                   ),
                   onChanged: (value) {
                     setState(() {
+                      if (value == '') {
+                        shownCards = _allCards;
+                        return;
+                      }
                       shownCards = _allCards
                           .where((card) =>
                               card.front
@@ -115,7 +117,6 @@ class _CardsPageState extends State<CardsPage> {
                           .toList();
                     });
                   },
-
                 ),
               ),
               //const Divider(),
@@ -123,7 +124,7 @@ class _CardsPageState extends State<CardsPage> {
                 child: ListView.builder(
                   itemCount: shownCards.length,
                   itemBuilder: (context, index) {
-                    final card = shownCards.elementAt(index);
+                    final card = shownCards[index];
                     return Dismissible(
                         key: Key(card.id.toString()),
                         direction: DismissDirection.endToStart,
