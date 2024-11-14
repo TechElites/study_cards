@@ -20,13 +20,14 @@ class HiveDeckAdapter extends TypeAdapter<HiveDeck> {
       ..name = fields[0] as String
       ..cards = fields[1] as int
       ..reviewCards = fields[2] as int
-      ..creation = fields[3] as String;
+      ..creation = fields[3] as String
+      ..shared = fields[4] as String;
   }
 
   @override
   void write(BinaryWriter writer, HiveDeck obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -34,7 +35,9 @@ class HiveDeckAdapter extends TypeAdapter<HiveDeck> {
       ..writeByte(2)
       ..write(obj.reviewCards)
       ..writeByte(3)
-      ..write(obj.creation);
+      ..write(obj.creation)
+      ..writeByte(4)
+      ..write(obj.shared);
   }
 
   @override
