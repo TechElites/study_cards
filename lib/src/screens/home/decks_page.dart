@@ -87,7 +87,7 @@ class _DecksPageState extends State<DecksPage> {
         child: decks.isEmpty && search.isEmpty
             ? Center(
                 child: Container(
-                    padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -101,7 +101,7 @@ class _DecksPageState extends State<DecksPage> {
             // search textbox to filter decks by name
             Column(children: [
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
                   child: TextField(
                     decoration: InputDecoration(
                       labelText: 'search'.tr(cx),
