@@ -1,4 +1,5 @@
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/remote/supabase_helper.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -126,6 +127,17 @@ class _AddDeckState extends State<AddDeck> {
                                 title: Text(shDeck.name),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    _supabaseHelper.deleteDecks([shDeck.name]).then((_) {
+                                      FloatingBar.show('deck_deleted'.tr(cx), cx);
+                                      setState(() {
+                                        sharedDecks.removeAt(index);
+                                      });
+                                    });
+                                  },
                                 ),
                                 onTap: () {
                                   setState(() => _loadingCards = true);

@@ -50,7 +50,7 @@ class SupabaseHelper {
   }
 
   /// Delete a list of deck from the Supabase storage.
-  Future<bool> deleteDeck(List<String> deck) async {
+  Future<bool> deleteDecks(List<String> deck) async {
     final response = await _supabase?.storage.from('decks').remove(deck);
     return response != null;
   }

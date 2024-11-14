@@ -145,6 +145,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   Future<bool> _uploadDeck() async {
     final fileName = await _exportDeck();
     final file = await FileDownloader.getFile(fileName);
+    _dbHelper.updateDeckShared(widget.deckId, file.path.substring(file.path.length - 4));
     return await _supabaseHelper.uploadDeck(file);
   }
 

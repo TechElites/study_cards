@@ -87,6 +87,13 @@ class DatabaseHelper {
     await deck.save();
   }
 
+  /// Updates the deck shared status in the database.
+  Future<void> updateDeckShared(int deckId, String shared) async {
+    final deck = decksBox.values.firstWhere((deck) => deck.key == deckId);
+    deck.shared = shared;
+    await deck.save();
+  }
+
   /// Updates the card informations in the database.
   Future<void> updateCard(StudyCard card) async {
     final existingCard = cardsBox.values.firstWhere((c) => c.key == card.id);
