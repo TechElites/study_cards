@@ -79,114 +79,119 @@ class _AddDeckState extends State<AddDeck> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: 'deck_name'.tr(cx),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: 'deck_name'.tr(cx),
+                ),
               ),
-            ),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                setState(() => _loadingCards = true);
-                FileReader.readFile().then((value) {
-                  setState(() {
-                    frontsAndBacks = value;
-                    _nameController.text = frontsAndBacks[0].front;
-                    _sharedDeck = '';
-                    _loadingCards = false;
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() => _loadingCards = true);
+                  FileReader.readFile().then((value) {
+                    setState(() {
+                      frontsAndBacks = value;
+                      _nameController.text = frontsAndBacks[0].front;
+                      _sharedDeck = '';
+                      _loadingCards = false;
+                    });
                   });
-                });
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(kIsWeb ? 'pick_xml'.tr(cx) : 'pick_xml_or_zip'.tr(cx)),
-                  const Icon(Icons.folder_copy_rounded),
-                ],
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(kIsWeb ? 'pick_xml'.tr(cx) : 'pick_xml_or_zip'.tr(cx)),
+                    const Icon(Icons.folder_copy_rounded),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 16.0),
-            Text('shared_decks'.tr(cx),
-                style: Theme.of(cx).textTheme.bodyMedium),
-            !_sharedDecksLoaded
-                ? Container(
+              const SizedBox(height: 16.0),
+              Text('shared_decks'.tr(cx),
+                  style: Theme.of(cx).textTheme.bodyMedium),
+              if (!_sharedDecksLoaded)
+                Container(
                     padding: const EdgeInsets.only(top: 16.0),
                     child: const LinearProgressIndicator())
-                : Flexible(
-                    flex: 0,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: sharedDecks.length,
-                      itemBuilder: (context, index) {
-                        final shDeck = sharedDecks[index];
-                        return Card(
-                            child: ListTile(
-                                title: Text(shDeck.name),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.clear),
-                                  onPressed: () {
-                                    _supabaseHelper
-                                        .deleteDecks([shDeck.name]).then((_) {
-                                      FloatingBar.show(
-                                          'deck_deleted'.tr(cx), cx);
-                                      setState(() {
-                                        sharedDecks.removeAt(index);
-                                      });
-                                    });
-                                  },
-                                ),
-                                onTap: () {
-                                  setState(() => _loadingCards = true);
+              else
+                SizedBox(
+                  height: 300,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: sharedDecks.length,
+                    itemBuilder: (context, index) {
+                      final shDeck = sharedDecks[index];
+                      return Card(
+                          child: ListTile(
+                              title: Text(shDeck.name),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              trailing: IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
                                   _supabaseHelper
-                                      .downloadDeck(shDeck.name)
-                                      .then((value) {
+                                      .deleteDecks([shDeck.name]).then((_) {
+                                    FloatingBar.show('deck_deleted'.tr(cx), cx);
                                     setState(() {
-                                      frontsAndBacks = value;
-                                      _nameController.text =
-                                          frontsAndBacks[0].front;
-                                      _sharedDeck = shDeck.name
-                                          .substring(shDeck.name.length - 4);
-                                      _loadingCards = false;
+                                      sharedDecks.removeAt(index);
                                     });
                                   });
-                                }));
-                      },
-                    ),
+                                },
+                              ),
+                              onTap: () {
+                                setState(() => _loadingCards = true);
+                                _supabaseHelper
+                                    .downloadDeck(shDeck.name)
+                                    .then((value) {
+                                  setState(() {
+                                    frontsAndBacks = value;
+                                    _nameController.text =
+                                        frontsAndBacks[0].front;
+                                    _sharedDeck = shDeck.name
+                                        .substring(shDeck.name.length - 4);
+                                    _loadingCards = false;
+                                  });
+                                });
+                              }));
+                    },
                   ),
-            _loadingCards
-                ? Container(
+                ),
+              if (_loadingCards)
+                Container(
                     padding: const EdgeInsets.only(top: 16.0),
                     child: const CircularProgressIndicator())
-                : Expanded(
-                    child: ListView.builder(
-                      itemCount: frontsAndBacks.length,
-                      itemBuilder: (context, index) {
-                        final item = frontsAndBacks[index];
-                        if (item.front != '') {
-                          var first = 'question'.tr(cx);
-                          var second = 'answer'.tr(cx);
-                          if (index == 0) {
-                            first = 'deck_name'.tr(cx);
-                            second = 'number_of_cards'.tr(cx);
-                          }
-                          return ListTile(
-                            title: Text('$first: ${item.front}'),
-                            subtitle: Text('$second: ${item.back}'),
-                          );
-                        }
-                        return const SizedBox.shrink();
-                      },
-                    ),
-                  ),
-          ],
+              else
+                ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: frontsAndBacks.length,
+                  itemBuilder: (context, index) {
+                    final item = frontsAndBacks[index];
+                    if (item.front != '') {
+                      var first = 'question'.tr(cx);
+                      var second = 'answer'.tr(cx);
+                      if (index == 0) {
+                        first = 'deck_name'.tr(cx);
+                        second = 'number_of_cards'.tr(cx);
+                      }
+                      return ListTile(
+                        title: Text('$first: ${item.front}'),
+                        subtitle: Text('$second: ${item.back}'),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                ),
+            ],
+          ),
         ),
       ),
+      resizeToAvoidBottomInset: true,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (_nameController.text != '') {
