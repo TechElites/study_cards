@@ -131,8 +131,10 @@ class _AddDeckState extends State<AddDeck> {
                                 trailing: IconButton(
                                   icon: const Icon(Icons.clear),
                                   onPressed: () {
-                                    _supabaseHelper.deleteDecks([shDeck.name]).then((_) {
-                                      FloatingBar.show('deck_deleted'.tr(cx), cx);
+                                    _supabaseHelper
+                                        .deleteDecks([shDeck.name]).then((_) {
+                                      FloatingBar.show(
+                                          'deck_deleted'.tr(cx), cx);
                                       setState(() {
                                         sharedDecks.removeAt(index);
                                       });
@@ -143,17 +145,14 @@ class _AddDeckState extends State<AddDeck> {
                                   setState(() => _loadingCards = true);
                                   _supabaseHelper
                                       .downloadDeck(shDeck.name)
-                                      .then((list) {
-                                    FileReader.readFromList(list, shDeck.name)
-                                        .then((value) {
-                                      setState(() {
-                                        frontsAndBacks = value;
-                                        _nameController.text =
-                                            frontsAndBacks[0].front;
-                                        _sharedDeck = shDeck.name
-                                            .substring(shDeck.name.length - 4);
-                                        _loadingCards = false;
-                                      });
+                                      .then((value) {
+                                    setState(() {
+                                      frontsAndBacks = value;
+                                      _nameController.text =
+                                          frontsAndBacks[0].front;
+                                      _sharedDeck = shDeck.name
+                                          .substring(shDeck.name.length - 4);
+                                      _loadingCards = false;
                                     });
                                   });
                                 }));

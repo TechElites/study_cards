@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/logic/load/file_reader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -37,16 +39,17 @@ class SupabaseHelper {
     if (decks.any((element) => element.name == fileName)) {
       response = await _supabase?.storage.from('decks').update(fileName, deck);
     } else {
-      response =
-          await _supabase?.storage.from('decks').upload(fileName, deck);
+      response = await _supabase?.storage.from('decks').upload(fileName, deck);
     }
     return response != null;
   }
 
   /// Downloads a deck from the Supabase storage.
-  Future<Uint8List> downloadDeck(String deck) async {
-    final response = await _supabase?.storage.from('decks').download(deck);
-    return response ?? Uint8List(0);
+  Future<List<StudyCard>> downloadDeck(String deck) async {
+    final intList = await _supabase?.storage.from('decks').download(deck);
+    final cardsList = FileReader.readFromList(
+        intList ?? Uint8List(0), deck.substring(deck.length - 4));
+    return cardsList;
   }
 
   /// Delete a list of deck from the Supabase storage.

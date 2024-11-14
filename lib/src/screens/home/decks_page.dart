@@ -4,7 +4,6 @@ import 'package:flash_cards/src/composables/home_drawer.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/data/remote/supabase_helper.dart';
-import 'package:flash_cards/src/logic/load/file_reader.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Import for mobile ads
@@ -310,29 +309,28 @@ class _DecksPageState extends State<DecksPage> {
 
   /// Merges a deck from the Supabase storage with the local deck
   void _mergeDeck(Deck deck, Function onMerge) {
-    _supa.downloadDeck(deck.name + deck.shared).then((list) {
-      FileReader.readFromList(list, deck.shared).then((sharedCards) {
-        final deckCards = _dbHelper.getCards(deck.id);
-        _dbHelper.deleteCards(deckCards.map((c) => c.id).toList());
-        final merged = <StudyCard>[];
-        for (var shC in sharedCards) {
-          StudyCard mergedCard = shC;
-          if (deckCards.any((c) => c.front == shC.front)) {
-            final oldCard = deckCards.firstWhere((c) => c.front == shC.front);
-            mergedCard = StudyCard(
-              deckId: oldCard.deckId,
-              rating: oldCard.rating,
-              front: shC.front,
-              back: shC.back,
-              frontMedia: shC.frontMedia,
-              backMedia: shC.backMedia,
-            );
-          }
-          merged.add(mergedCard);
+    _supa.downloadDeck(deck.name + deck.shared).then((sharedCards) {
+      final deckCards = _dbHelper.getCards(deck.id);
+      _dbHelper.deleteCards(deckCards.map((c) => c.id).toList());
+      final merged = <StudyCard>[];
+
+      for (var shC in sharedCards) {
+        StudyCard mergedCard = shC;
+        if (deckCards.any((c) => c.front == shC.front)) {
+          final oldCard = deckCards.firstWhere((c) => c.front == shC.front);
+          mergedCard = StudyCard(
+            deckId: oldCard.deckId,
+            rating: oldCard.rating,
+            front: shC.front,
+            back: shC.back,
+            frontMedia: shC.frontMedia,
+            backMedia: shC.backMedia,
+          );
         }
-        _dbHelper.insertDeckCards(merged);
-        onMerge();
-      });
+        merged.add(mergedCard);
+      }
+      _dbHelper.insertDeckCards(merged);
+      onMerge();
     });
   }
 }
