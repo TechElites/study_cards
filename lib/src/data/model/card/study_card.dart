@@ -63,6 +63,26 @@ class StudyCard {
     this.backMedia = '',
   });
 
+  StudyCard copy(
+          {int? id,
+          int? deckId,
+          String? front,
+          String? back,
+          String? rating,
+          String? lastReviewed,
+          String? frontMedia,
+          String? backMedia}) =>
+      StudyCard(
+        id: id ?? this.id,
+        deckId: deckId ?? this.deckId,
+        front: front ?? this.front,
+        back: back ?? this.back,
+        rating: rating ?? this.rating,
+        lastReviewed: lastReviewed ?? this.lastReviewed,
+        frontMedia: frontMedia ?? this.frontMedia,
+        backMedia: backMedia ?? this.backMedia,
+      );
+
   /// Converts the StudyCard object to a HiveStudyCard object.
   HiveStudyCard toHiveStudyCard() {
     return HiveStudyCard()
