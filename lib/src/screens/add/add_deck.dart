@@ -32,12 +32,14 @@ class _AddDeckState extends State<AddDeck> {
   @override
   void initState() {
     super.initState();
-    _supabaseHelper.listDecks().then((decks) {
-      setState(() {
-        sharedDecks = decks;
-        _sharedDecksLoaded = true;
+    if (!kIsWeb) {
+      _supabaseHelper.listDecks().then((decks) {
+        setState(() {
+          sharedDecks = decks;
+          _sharedDecksLoaded = true;
+        });
       });
-    });
+    }
   }
 
   @override
@@ -111,9 +113,10 @@ class _AddDeckState extends State<AddDeck> {
                 ),
               ),
               const SizedBox(height: 16.0),
-              Text('shared_decks'.tr(cx),
-                  style: Theme.of(cx).textTheme.bodyMedium),
-              if (!_sharedDecksLoaded)
+              if (!kIsWeb)
+                Text('shared_decks'.tr(cx),
+                    style: Theme.of(cx).textTheme.bodyMedium),
+              if (!_sharedDecksLoaded && !kIsWeb)
                 Container(
                     padding: const EdgeInsets.only(top: 16.0),
                     child: const LinearProgressIndicator())
