@@ -34,7 +34,6 @@ class _DecksPageState extends State<DecksPage> {
   final ListDeleter _deleter = ListDeleter();
   List<Deck> decks = [];
   List<Deck> shownDecks = [];
-  // String _searchText = '';
   final TextEditingController _searchController = TextEditingController();
 
   /// ads
@@ -51,7 +50,6 @@ class _DecksPageState extends State<DecksPage> {
       _adsFullScreen.loadAd();
     }
     _searchController.text = '';
-    shownDecks = decks;
   }
 
   void refreshList() {
@@ -120,7 +118,7 @@ class _DecksPageState extends State<DecksPage> {
                         shownDecks = decks;
                       }
                       setState(() {
-                        shownDecks = _dbHelper.getDecks().where((deck) {
+                        decks = _dbHelper.getDecks().where((deck) {
                           return deck.name
                               .toLowerCase()
                               .contains(value.toLowerCase());
