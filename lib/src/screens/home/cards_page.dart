@@ -35,6 +35,7 @@ class _CardsPageState extends State<CardsPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   List<StudyCard> shownCards = [];
   List<StudyCard> _allCards = [];
+  final TextEditingController _searchController = TextEditingController(); 
   final List<String> _filteredRatings = ['all'];
   final ListDeleter _deleter = ListDeleter();
   late AdsFullscreen _adsFullScreen;
@@ -49,6 +50,7 @@ class _CardsPageState extends State<CardsPage> {
       _adsFullScreen = AdsFullscreen();
       _adsFullScreen.loadAd();
     }
+    _searchController.text = '';
   }
 
   void refreshList() {
@@ -91,6 +93,14 @@ class _CardsPageState extends State<CardsPage> {
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'search'.tr(cx),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        setState(() {
+                          _searchController.clear();
+                        });
+                      },
+                    ),
                   ),
                   onChanged: (value) {
                     setState(() {
@@ -105,6 +115,7 @@ class _CardsPageState extends State<CardsPage> {
                           .toList();
                     });
                   },
+
                 ),
               ),
               //const Divider(),
