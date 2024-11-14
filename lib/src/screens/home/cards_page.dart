@@ -89,8 +89,9 @@ class _CardsPageState extends State<CardsPage> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
                 child: TextField(
+                  controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'search'.tr(cx),
+                    labelText: 'search'.tr(cx),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
