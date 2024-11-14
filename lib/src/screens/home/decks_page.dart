@@ -37,7 +37,6 @@ class _DecksPageState extends State<DecksPage> {
   final SupabaseHelper _supa = SupabaseHelper();
   final ListDeleter _deleter = ListDeleter();
   List<Deck> decks = [];
-  // String _searchText = '';
   final TextEditingController _searchController = TextEditingController();
 
   /// ads
@@ -168,7 +167,7 @@ class _DecksPageState extends State<DecksPage> {
                           _dbHelper.deleteDeck(deck.id).then((_) {
                             FloatingBar.show('deck_deleted'.tr(cx), cx);
                             _deleteFolder(List.of([deck.name]));
-                            _supa.deleteDeck([deck.shared]);
+                            _supa.deleteDeck([deck.name + deck.shared]);
                           });
                         },
                         background: Container(
@@ -307,7 +306,7 @@ class _DecksPageState extends State<DecksPage> {
 
   /// Merges a deck from the Supabase storage with the local deck
   void _mergeDeck(Deck deck, Function onMerge) {
-    _supa.downloadDeck(deck.shared).then((list) {
+    _supa.downloadDeck(deck.name + deck.shared).then((list) {
       FileReader.readFromList(list, deck.shared).then((sharedCards) {
         final deckCards = _dbHelper.getCards(deck.id);
         _dbHelper.deleteCards(deckCards.map((c) => c.id).toList());

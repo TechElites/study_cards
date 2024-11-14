@@ -21,6 +21,7 @@ class _AddDeckState extends State<AddDeck> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final TextEditingController _nameController = TextEditingController();
   List<StudyCard> frontsAndBacks = [StudyCard(front: '', back: '')];
+  bool _loadingCards = false;
 
   final SupabaseHelper _supabaseHelper = SupabaseHelper();
   List<FileObject> sharedDecks = [];
@@ -88,11 +89,13 @@ class _AddDeckState extends State<AddDeck> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
+                setState(() => _loadingCards = true);
                 FileReader.readFile().then((value) {
                   setState(() {
                     frontsAndBacks = value;
                     _nameController.text = frontsAndBacks[0].front;
                     _sharedDeck = '';
+                    _loadingCards = false;
                   });
                 });
               },
@@ -108,7 +111,9 @@ class _AddDeckState extends State<AddDeck> {
             Text('shared_decks'.tr(cx),
                 style: Theme.of(cx).textTheme.bodyMedium),
             !_sharedDecksLoaded
-                ? const Center(child: LinearProgressIndicator())
+                ? Container(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: const LinearProgressIndicator())
                 : Flexible(
                     flex: 0,
                     child: ListView.builder(
@@ -123,6 +128,7 @@ class _AddDeckState extends State<AddDeck> {
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 onTap: () {
+                                  setState(() => _loadingCards = true);
                                   _supabaseHelper
                                       .downloadDeck(shDeck.name)
                                       .then((list) {
@@ -132,8 +138,9 @@ class _AddDeckState extends State<AddDeck> {
                                         frontsAndBacks = value;
                                         _nameController.text =
                                             frontsAndBacks[0].front;
-                                        _sharedDeck = shDeck.name.substring(
-                                            shDeck.name.length - 4);
+                                        _sharedDeck = shDeck.name
+                                            .substring(shDeck.name.length - 4);
+                                        _loadingCards = false;
                                       });
                                     });
                                   });
@@ -141,27 +148,31 @@ class _AddDeckState extends State<AddDeck> {
                       },
                     ),
                   ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: frontsAndBacks.length,
-                itemBuilder: (context, index) {
-                  final item = frontsAndBacks[index];
-                  if (item.front != '') {
-                    var first = 'question'.tr(cx);
-                    var second = 'answer'.tr(cx);
-                    if (index == 0) {
-                      first = 'deck_name'.tr(cx);
-                      second = 'number_of_cards'.tr(cx);
-                    }
-                    return ListTile(
-                      title: Text('$first: ${item.front}'),
-                      subtitle: Text('$second: ${item.back}'),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
+            _loadingCards
+                ? Container(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: const CircularProgressIndicator())
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: frontsAndBacks.length,
+                      itemBuilder: (context, index) {
+                        final item = frontsAndBacks[index];
+                        if (item.front != '') {
+                          var first = 'question'.tr(cx);
+                          var second = 'answer'.tr(cx);
+                          if (index == 0) {
+                            first = 'deck_name'.tr(cx);
+                            second = 'number_of_cards'.tr(cx);
+                          }
+                          return ListTile(
+                            title: Text('$first: ${item.front}'),
+                            subtitle: Text('$second: ${item.back}'),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                    ),
+                  ),
           ],
         ),
       ),
