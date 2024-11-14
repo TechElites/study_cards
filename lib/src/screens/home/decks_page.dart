@@ -309,14 +309,14 @@ class _DecksPageState extends State<DecksPage> {
 
   /// Merges a deck from the Supabase storage with the local deck
   void _mergeDeck(Deck deck, Function onMerge) {
-    _supa.downloadDeck(deck.name + deck.shared).then((sharedCards) {
+    _supa.downloadDeck(deck.name).then((sharedCards) {
       sharedCards
           .removeAt(0); // Skips the first card containing the name of the deck
       sharedCards = sharedCards
           .map((c) => c.copy(deckId: deck.id))
           .toList(); // Adds the deck id to the cards
       final deckCards = _dbHelper.getCards(deck.id);
-      _dbHelper.deleteCards(deckCards.map((c) => c.id).toList());
+      _dbHelper.emptyDeck(deck.id);
       final merged = <StudyCard>[];
 
       if (deckCards.isNotEmpty) {

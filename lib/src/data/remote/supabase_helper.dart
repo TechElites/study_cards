@@ -46,9 +46,15 @@ class SupabaseHelper {
 
   /// Downloads a deck from the Supabase storage.
   Future<List<StudyCard>> downloadDeck(String deck) async {
+    // if no extension is provided, try to find the deck with the zip extension
+    if (!deck.contains('.')) {
+      final decks = await listDecks();
+      final decksNames = decks.map((e) => e.name).toList();
+      deck += decksNames.contains('$deck.zip') ? '.zip' : '.xml';
+    }
     final intList = await _supabase?.storage.from('decks').download(deck);
     final cardsList = FileReader.readFromList(
-        intList ?? Uint8List(0), deck.substring(deck.length - 4));
+        intList ?? Uint8List(0), deck);
     return cardsList;
   }
 

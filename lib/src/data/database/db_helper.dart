@@ -139,6 +139,18 @@ class DatabaseHelper {
     }
   }
 
+  /// Empty the deck of all its cards.
+  Future<void> emptyDeck(int deckId) async {
+    final deck = decksBox.values.firstWhere((deck) => deck.key == deckId);
+    deck.cards = 0;
+    await deck.save();
+    final cards =
+        cardsBox.values.where((card) => card.deckId == deckId).toList();
+    for (var card in cards) {
+      await card.delete();
+    }
+  }
+
   /// Deletes a list of cards from the database.
   Future<void> deleteCards(List<int> cardIds) async {
     final card = cardsBox.values.firstWhere((card) => card.key == cardIds[0]);
