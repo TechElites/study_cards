@@ -33,7 +33,8 @@ class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   final ListDeleter _deleter = ListDeleter();
   List<Deck> decks = [];
-  String search = '';
+  // String _searchText = '';
+  final TextEditingController _searchController = TextEditingController();
 
   /// ads
   late AdsFullscreen _adsFullScreen;
@@ -48,6 +49,7 @@ class _DecksPageState extends State<DecksPage> {
       _adsSandman = AdsSandman();
       _adsFullScreen.loadAd();
     }
+    _searchController.text = '';
   }
 
   void refreshList() {
@@ -80,7 +82,7 @@ class _DecksPageState extends State<DecksPage> {
         onRefresh: () async {
           refreshList();
         },
-        child: decks.isEmpty && search.isEmpty
+        child: decks.isEmpty && _searchController.text.isEmpty
             ? Center(
                 child: Container(
                     padding: const EdgeInsets.all(16.0),
@@ -99,13 +101,21 @@ class _DecksPageState extends State<DecksPage> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
                   child: TextField(
+                    controller: _searchController,
                     decoration: InputDecoration(
                       labelText: 'search'.tr(cx),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          setState(() {
+                            _searchController.clear();
+                          });
+                        },
+                      ),
                     ),
                     onChanged: (value) {
                       setState(() {
                         decks = _dbHelper.getDecks().where((deck) {
-                          search = value;
                           return deck.name
                               .toLowerCase()
                               .contains(value.toLowerCase());
