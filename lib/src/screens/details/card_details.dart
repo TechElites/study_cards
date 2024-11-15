@@ -84,9 +84,10 @@ class _CardsPageState extends State<CardDetailsPage> {
                     children: [
                       Image.file(
                         File(_selectedFrontImage!.path),
-                        height: 200.0,
-                        width: 200.0,
-                        fit: BoxFit.cover,
+                        height: 300.0, // Altezza massima
+                        width: 300.0, // Larghezza massima
+                        fit: BoxFit
+                            .contain, // Ridimensiona mantenendo le proporzioni
                         alignment: Alignment.center,
                       ),
                       Row(
@@ -146,9 +147,10 @@ class _CardsPageState extends State<CardDetailsPage> {
                     children: [
                       Image.file(
                         File(_selectedBackImage!.path),
-                        height: 200.0,
-                        width: 200.0,
-                        fit: BoxFit.cover,
+                        height: 300.0, // Altezza massima
+                        width: 300.0, // Larghezza massima
+                        fit: BoxFit
+                            .contain, // Ridimensiona mantenendo le proporzioni
                         alignment: Alignment.center,
                       ),
                       Row(
