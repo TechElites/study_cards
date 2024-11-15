@@ -169,8 +169,8 @@ class _DecksPageState extends State<DecksPage> {
                             shownDecks.removeAt(index);
                           });
                           _dbHelper.deleteDeck(deck.id).then((_) {
-                            FloatingBar.show('deck_deleted'.tr(cx), cx);
                             _deleteFolder(List.of([deck.name]));
+                            FloatingBar.show('deck_deleted'.tr(cx), cx);
                           });
                         },
                         background: Container(
