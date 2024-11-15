@@ -189,9 +189,10 @@ class _CardsReviewState extends State<ReviewPage>
                                             child: Image.file(
                                               File(widget
                                                   .cards[_index].frontMedia),
-                                              height: 200.0,
-                                              width: 200.0,
-                                              fit: BoxFit.cover,
+                                              height: 300.0, // Altezza massima
+                                              width: 300.0, // Larghezza massima
+                                              fit: BoxFit
+                                                  .contain, // Ridimensiona mantenendo le proporzioni
                                               alignment: Alignment.center,
                                             ),
                                           ),
@@ -216,10 +217,11 @@ class _CardsReviewState extends State<ReviewPage>
                                                 vertical: 16.0),
                                             child: Image.file(
                                               File(widget
-                                                  .cards[_index].backMedia),
-                                              height: 200.0,
-                                              width: 200.0,
-                                              fit: BoxFit.cover,
+                                                  .cards[_index].frontMedia),
+                                              height: 300.0, // Altezza massima
+                                              width: 300.0, // Larghezza massima
+                                              fit: BoxFit
+                                                  .contain, // Ridimensiona mantenendo le proporzioni
                                               alignment: Alignment.center,
                                             ),
                                           ),
@@ -274,9 +276,10 @@ class _CardsReviewState extends State<ReviewPage>
                                             child: Image.file(
                                               File(widget
                                                   .cards[_index].frontMedia),
-                                              height: 200.0,
-                                              width: 200.0,
-                                              fit: BoxFit.cover,
+                                              height: 300.0, // Altezza massima
+                                              width: 300.0, // Larghezza massima
+                                              fit: BoxFit
+                                                  .contain, // Ridimensiona mantenendo le proporzioni
                                               alignment: Alignment.center,
                                             ),
                                           ),
