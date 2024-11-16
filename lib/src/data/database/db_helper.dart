@@ -99,12 +99,14 @@ class DatabaseHelper {
     await existingCard.save();
   }
 
-  /// Updates the card rating in the database.
-  Future<void> updateCardRating(int cardId, String rating) async {
-    final card = cardsBox.values.firstWhere((c) => c.key == cardId);
-    card.rating = rating;
-    card.lastReviewed = DateTime.now().toIso8601String();
-    await card.save();
+  /// Updates the cards rating in the database.
+  Future<void> updateCardsRating(List<int> cardId, String rating) async {
+    for (var id in cardId) {
+      final card = cardsBox.values.firstWhere((c) => c.key == id);
+      card.rating = rating;
+      card.lastReviewed = DateTime.now().toIso8601String();
+      await card.save();
+    }
   }
 
   /// Deletes the deck and all its cards from the database.

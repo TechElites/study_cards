@@ -298,8 +298,8 @@ class _CardsReviewState extends State<ReviewPage>
                         ? SlideTransition(
                             position: _ratingAnimation,
                             child: RatingButtons.build(cx, (rating) {
-                              _dbHelper.updateCardRating(
-                                  widget.cards[_index].id, rating);
+                              _dbHelper.updateCardsRating(
+                                  [widget.cards[_index].id], rating);
                               _nextCard();
                             }))
                         : Text(

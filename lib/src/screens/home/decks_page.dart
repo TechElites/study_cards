@@ -12,7 +12,7 @@ import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flash_cards/src/logic/deck/list_deleter.dart';
+import 'package:flash_cards/src/logic/deck/list_selector.dart';
 import 'package:flash_cards/src/logic/permission_helper.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
@@ -31,7 +31,7 @@ class DecksPage extends StatefulWidget {
 
 class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
-  final ListDeleter _deleter = ListDeleter();
+  final ListSelector _deleter = ListSelector();
   List<Deck> _allDecks = [];
   List<Deck> shownDecks = [];
   final TextEditingController _searchController = TextEditingController();
@@ -200,9 +200,9 @@ class _DecksPageState extends State<DecksPage> {
                                   ],
                                 ),
                                 onTap: () {
-                                  if (_deleter.isDeleting) {
+                                  if (_deleter.isSelecting) {
                                     setState(() {
-                                      _deleter.toggleItem(deck.id);
+                                      _deleter.toggleItem(deck.id, name: deck.name);
                                     });
                                     return;
                                   }
@@ -216,8 +216,8 @@ class _DecksPageState extends State<DecksPage> {
                                 },
                                 onLongPress: () {
                                   setState(() {
-                                    _deleter.isDeleting = true;
-                                    _deleter.toggleItem(deck.id);
+                                    _deleter.isSelecting = true;
+                                    _deleter.toggleItem(deck.id, name: deck.name);
                                   });
                                   Vibration.hasVibrator().then((value) {
                                     if (value ?? false) {
@@ -231,7 +231,7 @@ class _DecksPageState extends State<DecksPage> {
                 )),
               ]),
       ),
-      floatingActionButton: _deleter.isDeleting
+      floatingActionButton: _deleter.isSelecting
           ? FloatingActionButton(
               onPressed: () {
                 final list = _deleter.dumpList();

@@ -12,12 +12,13 @@ import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/rating.dart';
 import 'package:flash_cards/src/logic/deck/deck_shuffler.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flash_cards/src/logic/deck/list_deleter.dart';
+import 'package:flash_cards/src/logic/deck/list_selector.dart';
 import 'package:flash_cards/src/screens/add/add_card.dart';
 import 'package:flash_cards/src/screens/details/card_details.dart';
 import 'package:flash_cards/src/screens/review/deck_review.dart';
 import 'package:flash_cards/src/screens/settings/cards_settings.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:vibration/vibration.dart';
 
@@ -37,7 +38,7 @@ class _CardsPageState extends State<CardsPage> {
   List<StudyCard> _allCards = [];
   final TextEditingController _searchController = TextEditingController();
   final List<String> _filteredRatings = ['all'];
-  final ListDeleter _deleter = ListDeleter();
+  final ListSelector _selector = ListSelector();
   late AdsFullscreen _adsFullScreen;
 
   @override
@@ -120,74 +121,84 @@ class _CardsPageState extends State<CardsPage> {
                   },
                 ),
               ),
-              //const Divider(),
               Expanded(
                 child: ListView.builder(
                   itemCount: shownCards.length,
                   itemBuilder: (context, index) {
                     final card = shownCards[index];
-                    return Dismissible(
+                    return Slidable(
                         key: Key(card.id.toString()),
-                        direction: DismissDirection.endToStart,
-                        onUpdate: (details) {
-                          if (details.progress >= 0.5 &&
-                              details.progress <= 0.55) {
-                            Vibration.hasVibrator().then((value) {
-                              if (value ?? false) {
-                                Vibration.vibrate(duration: 10);
-                              }
-                            });
-                          }
-                        },
-                        confirmDismiss: (direction) async {
-                          int deletionTime = 3;
-                          Completer<bool?> completer = Completer<bool?>();
-                          Timer deletionTimer =
-                              Timer(Duration(seconds: deletionTime), () {
-                            completer.complete(true);
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          });
-                          FloatingBar.showWithAction(
-                              'card_deletion'.tr(cx), 'undo'.tr(cx), () {
-                            completer.complete(false);
-                            deletionTimer.cancel();
-                          }, cx);
-                          return completer.future;
-                        },
-                        onDismissed: (direction) {
-                          setState(() {
-                            shownCards.removeAt(index);
-                          });
-                          _dbHelper.deleteCard(card.id).then((_) {
-                            FloatingBar.show('card_deleted'.tr(cx), cx);
-                          });
-                        },
-                        background: Container(
-                          color: Colors.red[400],
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: const Icon(Icons.delete, color: Colors.white),
+                        startActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (cx) {
+                                _dbHelper.updateCardsRating([card.id],
+                                    Rating.none).then((_) => refreshList());
+                              },
+                              icon: Icons.restore,
+                              backgroundColor: Colors.grey[400]!,
+                              foregroundColor: Colors.white,
+                              label: 'reset'.tr(cx),
+                            ),
+                          ],
+                        ),
+                        endActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (cx) {
+                                int deletionTime = 3;
+                                Completer<bool?> completer = Completer<bool?>();
+                                Timer deletionTimer =
+                                    Timer(Duration(seconds: deletionTime), () {
+                                  completer.complete(true);
+                                  ScaffoldMessenger.of(context)
+                                      .hideCurrentSnackBar();
+                                });
+                                FloatingBar.showWithAction(
+                                    'card_deletion'.tr(cx), 'undo'.tr(cx), () {
+                                  completer.complete(false);
+                                  deletionTimer.cancel();
+                                }, cx);
+                                completer.future.then((value) {
+                                  if (value == false) {
+                                    return;
+                                  }
+                                  setState(() {
+                                    shownCards.removeAt(index);
+                                  });
+                                  _dbHelper.deleteCard(card.id).then((_) {
+                                    FloatingBar.show('card_deleted'.tr(cx), cx);
+                                  });
+                                });
+                              },
+                              icon: Icons.delete,
+                              backgroundColor: Colors.red[400]!,
+                              foregroundColor: Colors.white,
+                              label: 'delete'.tr(cx),
+                            ),
+                          ],
                         ),
                         child: Container(
                             padding: const EdgeInsets.all(8.0),
-                            color: _deleter.isInList(card.id)
+                            color: _selector.isInList(card.id)
                                 ? Theme.of(cx)
                                     .colorScheme
                                     .primary
                                     .withOpacity(0.1)
                                 : null,
                             child: Card(
-                              elevation: _deleter.isInList(card.id) ? 5 : 1,
+                              elevation: _selector.isInList(card.id) ? 5 : 1,
                               margin: const EdgeInsets.all(8.0),
                               child: ListTile(
                                 title: Text(card.front),
-                                selected: _deleter.isInList(card.id),
+                                selected: _selector.isInList(card.id),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Container(
-                                      height:
-                                          6, // Height of the colored bar/ Color of the bar
+                                      height: 6,
                                       decoration: BoxDecoration(
                                         border: Border.all(
                                           color: Colors.grey,
@@ -200,9 +211,9 @@ class _CardsPageState extends State<CardsPage> {
                                   ],
                                 ),
                                 onTap: () {
-                                  if (_deleter.isDeleting) {
+                                  if (_selector.isSelecting) {
                                     setState(() {
-                                      _deleter.toggleItem(card.id);
+                                      _selector.toggleItem(card.id);
                                     });
                                     return;
                                   }
@@ -222,8 +233,8 @@ class _CardsPageState extends State<CardsPage> {
                                 },
                                 onLongPress: () {
                                   setState(() {
-                                    _deleter.isDeleting = true;
-                                    _deleter.toggleItem(card.id);
+                                    _selector.isSelecting = true;
+                                    _selector.toggleItem(card.id);
                                   });
                                   Vibration.hasVibrator().then((value) {
                                     if (value ?? false) {
@@ -237,68 +248,96 @@ class _CardsPageState extends State<CardsPage> {
                 ),
               )
             ])),
-        floatingActionButton: _deleter.isDeleting
-            ? FloatingActionButton(
-                onPressed: () {
-                  _dbHelper
-                      .deleteCards(_deleter.dumpList().keys.toList())
-                      .then((value) => refreshList());
-                  FloatingBar.show('cards_deleted'.tr(cx), cx);
-                },
-                tooltip: 'delete_cards'.tr(cx),
-                child: const Icon(Icons.delete),
-              )
-            : SpeedDial(icon: Icons.menu, activeIcon: Icons.close, children: [
-                SpeedDialChild(
-                  child: const Icon(Icons.filter_alt_rounded),
-                  label: 'filter_cards'.tr(cx),
-                  onTap: () async {
-                    _openRatingFilter(cx);
-                  },
-                ),
-                SpeedDialChild(
-                  child: const Icon(Icons.add),
-                  label: 'add_cards'.tr(cx),
-                  onTap: () {
-                    Navigator.push(
-                      cx,
-                      MaterialPageRoute(
-                        builder: (context) => AddCard(deckId: widget.deckId),
-                      ),
-                    ).then((value) => refreshList());
-                  },
-                ),
-                SpeedDialChild(
-                    child: const Icon(Icons.rate_review),
-                    label: 'review'.tr(cx),
-                    onTap: () {
-                      if (shownCards.isEmpty) {
-                        FloatingBar.show('no_cards_review'.tr(cx), cx);
-                      } else {
-                        final maxCards =
-                            _dbHelper.getReviewCards(widget.deckId);
+        floatingActionButton: SpeedDial(
+            icon: Icons.menu,
+            activeIcon: Icons.close,
+            children: _selector.isSelecting
+                ? [
+                    SpeedDialChild(
+                      onTap: () {
+                        _dbHelper
+                            .deleteCards(_selector.dumpList().keys.toList())
+                            .then((value) => refreshList());
+                        FloatingBar.show('cards_deleted'.tr(cx), cx);
+                      },
+                      label: 'delete_cards'.tr(cx),
+                      child: const Icon(Icons.delete),
+                    ),
+                    SpeedDialChild(
+                      onTap: () {
+                        _dbHelper
+                            .updateCardsRating(
+                                _selector.dumpList().keys.toList(), Rating.none)
+                            .then((value) => refreshList());
+                        FloatingBar.show('cards_reset'.tr(cx), cx);
+                      },
+                      label: 'reset_cards'.tr(cx),
+                      child: const Icon(Icons.restore),
+                    ),
+                    SpeedDialChild(
+                      onTap: () {
+                        setState(() {
+                          _selector.selectAll(
+                              shownCards.map((e) => e.id).toList());
+                        });
+                      },
+                      label: 'select_all'.tr(cx),
+                      child: const Icon(Icons.select_all),
+                    )
+                  ]
+                : [
+                    SpeedDialChild(
+                      child: const Icon(Icons.filter_alt_rounded),
+                      label: 'filter_cards'.tr(cx),
+                      onTap: () async {
+                        _openRatingFilter(cx);
+                      },
+                    ),
+                    SpeedDialChild(
+                      child: const Icon(Icons.add),
+                      label: 'add_cards'.tr(cx),
+                      onTap: () {
                         Navigator.push(
                           cx,
                           MaterialPageRoute(
-                            builder: (context) => ReviewPage(
-                                cards: _filteredRatings.contains("no_timing")
-                                    ? DeckShuffler.shuffleCards(
-                                        shownCards, maxCards)
-                                    : DeckShuffler.shuffleTimedCards(
-                                        shownCards, maxCards)),
+                            builder: (context) =>
+                                AddCard(deckId: widget.deckId),
                           ),
-                        ).then((value) {
-                          if (!kIsWeb) {
-                            _adsFullScreen.showAndReloadAd(() {
-                              refreshList();
-                            });
+                        ).then((value) => refreshList());
+                      },
+                    ),
+                    SpeedDialChild(
+                        child: const Icon(Icons.rate_review),
+                        label: 'review'.tr(cx),
+                        onTap: () {
+                          if (shownCards.isEmpty) {
+                            FloatingBar.show('no_cards_review'.tr(cx), cx);
                           } else {
-                            refreshList();
+                            final maxCards =
+                                _dbHelper.getReviewCards(widget.deckId);
+                            Navigator.push(
+                              cx,
+                              MaterialPageRoute(
+                                builder: (context) => ReviewPage(
+                                    cards:
+                                        _filteredRatings.contains("no_timing")
+                                            ? DeckShuffler.shuffleCards(
+                                                shownCards, maxCards)
+                                            : DeckShuffler.shuffleTimedCards(
+                                                shownCards, maxCards)),
+                              ),
+                            ).then((value) {
+                              if (!kIsWeb) {
+                                _adsFullScreen.showAndReloadAd(() {
+                                  refreshList();
+                                });
+                              } else {
+                                refreshList();
+                              }
+                            });
                           }
-                        });
-                      }
-                    })
-              ]));
+                        })
+                  ]));
   }
 
   /// Opens a dialog to filter the cards by rating
