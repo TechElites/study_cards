@@ -37,6 +37,7 @@ class _CardsPageState extends State<CardsPage> {
   List<StudyCard> shownCards = [];
   List<StudyCard> _allCards = [];
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocus = FocusNode();
   final List<String> _filteredRatings = ['all'];
   final ListSelector _selector = ListSelector();
   late AdsFullscreen _adsFullScreen;
@@ -91,12 +92,14 @@ class _CardsPageState extends State<CardsPage> {
                 padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
                 child: TextField(
                   controller: _searchController,
+                  focusNode: _searchFocus,
                   decoration: InputDecoration(
                     labelText: 'search'.tr(cx),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
                         setState(() {
+                          _searchFocus.unfocus();
                           _searchController.clear();
                         });
                       },

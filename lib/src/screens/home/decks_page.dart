@@ -36,6 +36,7 @@ class _DecksPageState extends State<DecksPage> {
   List<Deck> _allDecks = [];
   List<Deck> shownDecks = [];
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocus = FocusNode();
 
   /// ads
   late AdsFullscreen _adsFullScreen;
@@ -105,12 +106,16 @@ class _DecksPageState extends State<DecksPage> {
                   padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
                   child: TextField(
                     controller: _searchController,
+                    focusNode: _searchFocus,
                     decoration: InputDecoration(
                       labelText: 'search'.tr(cx),
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          setState(() => _searchController.clear());
+                          setState(() {
+                            _searchFocus.unfocus();
+                            _searchController.clear();
+                          });
                         },
                       ),
                     ),
