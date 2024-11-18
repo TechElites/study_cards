@@ -107,7 +107,6 @@ class _AddCardState extends State<AddCard> {
               ElevatedButton(
                 onPressed: () {
                   _addCard().then((_) {
-                    FloatingBar.show('card_add_success'.tr(cx), cx);
                     setState(() {
                       _frontController.clear();
                       _backController.clear();
@@ -115,6 +114,8 @@ class _AddCardState extends State<AddCard> {
                       _selectedBackImage = null;
                       focus.requestFocus();
                     });
+                    if (!cx.mounted) return;
+                    FloatingBar.show('card_add_success'.tr(cx), cx);
                   });
                 },
                 child: Text('add_card'.tr(cx)),

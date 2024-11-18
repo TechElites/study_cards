@@ -9,7 +9,7 @@ class RatingButtons {
       {String selected = ''}) {
     return FittedBox(
         fit: BoxFit.scaleDown,
-        child: ButtonBar(alignment: MainAxisAlignment.spaceEvenly, children: [
+        child: OverflowBar(alignment: MainAxisAlignment.spaceEvenly, children: [
           for (var rating
               in Rating.colors.entries.where((e) => e.key != Rating.none))
             ElevatedButton(

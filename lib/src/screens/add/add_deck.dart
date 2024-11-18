@@ -126,7 +126,8 @@ class _AddDeckState extends State<AddDeck> {
                 }
                 _dbHelper.insertDeckCards(cards);
               }
-              Navigator.pop(context, deckId);
+              if (!cx.mounted) return;
+              Navigator.pop(cx, deckId);
             });
           }
         },
