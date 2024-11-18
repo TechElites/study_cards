@@ -95,7 +95,7 @@ class FileReader {
     String fileContent = '';
     if (name.contains('.zip')) {
       final archive = ZipDecoder().decodeBytes(list);
-      fileContent = await FileReader.unzipFile(archive, name.substring(name.length - 4))
+      fileContent = await FileReader.unzipFile(archive, name.substring(0, name.length - 4))
           .then((value) => value!.readAsString());
     } else {
       fileContent = String.fromCharCodes(list);
