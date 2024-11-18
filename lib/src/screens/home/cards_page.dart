@@ -126,68 +126,73 @@ class _CardsPageState extends State<CardsPage> {
                   itemCount: shownCards.length,
                   itemBuilder: (context, index) {
                     final card = shownCards[index];
-                    return Slidable(
-                        key: Key(card.id.toString()),
-                        startActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (cx) {
-                                _dbHelper.updateCardsRating([card.id],
-                                    Rating.none).then((_) => refreshList());
-                              },
-                              icon: Icons.restore,
-                              backgroundColor: Colors.grey[400]!,
-                              foregroundColor: Colors.white,
-                              label: 'reset'.tr(cx),
+                    return Container(
+                        padding: const EdgeInsets.all(8.0),
+                        color: _selector.isInList(card.id)
+                            ? Theme.of(cx).colorScheme.primary.withOpacity(0.1)
+                            : null,
+                        child: Slidable(
+                            key: Key(card.id.toString()),
+                            startActionPane: ActionPane(
+                              motion: const BehindMotion(),
+                              children: [
+                                SlidableAction(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  onPressed: (cx) {
+                                    _dbHelper.updateCardsRating([card.id],
+                                        Rating.none).then((_) => refreshList());
+                                  },
+                                  icon: Icons.restore,
+                                  backgroundColor: Colors.grey[400]!,
+                                  foregroundColor: Colors.white,
+                                  label: 'reset'.tr(cx),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        endActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (cx) {
-                                int deletionTime = 3;
-                                Completer<bool?> completer = Completer<bool?>();
-                                Timer deletionTimer =
-                                    Timer(Duration(seconds: deletionTime), () {
-                                  completer.complete(true);
-                                  ScaffoldMessenger.of(context)
-                                      .hideCurrentSnackBar();
-                                });
-                                FloatingBar.showWithAction(
-                                    'card_deletion'.tr(cx), 'undo'.tr(cx), () {
-                                  completer.complete(false);
-                                  deletionTimer.cancel();
-                                }, cx);
-                                completer.future.then((value) {
-                                  if (value == false) {
-                                    return;
-                                  }
-                                  setState(() {
-                                    shownCards.removeAt(index);
-                                  });
-                                  _dbHelper.deleteCard(card.id).then((_) {
-                                    FloatingBar.show('card_deleted'.tr(cx), cx);
-                                  });
-                                });
-                              },
-                              icon: Icons.delete,
-                              backgroundColor: Colors.red[400]!,
-                              foregroundColor: Colors.white,
-                              label: 'delete'.tr(cx),
+                            endActionPane: ActionPane(
+                              motion: const BehindMotion(),
+                              children: [
+                                SlidableAction(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  onPressed: (cx) {
+                                    int deletionTime = 3;
+                                    Completer<bool?> completer =
+                                        Completer<bool?>();
+                                    Timer deletionTimer = Timer(
+                                        Duration(seconds: deletionTime), () {
+                                      completer.complete(true);
+                                      ScaffoldMessenger.of(context)
+                                          .hideCurrentSnackBar();
+                                    });
+                                    String shownName = card.front.length < 10
+                                        ? ' ${card.front}'
+                                        : ' ${card.front.substring(0, 10)}...';
+                                    FloatingBar.showWithAction(
+                                        'card_deletion'.tr(cx) + shownName,
+                                        'undo'.tr(cx), () {
+                                      completer.complete(false);
+                                      deletionTimer.cancel();
+                                    }, cx);
+                                    completer.future.then((value) {
+                                      if (value == false) {
+                                        return;
+                                      }
+                                      setState(() {
+                                        shownCards.removeAt(index);
+                                      });
+                                      _dbHelper.deleteCard(card.id).then((_) {
+                                        FloatingBar.show(
+                                            'card_deleted'.tr(cx), cx);
+                                      });
+                                    });
+                                  },
+                                  icon: Icons.delete,
+                                  backgroundColor: Colors.red[400]!,
+                                  foregroundColor: Colors.white,
+                                  label: 'delete'.tr(cx),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Container(
-                            padding: const EdgeInsets.all(8.0),
-                            color: _selector.isInList(card.id)
-                                ? Theme.of(cx)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.1)
-                                : null,
                             child: Card(
                               elevation: _selector.isInList(card.id) ? 5 : 1,
                               margin: const EdgeInsets.all(8.0),
@@ -277,8 +282,8 @@ class _CardsPageState extends State<CardsPage> {
                     SpeedDialChild(
                       onTap: () {
                         setState(() {
-                          _selector.selectAll(
-                              shownCards.map((e) => e.id).toList());
+                          _selector
+                              .selectAll(shownCards.map((e) => e.id).toList());
                         });
                       },
                       label: 'select_all'.tr(cx),

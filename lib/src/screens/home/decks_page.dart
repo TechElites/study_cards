@@ -17,6 +17,7 @@ import 'package:flash_cards/src/logic/permission_helper.dart';
 import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:vibration/vibration.dart';
@@ -133,57 +134,55 @@ class _DecksPageState extends State<DecksPage> {
                   itemCount: shownDecks.length,
                   itemBuilder: (context, index) {
                     final deck = shownDecks[index];
-                    return Dismissible(
-                        key: Key(deck.id.toString()),
-                        direction: DismissDirection.endToStart,
-                        onUpdate: (details) {
-                          if (details.progress >= 0.5 &&
-                              details.progress <= 0.55) {
-                            Vibration.hasVibrator().then((value) {
-                              if (value ?? false) {
-                                Vibration.vibrate(duration: 10);
-                              }
-                            });
-                          }
-                        },
-                        confirmDismiss: (direction) async {
-                          int deletionTime = 3;
-                          Completer<bool?> completer = Completer<bool?>();
-                          Timer deletionTimer =
-                              Timer(Duration(seconds: deletionTime), () {
-                            completer.complete(true);
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          });
-                          FloatingBar.showWithAction(
-                              'deck_deletion'.tr(cx), 'undo'.tr(cx), () {
-                            completer.complete(false);
-                            deletionTimer.cancel();
-                          }, cx);
-                          return completer.future;
-                        },
-                        onDismissed: (direction) {
-                          setState(() {
-                            shownDecks.removeAt(index);
-                          });
-                          _dbHelper.deleteDeck(deck.id).then((_) {
-                            FloatingBar.show('deck_deleted'.tr(cx), cx);
-                            _deleteFolder(List.of([deck.name]));
-                          });
-                        },
-                        background: Container(
-                          color: Colors.red[400],
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: const Icon(Icons.delete, color: Colors.white),
-                        ),
-                        child: Container(
-                            padding: const EdgeInsets.all(8.0),
-                            color: _deleter.isInList(deck.id)
-                                ? Theme.of(cx)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.1)
-                                : null,
+                    return Container(
+                        padding: const EdgeInsets.all(8.0),
+                        color: _deleter.isInList(deck.id)
+                            ? Theme.of(cx).colorScheme.primary.withOpacity(0.1)
+                            : null,
+                        child: Slidable(
+                            key: Key(deck.id.toString()),
+                            endActionPane: ActionPane(
+                              motion: const BehindMotion(),
+                              children: [
+                                SlidableAction(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  onPressed: (cx) {
+                                    int deletionTime = 3;
+                                    Completer<bool?> completer =
+                                        Completer<bool?>();
+                                    Timer deletionTimer = Timer(
+                                        Duration(seconds: deletionTime), () {
+                                      completer.complete(true);
+                                      ScaffoldMessenger.of(context)
+                                          .hideCurrentSnackBar();
+                                    });
+                                    FloatingBar.showWithAction(
+                                        '${'deck_deletion'.tr(cx)} ${deck.name}',
+                                        'undo'.tr(cx), () {
+                                      completer.complete(false);
+                                      deletionTimer.cancel();
+                                    }, cx);
+                                    completer.future.then((value) {
+                                      if (value == false) {
+                                        return;
+                                      }
+                                      setState(() {
+                                        shownDecks.removeAt(index);
+                                      });
+                                      _dbHelper.deleteDeck(deck.id).then((_) {
+                                        FloatingBar.show(
+                                            'deck_deleted'.tr(cx), cx);
+                                        _deleteFolder(List.of([deck.name]));
+                                      });
+                                    });
+                                  },
+                                  icon: Icons.delete,
+                                  backgroundColor: Colors.red[400]!,
+                                  foregroundColor: Colors.white,
+                                  label: 'delete'.tr(cx),
+                                ),
+                              ],
+                            ),
                             child: Card(
                               elevation: _deleter.isInList(deck.id) ? 5 : 1,
                               margin: const EdgeInsets.all(8.0),
@@ -202,7 +201,8 @@ class _DecksPageState extends State<DecksPage> {
                                 onTap: () {
                                   if (_deleter.isSelecting) {
                                     setState(() {
-                                      _deleter.toggleItem(deck.id, name: deck.name);
+                                      _deleter.toggleItem(deck.id,
+                                          name: deck.name);
                                     });
                                     return;
                                   }
@@ -217,7 +217,8 @@ class _DecksPageState extends State<DecksPage> {
                                 onLongPress: () {
                                   setState(() {
                                     _deleter.isSelecting = true;
-                                    _deleter.toggleItem(deck.id, name: deck.name);
+                                    _deleter.toggleItem(deck.id,
+                                        name: deck.name);
                                   });
                                   Vibration.hasVibrator().then((value) {
                                     if (value ?? false) {
