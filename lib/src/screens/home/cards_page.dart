@@ -138,7 +138,7 @@ class _CardsPageState extends State<CardsPage> {
                               children: [
                                 SlidableAction(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  onPressed: (cx) {
+                                  onPressed: (scx) {
                                     _dbHelper.updateCardsRating([card.id],
                                         Rating.none).then((_) => refreshList());
                                   },
@@ -151,41 +151,40 @@ class _CardsPageState extends State<CardsPage> {
                             ),
                             endActionPane: ActionPane(
                               motion: const BehindMotion(),
+                              dismissible: DismissiblePane(
+                                confirmDismiss: () {
+                                  int deletionTime = 3;
+                                  Completer<bool> completer = Completer<bool>();
+                                  Timer deletionTimer = Timer(
+                                      Duration(seconds: deletionTime), () {
+                                    completer.complete(true);
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                  });
+                                  String shownName = card.front.length < 10
+                                      ? ' ${card.front}'
+                                      : ' ${card.front.substring(0, 10)}...';
+                                  FloatingBar.showWithAction(
+                                      'card_deletion'.tr(cx) + shownName,
+                                      'undo'.tr(cx), () {
+                                    completer.complete(false);
+                                    deletionTimer.cancel();
+                                  }, cx);
+                                  return completer.future;
+                                },
+                                onDismissed: () {
+                                  setState(() {
+                                    shownCards.removeAt(index);
+                                  });
+                                  _dbHelper.deleteCard(card.id).then((_) {
+                                    FloatingBar.show('card_deleted'.tr(cx), cx);
+                                  });
+                                },
+                              ),
                               children: [
                                 SlidableAction(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  onPressed: (cx) {
-                                    int deletionTime = 3;
-                                    Completer<bool?> completer =
-                                        Completer<bool?>();
-                                    Timer deletionTimer = Timer(
-                                        Duration(seconds: deletionTime), () {
-                                      completer.complete(true);
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
-                                    });
-                                    String shownName = card.front.length < 10
-                                        ? ' ${card.front}'
-                                        : ' ${card.front.substring(0, 10)}...';
-                                    FloatingBar.showWithAction(
-                                        'card_deletion'.tr(cx) + shownName,
-                                        'undo'.tr(cx), () {
-                                      completer.complete(false);
-                                      deletionTimer.cancel();
-                                    }, cx);
-                                    completer.future.then((value) {
-                                      if (value == false) {
-                                        return;
-                                      }
-                                      setState(() {
-                                        shownCards.removeAt(index);
-                                      });
-                                      _dbHelper.deleteCard(card.id).then((_) {
-                                        FloatingBar.show(
-                                            'card_deleted'.tr(cx), cx);
-                                      });
-                                    });
-                                  },
+                                  onPressed: (scx) {},
                                   icon: Icons.delete,
                                   backgroundColor: Colors.red[400]!,
                                   foregroundColor: Colors.white,

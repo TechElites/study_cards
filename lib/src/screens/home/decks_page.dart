@@ -143,39 +143,38 @@ class _DecksPageState extends State<DecksPage> {
                             key: Key(deck.id.toString()),
                             endActionPane: ActionPane(
                               motion: const BehindMotion(),
+                              dismissible: DismissiblePane(
+                                confirmDismiss: () {
+                                  int deletionTime = 3;
+                                  Completer<bool> completer = Completer<bool>();
+                                  Timer deletionTimer = Timer(
+                                      Duration(seconds: deletionTime), () {
+                                    completer.complete(true);
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                  });
+                                  FloatingBar.showWithAction(
+                                      '${'deck_deletion'.tr(cx)} ${deck.name}',
+                                      'undo'.tr(cx), () {
+                                    completer.complete(false);
+                                    deletionTimer.cancel();
+                                  }, cx);
+                                  return completer.future;
+                                },
+                                onDismissed: () {
+                                  setState(() {
+                                    shownDecks.removeAt(index);
+                                  });
+                                  _dbHelper.deleteDeck(deck.id).then((_) {
+                                    FloatingBar.show('deck_deleted'.tr(cx), cx);
+                                    _deleteFolder(List.of([deck.name]));
+                                  });
+                                },
+                              ),
                               children: [
                                 SlidableAction(
                                   borderRadius: BorderRadius.circular(10.0),
-                                  onPressed: (cx) {
-                                    int deletionTime = 3;
-                                    Completer<bool?> completer =
-                                        Completer<bool?>();
-                                    Timer deletionTimer = Timer(
-                                        Duration(seconds: deletionTime), () {
-                                      completer.complete(true);
-                                      ScaffoldMessenger.of(context)
-                                          .hideCurrentSnackBar();
-                                    });
-                                    FloatingBar.showWithAction(
-                                        '${'deck_deletion'.tr(cx)} ${deck.name}',
-                                        'undo'.tr(cx), () {
-                                      completer.complete(false);
-                                      deletionTimer.cancel();
-                                    }, cx);
-                                    completer.future.then((value) {
-                                      if (value == false) {
-                                        return;
-                                      }
-                                      setState(() {
-                                        shownDecks.removeAt(index);
-                                      });
-                                      _dbHelper.deleteDeck(deck.id).then((_) {
-                                        FloatingBar.show(
-                                            'deck_deleted'.tr(cx), cx);
-                                        _deleteFolder(List.of([deck.name]));
-                                      });
-                                    });
-                                  },
+                                  onPressed: (scx) {},
                                   icon: Icons.delete,
                                   backgroundColor: Colors.red[400]!,
                                   foregroundColor: Colors.white,
@@ -207,9 +206,9 @@ class _DecksPageState extends State<DecksPage> {
                                     return;
                                   }
                                   Navigator.push(
-                                    context,
+                                    cx,
                                     MaterialPageRoute(
-                                      builder: (context) =>
+                                      builder: (cx) =>
                                           CardsPage(deckId: deck.id),
                                     ),
                                   ).then((value) => refreshList());
