@@ -177,7 +177,10 @@ class _CardsPageState extends State<CardsPage> {
                                     shownCards.removeAt(index);
                                   });
                                   _dbHelper.deleteCard(card.id).then((_) {
-                                    FloatingBar.show('card_deleted'.tr(cx), cx);
+                                    if (cx.mounted) {
+                                      FloatingBar.show(
+                                          'card_deleted'.tr(cx), cx);
+                                    }
                                   });
                                 },
                               ),
@@ -222,16 +225,17 @@ class _CardsPageState extends State<CardsPage> {
                                     return;
                                   }
                                   Navigator.push(
-                                    context,
+                                    cx,
                                     MaterialPageRoute(
-                                      builder: (context) =>
+                                      builder: (cx) =>
                                           CardDetailsPage(card: card),
                                     ),
                                   ).then((value) {
                                     if (value != null) {
+                                      refreshList();
+                                      if (!cx.mounted) return;
                                       FloatingBar.show(
                                           'card_modify_success'.tr(cx), cx);
-                                      refreshList();
                                     }
                                   });
                                 },
