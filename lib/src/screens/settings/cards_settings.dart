@@ -69,8 +69,10 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                       onTap: () {
                         _dbHelper
                             .updateDeckName(widget.deckId, _nameController.text)
-                            .then((value) => FloatingBar.show(
-                                'deck_name_update'.tr(cx), cx));
+                            .then((value) {
+                          if (!cx.mounted) return;
+                          FloatingBar.show('deck_name_update'.tr(cx), cx);
+                        });
                       },
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
@@ -91,8 +93,10 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                     });
                   },
                   onChangeEnd: (double value) {
-                    _updateReviewCards(cardsPerReview.round()).then((_) =>
-                        FloatingBar.show('review_cards_update'.tr(cx), cx));
+                    _updateReviewCards(cardsPerReview.round()).then((_) {
+                      if (!cx.mounted) return;
+                      FloatingBar.show('review_cards_update'.tr(cx), cx);
+                    });
                   },
                 ),
               ),
@@ -119,7 +123,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                 _adsFullScreen.showAndReloadAd(() {
                   FloatingBar.show('deck_download'.tr(cx), cx);
                 }).then((showed) {
-                  if (!showed) {
+                  if (!showed && cx.mounted) {
                     FloatingBar.show('deck_download'.tr(cx), cx);
                   }
                 });
@@ -134,8 +138,11 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
             child: const Icon(Icons.file_upload),
             label: 'upload_deck'.tr(cx),
             onTap: () {
-              _uploadDeck().then((value) => FloatingBar.show(
-                  value ? 'deck_upload'.tr(cx) : 'deck_upload_error', cx));
+              _uploadDeck().then((value) {
+                if (!cx.mounted) return;
+                FloatingBar.show(
+                    value ? 'deck_upload'.tr(cx) : 'deck_upload_error', cx);
+              });
             },
           )
       ]),
@@ -145,7 +152,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   Future<bool> _uploadDeck() async {
     final fileName = await _exportDeck();
     final file = await FileDownloader.getFile(fileName);
-    _dbHelper.updateDeckShared(widget.deckId, file.path.substring(file.path.length - 4));
+    _dbHelper.updateDeckShared(
+        widget.deckId, file.path.substring(file.path.length - 4));
     return await _supabaseHelper.uploadDeck(file);
   }
 

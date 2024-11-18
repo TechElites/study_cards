@@ -9,6 +9,7 @@ class RatingButtons {
       {String selected = ''}) {
     return FittedBox(
         fit: BoxFit.scaleDown,
+        // ignore: deprecated_member_use
         child: ButtonBar(alignment: MainAxisAlignment.spaceEvenly, children: [
           for (var rating
               in Rating.colors.entries.where((e) => e.key != Rating.none))

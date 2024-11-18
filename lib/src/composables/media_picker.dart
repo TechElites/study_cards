@@ -12,17 +12,20 @@ class MediaPicker {
         children: <Widget>[
           SimpleDialogOption(
             onPressed: () {
-              picker
-                  .pickImage(source: ImageSource.camera)
-                  .then((value) => Navigator.pop(context, value));
+              picker.pickImage(source: ImageSource.camera).then((value) {
+                if (context.mounted) {
+                  Navigator.pop(context, value);
+                }
+              });
             },
             child: Text('camera'.tr(cx)),
           ),
           SimpleDialogOption(
             onPressed: () {
-              picker
-                  .pickImage(source: ImageSource.gallery)
-                  .then((value) => Navigator.pop(context, value));
+              picker.pickImage(source: ImageSource.gallery).then((value) {
+                if (!context.mounted) return;
+                Navigator.pop(context, value);
+              });
             },
             child: Text('gallery'.tr(cx)),
           ),

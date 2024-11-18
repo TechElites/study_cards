@@ -39,6 +39,7 @@ class _DecksPageState extends State<DecksPage> {
   List<Deck> _allDecks = [];
   List<Deck> shownDecks = [];
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocus = FocusNode();
 
   /// ads
   late AdsFullscreen _adsFullScreen;
@@ -79,7 +80,7 @@ class _DecksPageState extends State<DecksPage> {
           FloatingBar.show('ad_rewarded'.tr(cx), cx);
           setState(() {});
         }).then((showed) {
-          if (!showed) {
+          if (!showed && cx.mounted) {
             FloatingBar.show('no_ads_left'.tr(cx), cx);
           }
         });
@@ -108,12 +109,16 @@ class _DecksPageState extends State<DecksPage> {
                   padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
                   child: TextField(
                     controller: _searchController,
+                    focusNode: _searchFocus,
                     decoration: InputDecoration(
                       labelText: 'search'.tr(cx),
                       suffixIcon: IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
-                          setState(() => _searchController.clear());
+                          setState(() {
+                            _searchFocus.unfocus();
+                            _searchController.clear();
+                          });
                         },
                       ),
                     ),
@@ -169,8 +174,9 @@ class _DecksPageState extends State<DecksPage> {
                                     shownDecks.removeAt(index);
                                   });
                                   _dbHelper.deleteDeck(deck.id).then((_) {
-                                    FloatingBar.show('deck_deleted'.tr(cx), cx);
                                     _deleteFolder(List.of([deck.name]));
+                                    if (!cx.mounted) return;
+                                    FloatingBar.show('deck_deleted'.tr(cx), cx);
                                   });
                                 },
                               ),

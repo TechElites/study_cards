@@ -19,6 +19,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       Uri.parse('http://studycards.altervista.org/insert_feedback.php'),
       body: {'content': _contentController.text},
     ).then((response) {
+      if (!cx.mounted) return;
       if (response.statusCode == 200) {
         FloatingBar.show("feedback_success".tr(cx), cx);
       } else {

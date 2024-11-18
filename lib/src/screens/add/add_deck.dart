@@ -139,10 +139,11 @@ class _AddDeckState extends State<AddDeck> {
                                 onPressed: () {
                                   _supabaseHelper
                                       .deleteDecks([shDeck.name]).then((_) {
-                                    FloatingBar.show('deck_deleted'.tr(cx), cx);
                                     setState(() {
                                       sharedDecks.removeAt(index);
                                     });
+                                    if (!cx.mounted) return;
+                                    FloatingBar.show('deck_deleted'.tr(cx), cx);
                                   });
                                 },
                               ),
@@ -211,7 +212,8 @@ class _AddDeckState extends State<AddDeck> {
                 }
                 _dbHelper.insertDeckCards(cards);
               }
-              Navigator.pop(context, deckId);
+              if (!cx.mounted) return;
+              Navigator.pop(cx, deckId);
             });
           }
         },

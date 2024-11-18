@@ -37,6 +37,7 @@ class _CardsPageState extends State<CardsPage> {
   List<StudyCard> shownCards = [];
   List<StudyCard> _allCards = [];
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocus = FocusNode();
   final List<String> _filteredRatings = ['all'];
   final ListSelector _selector = ListSelector();
   late AdsFullscreen _adsFullScreen;
@@ -91,12 +92,14 @@ class _CardsPageState extends State<CardsPage> {
                 padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
                 child: TextField(
                   controller: _searchController,
+                  focusNode: _searchFocus,
                   decoration: InputDecoration(
                     labelText: 'search'.tr(cx),
                     suffixIcon: IconButton(
                       icon: const Icon(Icons.clear),
                       onPressed: () {
                         setState(() {
+                          _searchFocus.unfocus();
                           _searchController.clear();
                         });
                       },
@@ -177,7 +180,10 @@ class _CardsPageState extends State<CardsPage> {
                                     shownCards.removeAt(index);
                                   });
                                   _dbHelper.deleteCard(card.id).then((_) {
-                                    FloatingBar.show('card_deleted'.tr(cx), cx);
+                                    if (cx.mounted) {
+                                      FloatingBar.show(
+                                          'card_deleted'.tr(cx), cx);
+                                    }
                                   });
                                 },
                               ),
@@ -222,16 +228,17 @@ class _CardsPageState extends State<CardsPage> {
                                     return;
                                   }
                                   Navigator.push(
-                                    context,
+                                    cx,
                                     MaterialPageRoute(
-                                      builder: (context) =>
+                                      builder: (cx) =>
                                           CardDetailsPage(card: card),
                                     ),
                                   ).then((value) {
                                     if (value != null) {
+                                      refreshList();
+                                      if (!cx.mounted) return;
                                       FloatingBar.show(
                                           'card_modify_success'.tr(cx), cx);
-                                      refreshList();
                                     }
                                   });
                                 },
