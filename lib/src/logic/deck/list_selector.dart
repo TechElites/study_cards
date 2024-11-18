@@ -1,11 +1,11 @@
 /// Class to handle the deletion of multiple objects.
-class ListDeleter {
+class ListSelector {
   final Map<int, String> _list = <int, String>{};
-  bool isDeleting = false;
+  bool isSelecting = false;
 
   /// Toggles the deletion mode.
   void toggleMode() {
-    isDeleting = !isDeleting;
+    isSelecting = !isSelecting;
   }
 
   /// Checks if the item is in the list.
@@ -15,14 +15,22 @@ class ListDeleter {
 
   /// Inserts the item in the list, if needed.
   void toggleItem(int id, {String name = ''}) {
-    if (isDeleting) {
+    if (isSelecting) {
       if (_list.containsKey(id)) {
         _list.remove(id);
         if (_list.isEmpty) {
-          isDeleting = false;
+          isSelecting = false;
         }
       } else {
         _list[id] = name;
+      }
+    }
+  }
+
+  void selectAll(List<int> ids) {
+    if (isSelecting) {
+      for (var i = 0; i < ids.length; i++) {
+        _list[ids[i]] = '';
       }
     }
   }
@@ -31,7 +39,7 @@ class ListDeleter {
   Map<int, String> dumpList() {
     final list = Map<int, String>.from(_list);
     _list.clear();
-    isDeleting = false;
+    isSelecting = false;
     return list;
   }
 }

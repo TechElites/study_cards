@@ -1,4 +1,4 @@
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 

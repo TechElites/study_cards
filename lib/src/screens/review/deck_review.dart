@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/rating_buttons.dart';
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/rating_buttons.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 
 const _animDuration = Duration(milliseconds: 300);
@@ -298,8 +298,8 @@ class _CardsReviewState extends State<ReviewPage>
                         ? SlideTransition(
                             position: _ratingAnimation,
                             child: RatingButtons.build(cx, (rating) {
-                              _dbHelper.updateCardRating(
-                                  widget.cards[_index].id, rating);
+                              _dbHelper.updateCardsRating(
+                                  [widget.cards[_index].id], rating);
                               _nextCard();
                             }))
                         : Text(
