@@ -152,7 +152,7 @@ class _CardsReviewState extends State<ReviewPage>
                                 margin: const EdgeInsets.all(16.0),
                                 padding: const EdgeInsets.all(16.0),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(cx).scaffoldBackgroundColor,
+                                  color: Theme.of(cx).colorScheme.surface,
                                   border: Border.all(
                                     color: Theme.of(cx).colorScheme.secondary,
                                     width: 2.0,
@@ -217,7 +217,7 @@ class _CardsReviewState extends State<ReviewPage>
                                                 vertical: 16.0),
                                             child: Image.file(
                                               File(widget
-                                                  .cards[_index].frontMedia),
+                                                  .cards[_index].backMedia),
                                               height: 300.0, // Altezza massima
                                               width: 300.0, // Larghezza massima
                                               fit: BoxFit
