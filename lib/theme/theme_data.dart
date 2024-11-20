@@ -2,6 +2,7 @@ import 'package:study_cards/theme/theme_season.dart';
 import 'package:flutter/material.dart';
 
 final currentMonth = DateTime.now().month;
+final currentDay = DateTime.now().day;
 
 final Season season = currentMonth >= 3 && currentMonth <= 5
     ? spring
@@ -9,7 +10,9 @@ final Season season = currentMonth >= 3 && currentMonth <= 5
         ? summer
         : currentMonth >= 9 && currentMonth <= 11
             ? autumn
-            : winter;
+            : currentDay >= 23 && currentMonth == 12 || currentDay <= 6 && currentMonth == 1
+                ? christmas
+                : winter;
 
 final ThemeData customLightTheme = ThemeData.light().copyWith(
     colorScheme: ColorScheme.light(
