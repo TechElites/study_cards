@@ -89,3 +89,19 @@ final Season autumn = Season(
     foregroundColor: Colors.orange[100]!,
   ),
 );
+
+final Season christmas = Season(
+  name: 'Christmas',
+  light: ThemeSeason(
+    primaryColor: Colors.red,
+    secondaryColor: Colors.green,
+    backgroundColor: Colors.green,
+    foregroundColor: const Color(0xFFD4AF37),
+  ),
+  dark: ThemeSeason(
+    primaryColor: Colors.red[700]!,
+    secondaryColor: Colors.green[700]!,
+    backgroundColor: Colors.green[700]!,
+    foregroundColor: const Color(0xFFD4AF37),
+  ),
+);
