@@ -59,8 +59,7 @@ class JsonHandler {
 
   // convert a list of StudyCard objects to a json string using the format:
   // {"deckName": "name", "length": 1, "cards": [{"front_text": "","back_text": "","front_media": [],"back_media": []}, ...]}
-  static String convertToJson(String deck_name, List<StudyCard> cards) {
-    final deckName = deck_name;
+  static String convertToJson(String deckName, List<StudyCard> cards) {
     final deckLength = cards.length;
     final List<Map<String, dynamic>> cardList = [];
     for (var i = 0; i < cards.length; i++) {
