@@ -115,6 +115,7 @@ class _DecksPageState extends State<DecksPage> {
                           setState(() {
                             _searchFocus.unfocus();
                             _searchController.clear();
+                            shownDecks = _allDecks;
                           });
                         },
                       ),

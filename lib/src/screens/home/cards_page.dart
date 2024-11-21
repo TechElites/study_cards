@@ -101,6 +101,7 @@ class _CardsPageState extends State<CardsPage> {
                         setState(() {
                           _searchFocus.unfocus();
                           _searchController.clear();
+                          shownCards = _allCards;
                         });
                       },
                     ),
