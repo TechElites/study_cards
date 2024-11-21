@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/rating_buttons.dart';
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/rating_buttons.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 
 const _animDuration = Duration(milliseconds: 300);
@@ -152,7 +152,7 @@ class _CardsReviewState extends State<ReviewPage>
                                 margin: const EdgeInsets.all(16.0),
                                 padding: const EdgeInsets.all(16.0),
                                 decoration: BoxDecoration(
-                                  color: Theme.of(cx).scaffoldBackgroundColor,
+                                  color: Theme.of(cx).colorScheme.surface,
                                   border: Border.all(
                                     color: Theme.of(cx).colorScheme.secondary,
                                     width: 2.0,
@@ -189,9 +189,10 @@ class _CardsReviewState extends State<ReviewPage>
                                             child: Image.file(
                                               File(widget
                                                   .cards[_index].frontMedia),
-                                              height: 200.0,
-                                              width: 200.0,
-                                              fit: BoxFit.cover,
+                                              height: 300.0, // Altezza massima
+                                              width: 300.0, // Larghezza massima
+                                              fit: BoxFit
+                                                  .contain, // Ridimensiona mantenendo le proporzioni
                                               alignment: Alignment.center,
                                             ),
                                           ),
@@ -217,9 +218,10 @@ class _CardsReviewState extends State<ReviewPage>
                                             child: Image.file(
                                               File(widget
                                                   .cards[_index].backMedia),
-                                              height: 200.0,
-                                              width: 200.0,
-                                              fit: BoxFit.cover,
+                                              height: 300.0, // Altezza massima
+                                              width: 300.0, // Larghezza massima
+                                              fit: BoxFit
+                                                  .contain, // Ridimensiona mantenendo le proporzioni
                                               alignment: Alignment.center,
                                             ),
                                           ),
@@ -274,9 +276,10 @@ class _CardsReviewState extends State<ReviewPage>
                                             child: Image.file(
                                               File(widget
                                                   .cards[_index].frontMedia),
-                                              height: 200.0,
-                                              width: 200.0,
-                                              fit: BoxFit.cover,
+                                              height: 300.0, // Altezza massima
+                                              width: 300.0, // Larghezza massima
+                                              fit: BoxFit
+                                                  .contain, // Ridimensiona mantenendo le proporzioni
                                               alignment: Alignment.center,
                                             ),
                                           ),
@@ -295,8 +298,8 @@ class _CardsReviewState extends State<ReviewPage>
                         ? SlideTransition(
                             position: _ratingAnimation,
                             child: RatingButtons.build(cx, (rating) {
-                              _dbHelper.updateCardRating(
-                                  widget.cards[_index].id, rating);
+                              _dbHelper.updateCardsRating(
+                                  [widget.cards[_index].id], rating);
                               _nextCard();
                             }))
                         : Text(

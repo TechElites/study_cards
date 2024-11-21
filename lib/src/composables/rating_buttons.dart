@@ -1,5 +1,5 @@
-import 'package:flash_cards/src/data/model/rating.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/data/model/rating.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 
 /// Class to build rating buttons.
@@ -9,6 +9,7 @@ class RatingButtons {
       {String selected = ''}) {
     return FittedBox(
         fit: BoxFit.scaleDown,
+        // ignore: deprecated_member_use
         child: ButtonBar(alignment: MainAxisAlignment.spaceEvenly, children: [
           for (var rating
               in Rating.colors.entries.where((e) => e.key != Rating.none))

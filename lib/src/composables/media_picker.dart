@@ -1,4 +1,4 @@
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -12,17 +12,20 @@ class MediaPicker {
         children: <Widget>[
           SimpleDialogOption(
             onPressed: () {
-              picker
-                  .pickImage(source: ImageSource.camera)
-                  .then((value) => Navigator.pop(context, value));
+              picker.pickImage(source: ImageSource.camera).then((value) {
+                if (context.mounted) {
+                  Navigator.pop(context, value);
+                }
+              });
             },
             child: Text('camera'.tr(cx)),
           ),
           SimpleDialogOption(
             onPressed: () {
-              picker
-                  .pickImage(source: ImageSource.gallery)
-                  .then((value) => Navigator.pop(context, value));
+              picker.pickImage(source: ImageSource.gallery).then((value) {
+                if (!context.mounted) return;
+                Navigator.pop(context, value);
+              });
             },
             child: Text('gallery'.tr(cx)),
           ),

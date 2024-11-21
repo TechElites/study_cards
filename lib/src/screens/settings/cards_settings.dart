@@ -2,14 +2,15 @@ import 'package:flash_cards/src/logic/json_handler.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Imports for ads
-import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
+import 'package:study_cards/src/composables/ads/ads_fullscreen.dart';
 
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/floating_bar.dart';
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/deck/deck.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/floating_bar.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/deck/deck.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/logic/load/xml_handler.dart';
 import 'package:flutter/material.dart';
 
 /// Creates a page to handle the settings of a deck
@@ -65,8 +66,10 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                       onTap: () {
                         _dbHelper
                             .updateDeckName(widget.deckId, _nameController.text)
-                            .then((value) => FloatingBar.show(
-                                'deck_name_update'.tr(cx), cx));
+                            .then((value) {
+                          if (!cx.mounted) return;
+                          FloatingBar.show('deck_name_update'.tr(cx), cx);
+                        });
                       },
                       child: const Icon(Icons.check,
                           color: Colors.grey, size: 32.0)))),
@@ -87,8 +90,10 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                     });
                   },
                   onChangeEnd: (double value) {
-                    _updateReviewCards(cardsPerReview.round()).then((_) =>
-                        FloatingBar.show('review_cards_update'.tr(cx), cx));
+                    _updateReviewCards(cardsPerReview.round()).then((_) {
+                      if (!cx.mounted) return;
+                      FloatingBar.show('review_cards_update'.tr(cx), cx);
+                    });
                   },
                 ),
               ),
@@ -111,7 +116,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
               _adsFullScreen.showAndReloadAd(() {
                 FloatingBar.show('deck_download'.tr(cx), cx);
               }).then((showed) {
-                if (!showed) {
+                if (!showed && cx.mounted) {
                   FloatingBar.show('deck_download'.tr(cx), cx);
                 }
               });

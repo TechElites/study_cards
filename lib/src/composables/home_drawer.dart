@@ -1,7 +1,7 @@
-import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flash_cards/src/screens/feedback/feedback.dart';
-import 'package:flash_cards/src/screens/guide/guide.dart';
-import 'package:flash_cards/theme/theme_provider.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/screens/feedback/feedback.dart';
+import 'package:study_cards/src/screens/guide/guide.dart';
+import 'package:study_cards/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;

@@ -1,7 +1,8 @@
-import 'package:flash_cards/src/composables/floating_bar.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/composables/floating_bar.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class FeedbackPage extends StatefulWidget {
   const FeedbackPage({super.key});
@@ -18,6 +19,7 @@ class _FeedbackPageState extends State<FeedbackPage> {
       Uri.parse('http://studycards.altervista.org/insert_feedback.php'),
       body: {'content': _contentController.text},
     ).then((response) {
+      if (!cx.mounted) return;
       if (response.statusCode == 200) {
         FloatingBar.show("feedback_success".tr(cx), cx);
       } else {
@@ -73,6 +75,13 @@ class _FeedbackPageState extends State<FeedbackPage> {
               decoration: InputDecoration(labelText: 'feedback'.tr(cx)),
               maxLines: null,
               maxLength: 500,
+            ),
+            Text('or'.tr(cx)),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              child: Text('amazon_feedback'.tr(cx)),
+              onPressed: () => launchUrl(Uri.parse(
+                  "https://www.amazon.it/review/create-review/ref=cm_cr_othr_d_wr_but_top?ie=UTF8&channel=glance-detail&asin=B0DK3N6GXT")),
             ),
           ],
         ),

@@ -1,21 +1,23 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flash_cards/src/composables/home_drawer.dart';
+import 'package:study_cards/src/composables/home_drawer.dart';
+import 'package:study_cards/src/data/model/deck/deck.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Import for mobile ads
-import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
-import 'package:flash_cards/src/composables/ads/ads_sandman.dart';
+import 'package:study_cards/src/composables/ads/ads_fullscreen.dart';
+import 'package:study_cards/src/composables/ads/ads_sandman.dart';
 
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/floating_bar.dart';
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flash_cards/src/logic/list_deleter.dart';
-import 'package:flash_cards/src/logic/permission_helper.dart';
-import 'package:flash_cards/src/screens/add/add_deck.dart';
-import 'package:flash_cards/src/screens/home/cards_page.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/floating_bar.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/logic/deck/list_selector.dart';
+import 'package:study_cards/src/logic/permission_helper.dart';
+import 'package:study_cards/src/screens/add/add_deck.dart';
+import 'package:study_cards/src/screens/home/cards_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:vibration/vibration.dart';
@@ -30,7 +32,11 @@ class DecksPage extends StatefulWidget {
 
 class _DecksPageState extends State<DecksPage> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
-  final ListDeleter _deleter = ListDeleter();
+  final ListSelector _deleter = ListSelector();
+  List<Deck> _allDecks = [];
+  List<Deck> shownDecks = [];
+  final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocus = FocusNode();
 
   /// ads
   late AdsFullscreen _adsFullScreen;
@@ -39,6 +45,9 @@ class _DecksPageState extends State<DecksPage> {
   @override
   void initState() {
     super.initState();
+    _allDecks = _dbHelper.getDecks();
+    shownDecks = _allDecks;
+    _searchController.text = '';
     if (!kIsWeb) {
       _adsFullScreen = AdsFullscreen();
       _adsSandman = AdsSandman();
@@ -46,98 +55,139 @@ class _DecksPageState extends State<DecksPage> {
     }
   }
 
+  void refreshList() {
+    setState(() {
+      _allDecks = _dbHelper.getDecks();
+      shownDecks = _allDecks;
+    });
+  }
+
   @override
   Widget build(BuildContext cx) {
-    final decks = _dbHelper.getDecks();
-    _adsSandman.loadAd(() => setState(() {}));
+    if (!kIsWeb) _adsSandman.loadAd(() => setState(() {}));
 
     return AdsScaffold(
       appBar: AppBar(
         title: Text('decks'.tr(cx)),
         centerTitle: true,
       ),
-      drawer: HomeDrawer.build(cx, kIsWeb, _adsSandman.isReady, () {
+      drawer: HomeDrawer.build(cx, kIsWeb, kIsWeb ? false : _adsSandman.isReady,
+          () {
         _adsSandman.showAd(() {
           FloatingBar.show('ad_rewarded'.tr(cx), cx);
           setState(() {});
         }).then((showed) {
-          if (!showed) {
+          if (!showed && cx.mounted) {
             FloatingBar.show('no_ads_left'.tr(cx), cx);
           }
         });
       }),
       body: RefreshIndicator(
-          onRefresh: () async {
-            setState(() {});
-          },
-          child: decks.isEmpty
-              ? Center(
-                  child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.add_circle_outline_outlined,
-                                size: 80, color: Colors.grey.withOpacity(0.5)),
-                            Text('no_decks'.tr(cx),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 20)),
-                          ])))
-              : ListView.builder(
-                  itemCount: decks.length,
-                  itemBuilder: (context, index) {
-                    final deck = decks[index];
-                    return Dismissible(
-                        key: Key(deck.id.toString()),
-                        direction: DismissDirection.endToStart,
-                        onUpdate: (details) {
-                          if (details.progress >= 0.5 &&
-                              details.progress <= 0.55) {
-                            Vibration.hasVibrator().then((value) {
-                              if (value ?? false) {
-                                Vibration.vibrate(duration: 10);
-                              }
-                            });
-                          }
-                        },
-                        confirmDismiss: (direction) async {
-                          int deletionTime = 3;
-                          Completer<bool?> completer = Completer<bool?>();
-                          Timer deletionTimer =
-                              Timer(Duration(seconds: deletionTime), () {
-                            completer.complete(true);
-                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          });
-                          FloatingBar.showWithAction(
-                              'deck_deletion'.tr(cx), 'undo'.tr(cx), () {
-                            completer.complete(false);
-                            deletionTimer.cancel();
-                          }, cx);
-                          return completer.future;
-                        },
-                        onDismissed: (direction) {
+        onRefresh: () async {
+          refreshList();
+        },
+        child: _allDecks.isEmpty && _searchController.text.isEmpty
+            ? Center(
+                child: Container(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add_circle_outline_outlined,
+                              size: 80, color: Colors.grey.withOpacity(0.5)),
+                          Text('no_decks'.tr(cx),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 20)),
+                        ])))
+            :
+            // search textbox to filter decks by name
+            Column(children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 0),
+                  child: TextField(
+                    controller: _searchController,
+                    focusNode: _searchFocus,
+                    decoration: InputDecoration(
+                      labelText: 'search'.tr(cx),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
                           setState(() {
-                            decks.removeAt(index);
-                          });
-                          _dbHelper.deleteDeck(deck.id).then((_) {
-                            FloatingBar.show('deck_deleted'.tr(cx), cx);
-                            _deleteFolder(List.of([deck.name]));
+                            _searchFocus.unfocus();
+                            _searchController.clear();
                           });
                         },
-                        background: Container(
-                          color: Colors.red[400],
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                          child: const Icon(Icons.delete, color: Colors.white),
-                        ),
-                        child: Container(
-                            padding: const EdgeInsets.all(8.0),
-                            color: _deleter.isInList(deck.id)
-                                ? Theme.of(cx)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.1)
-                                : null,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == '') {
+                          shownDecks = _allDecks;
+                          return;
+                        }
+                        shownDecks = _allDecks.where((deck) {
+                          return deck.name
+                              .toLowerCase()
+                              .contains(value.toLowerCase());
+                        }).toList();
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                    child: ListView.builder(
+                  itemCount: shownDecks.length,
+                  itemBuilder: (context, index) {
+                    final deck = shownDecks[index];
+                    return Container(
+                        padding: const EdgeInsets.all(8.0),
+                        color: _deleter.isInList(deck.id)
+                            ? Theme.of(cx).colorScheme.primary.withOpacity(0.1)
+                            : null,
+                        child: Slidable(
+                            key: Key(deck.id.toString()),
+                            endActionPane: ActionPane(
+                              motion: const BehindMotion(),
+                              dismissible: DismissiblePane(
+                                confirmDismiss: () {
+                                  int deletionTime = 3;
+                                  Completer<bool> completer = Completer<bool>();
+                                  Timer deletionTimer = Timer(
+                                      Duration(seconds: deletionTime), () {
+                                    completer.complete(true);
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                  });
+                                  FloatingBar.showWithAction(
+                                      '${'deck_deletion'.tr(cx)} ${deck.name}',
+                                      'undo'.tr(cx), () {
+                                    completer.complete(false);
+                                    deletionTimer.cancel();
+                                  }, cx);
+                                  return completer.future;
+                                },
+                                onDismissed: () {
+                                  setState(() {
+                                    shownDecks.removeAt(index);
+                                  });
+                                  _dbHelper.deleteDeck(deck.id).then((_) {
+                                    _deleteFolder(List.of([deck.name]));
+                                    if (!cx.mounted) return;
+                                    FloatingBar.show('deck_deleted'.tr(cx), cx);
+                                  });
+                                },
+                              ),
+                              children: [
+                                SlidableAction(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  onPressed: (scx) {},
+                                  icon: Icons.delete,
+                                  backgroundColor: Colors.red[400]!,
+                                  foregroundColor: Colors.white,
+                                  label: 'delete'.tr(cx),
+                                ),
+                              ],
+                            ),
                             child: Card(
                               elevation: _deleter.isInList(deck.id) ? 5 : 1,
                               margin: const EdgeInsets.all(8.0),
@@ -154,24 +204,26 @@ class _DecksPageState extends State<DecksPage> {
                                   ],
                                 ),
                                 onTap: () {
-                                  if (_deleter.isDeleting) {
+                                  if (_deleter.isSelecting) {
                                     setState(() {
-                                      _deleter.toggleItem(deck.id);
+                                      _deleter.toggleItem(deck.id,
+                                          name: deck.name);
                                     });
                                     return;
                                   }
                                   Navigator.push(
-                                    context,
+                                    cx,
                                     MaterialPageRoute(
-                                      builder: (context) =>
+                                      builder: (cx) =>
                                           CardsPage(deckId: deck.id),
                                     ),
-                                  ).then((value) => setState(() {}));
+                                  ).then((value) => refreshList());
                                 },
                                 onLongPress: () {
                                   setState(() {
-                                    _deleter.isDeleting = true;
-                                    _deleter.toggleItem(deck.id);
+                                    _deleter.isSelecting = true;
+                                    _deleter.toggleItem(deck.id,
+                                        name: deck.name);
                                   });
                                   Vibration.hasVibrator().then((value) {
                                     if (value ?? false) {
@@ -183,12 +235,14 @@ class _DecksPageState extends State<DecksPage> {
                             )));
                   },
                 )),
-      floatingActionButton: _deleter.isDeleting
+              ]),
+      ),
+      floatingActionButton: _deleter.isSelecting
           ? FloatingActionButton(
               onPressed: () {
                 final list = _deleter.dumpList();
                 _dbHelper.deleteDecks(list.keys.toList()).then((value) {
-                  setState(() {});
+                  refreshList();
                   _deleteFolder(list.values.toList());
                 });
                 FloatingBar.show('decks_deleted'.tr(cx), cx);
@@ -208,10 +262,10 @@ class _DecksPageState extends State<DecksPage> {
                     if (!kIsWeb) {
                       _adsFullScreen.showAndReloadAd(() {
                         FloatingBar.show('deck_add_success'.tr(cx), cx);
-                        setState(() {});
+                        refreshList();
                       });
                     } else {
-                      setState(() {});
+                      refreshList();
                     }
                   }
                 });

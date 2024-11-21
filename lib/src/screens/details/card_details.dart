@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/media_picker.dart';
-import 'package:flash_cards/src/composables/rating_buttons.dart';
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/media_picker.dart';
+import 'package:study_cards/src/composables/rating_buttons.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -84,9 +84,10 @@ class _CardsPageState extends State<CardDetailsPage> {
                     children: [
                       Image.file(
                         File(_selectedFrontImage!.path),
-                        height: 200.0,
-                        width: 200.0,
-                        fit: BoxFit.cover,
+                        height: 300.0, // Altezza massima
+                        width: 300.0, // Larghezza massima
+                        fit: BoxFit
+                            .contain, // Ridimensiona mantenendo le proporzioni
                         alignment: Alignment.center,
                       ),
                       Row(
@@ -146,9 +147,10 @@ class _CardsPageState extends State<CardDetailsPage> {
                     children: [
                       Image.file(
                         File(_selectedBackImage!.path),
-                        height: 200.0,
-                        width: 200.0,
-                        fit: BoxFit.cover,
+                        height: 300.0, // Altezza massima
+                        width: 300.0, // Larghezza massima
+                        fit: BoxFit
+                            .contain, // Ridimensiona mantenendo le proporzioni
                         alignment: Alignment.center,
                       ),
                       Row(
@@ -189,7 +191,8 @@ class _CardsPageState extends State<CardDetailsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _modifyCard().then((id) {
-            Navigator.pop(context, true);
+            if (!cx.mounted) return;
+            Navigator.pop(cx, true);
           });
         },
         child: const Icon(Icons.check),
