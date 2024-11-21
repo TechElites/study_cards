@@ -64,7 +64,7 @@
   "number_of_cards": "Numero di carte",
   "or": "oppure",
   "pick_xml": "Scegli il file XML ",
-  "pick_xml_or_zip": "Scegli un file XML, JSON o ZIP ",
+  "pick_xml_or_zip_or_json": "Scegli un file XML, JSON o ZIP ",
   "question": "Domanda",
   "remove_ads": "Rimuovi pubblicità",
   "reset": "Reset",

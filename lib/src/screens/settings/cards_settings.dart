@@ -1,4 +1,4 @@
-import 'package:flash_cards/src/logic/json_handler.dart';
+import 'package:study_cards/src/logic/json_handler.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Imports for ads

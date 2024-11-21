@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/json_handler.dart';
 import 'package:study_cards/src/logic/load/xml_handler.dart';
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
@@ -17,7 +18,7 @@ class FileUploader {
   static Future<List<StudyCard>> uploadFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['xml', 'zip'],
+      allowedExtensions: ['xml', 'zip', 'json'],
     );
 
     if (result != null) {
@@ -31,7 +32,9 @@ class FileUploader {
           } else {
             fileContent = await file.readAsString();
           }
-          return await XmlHandler.parseXml(fileContent);
+          return fileContent.startsWith('{') 
+              ? await JsonHandler().parseJson(fileContent)
+              : await XmlHandler.parseSimpleXml(fileContent);
         }
       } else {
         final file = result.files.first;
@@ -43,7 +46,7 @@ class FileUploader {
     return [];
   }
 
-  /// Unzips the file and returns the xml file.
+  /// Unzips the file and returns the xml or json file.
   static Future<File?> _unzipFile(File zipFile) async {
     try {
       Directory? externalDir;
@@ -65,7 +68,7 @@ class FileUploader {
           Directory(path.join(externalDir!.path, zipFileName));
       await destinationDir.create(recursive: true);
 
-      File? xmlFile;
+      File? retFile;
       for (final file in archive) {
         if (file.isFile) {
           final filename = file.name;
@@ -75,8 +78,8 @@ class FileUploader {
           await outputFile.create(recursive: true);
           await outputFile.writeAsBytes(file.content as List<int>);
 
-          if (path.extension(filename) == '.xml') {
-            xmlFile = outputFile;
+          if (path.extension(filename) == '.xml' ||path.extension(filename) == '.json') {
+            retFile = outputFile;
           }
         } else {
           final dirPath = path.join(destinationDir.path, file.name);
@@ -84,7 +87,7 @@ class FileUploader {
         }
       }
 
-      return xmlFile;
+      return retFile;
     } catch (e) {
       throw Exception('Error while unzipping $e');
     }
