@@ -4,8 +4,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:study_cards/src/data/model/card/study_card.dart';
-import 'package:study_cards/src/logic/json_handler.dart';
-import 'package:study_cards/src/logic/load/xml_handler.dart';
+import 'package:study_cards/src/logic/load/extension_handler.dart';
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
 import 'package:study_cards/src/logic/permission_helper.dart';
@@ -33,13 +32,13 @@ class FileUploader {
             fileContent = await file.readAsString();
           }
           return fileContent.startsWith('{') 
-              ? await JsonHandler().parseJson(fileContent)
-              : await XmlHandler.parseSimpleXml(fileContent);
+              ? await ExtensionHandler.parseJson(fileContent)
+              : await ExtensionHandler.parseSimpleXml(fileContent);
         }
       } else {
         final file = result.files.first;
         final fileContent = utf8.decode(file.bytes!);
-        return await XmlHandler.parseSimpleXml(fileContent);
+        return await ExtensionHandler.parseSimpleXml(fileContent);
       }
     }
 

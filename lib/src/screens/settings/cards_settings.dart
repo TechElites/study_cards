@@ -1,4 +1,3 @@
-import 'package:study_cards/src/logic/json_handler.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Imports for ads
@@ -11,6 +10,7 @@ import 'package:study_cards/src/data/model/deck/deck.dart';
 import 'package:study_cards/src/data/model/card/study_card.dart';
 import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:study_cards/src/logic/load/extension_handler.dart';
 
 /// Creates a page to handle the settings of a deck
 class CardsSettingsPage extends StatefulWidget {
@@ -133,7 +133,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   Future<bool> _exportDeck() async {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);
-    final String deckJson = JsonHandler.convertToJson(deck.name, cards);
+    final String deckJson = ExtensionHandler.convertToJson(deck.name, cards);
     final Map<String, String> mediaMap = {}; //path;name
     for (final card in cards) {
       if (card.frontMedia.isNotEmpty) {
@@ -145,7 +145,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
             '${card.id}_back.${card.backMedia.split('.').last}';
       }
     }
-    return await JsonHandler.saveJSONToFile(
+    return await ExtensionHandler.saveJSONToFile(
         deckJson, '${deck.name}.json', mediaMap);
   }
 
