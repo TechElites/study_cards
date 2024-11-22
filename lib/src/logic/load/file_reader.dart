@@ -34,7 +34,7 @@ class FileReader {
           } else {
             fileContent = await file.readAsString();
           }
-          return fileContent.startsWith('{') 
+          return fileContent.startsWith('{')
               ? await ExtensionHandler.parseJson(fileContent)
               : await ExtensionHandler.parseSimpleXml(fileContent);
         }
@@ -76,7 +76,8 @@ class FileReader {
           await outputFile.create(recursive: true);
           await outputFile.writeAsBytes(file.content as List<int>);
 
-          if (path.extension(filename) == '.xml' ||path.extension(filename) == '.json') {
+          if (path.extension(filename) == '.xml' ||
+              path.extension(filename) == '.json') {
             retFile = outputFile;
           }
         } else {
@@ -97,11 +98,14 @@ class FileReader {
     String fileContent = '';
     if (name.contains('.zip')) {
       final archive = ZipDecoder().decodeBytes(list);
-      fileContent = await FileReader.unzipFile(archive, name.substring(0, name.length - 4))
+      fileContent = await FileReader.unzipFile(
+              archive, name.substring(0, name.length - 4))
           .then((value) => value!.readAsString());
     } else {
       fileContent = String.fromCharCodes(list);
     }
-    return await ExtensionHandler.parseJson(fileContent);
+    return name.contains('.xml')
+        ? ExtensionHandler.parseXml(fileContent)
+        : ExtensionHandler.parseJson(fileContent);
   }
 }
