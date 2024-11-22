@@ -50,7 +50,7 @@ class SupabaseHelper {
     if (!deck.contains('.')) {
       final decks = await listDecks();
       final decksNames = decks.map((e) => e.name).toList();
-      deck += decksNames.contains('$deck.zip') ? '.zip' : '.xml';
+      deck += decksNames.contains('$deck.zip') ? '.zip' : '.json';
     }
     final intList = await _supabase?.storage.from('decks').download(deck);
     final cardsList = FileReader.readFromList(

@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:study_cards/src/data/model/card/study_card.dart';
-import 'package:study_cards/src/logic/load/xml_handler.dart';
+import 'package:study_cards/src/logic/load/extension_handler.dart';
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
 import 'package:study_cards/src/logic/permission_helper.dart';
@@ -17,7 +17,7 @@ class FileReader {
   static Future<List<StudyCard>> readFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['xml', 'zip'],
+      allowedExtensions: ['xml', 'zip', 'json'],
     );
 
     if (result != null) {
@@ -34,19 +34,21 @@ class FileReader {
           } else {
             fileContent = await file.readAsString();
           }
-          return await XmlHandler.parseXml(fileContent);
+          return fileContent.startsWith('{') 
+              ? await ExtensionHandler.parseJson(fileContent)
+              : await ExtensionHandler.parseSimpleXml(fileContent);
         }
       } else {
         final file = result.files.first;
         final fileContent = utf8.decode(file.bytes!);
-        return await XmlHandler.parseSimpleXml(fileContent);
+        return await ExtensionHandler.parseSimpleXml(fileContent);
       }
     }
 
     return [];
   }
 
-  /// Unzips the file and returns the xml file.
+  /// Unzips the file and returns the xml or json file.
   static Future<File?> unzipFile(Archive archive, String name) async {
     try {
       Directory? externalDir;
@@ -64,7 +66,7 @@ class FileReader {
       Directory destinationDir = Directory(path.join(externalDir!.path, name));
       await destinationDir.create(recursive: true);
 
-      File? xmlFile;
+      File? retFile;
       for (final file in archive) {
         if (file.isFile) {
           final filename = file.name;
@@ -74,8 +76,8 @@ class FileReader {
           await outputFile.create(recursive: true);
           await outputFile.writeAsBytes(file.content as List<int>);
 
-          if (path.extension(filename) == '.xml') {
-            xmlFile = outputFile;
+          if (path.extension(filename) == '.xml' ||path.extension(filename) == '.json') {
+            retFile = outputFile;
           }
         } else {
           final dirPath = path.join(destinationDir.path, file.name);
@@ -83,13 +85,13 @@ class FileReader {
         }
       }
 
-      return xmlFile;
+      return retFile;
     } catch (e) {
       throw Exception('Error while unzipping $e');
     }
   }
 
-  /// Retrieves the file from a Int list.
+  /// Retrieves the json file from a Int list.
   static Future<List<StudyCard>> readFromList(
       Uint8List list, String name) async {
     String fileContent = '';
@@ -100,6 +102,6 @@ class FileReader {
     } else {
       fileContent = String.fromCharCodes(list);
     }
-    return await XmlHandler.parseXml(fileContent);
+    return await ExtensionHandler.parseJson(fileContent);
   }
 }

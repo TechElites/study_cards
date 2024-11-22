@@ -11,9 +11,9 @@ import 'package:study_cards/src/data/database/db_helper.dart';
 import 'package:study_cards/src/data/model/deck/deck.dart';
 import 'package:study_cards/src/data/model/card/study_card.dart';
 import 'package:study_cards/src/logic/language/string_extension.dart';
-import 'package:study_cards/src/logic/load/xml_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:study_cards/src/logic/load/extension_handler.dart';
 
 /// Creates a page to handle the settings of a deck
 class CardsSettingsPage extends StatefulWidget {
@@ -161,7 +161,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
   Future<String> _exportDeck() async {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);
-    final String deckXml = XmlHandler.createXml(cards, deck.name);
+    final String deckJson = ExtensionHandler.convertToJson(deck.name, cards);
     final Map<String, String> mediaMap = {}; //path;name
     for (final card in cards) {
       if (card.frontMedia.isNotEmpty) {
@@ -173,8 +173,8 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
             '${card.id}_back.${card.backMedia.split('.').last}';
       }
     }
-    return await XmlHandler.saveXmlToFile(
-        deckXml, '${deck.name}.xml', mediaMap);
+    return await ExtensionHandler.saveJSONToFile(
+        deckJson, '${deck.name}.json', mediaMap);
   }
 
   Future<void> _updateReviewCards(int cards) async {

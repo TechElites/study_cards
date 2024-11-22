@@ -41,8 +41,8 @@ class FileDownloader {
           final zipEncoder = ZipEncoder();
           final encodedFile = zipEncoder.encode(archive);
           if (encodedFile != null) {
-            fileName = '${fileName.split('.xml')[0]}.zip';
-            await io.File('${directory.path}/$fileName')
+            final String extension = fileName.split('.').last;
+            await io.File('${directory.path}/${fileName.split(extension)[0]}zip')
                 .writeAsBytes(encodedFile);
           } else {
             return 'error';

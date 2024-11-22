@@ -107,7 +107,7 @@ class _AddDeckState extends State<AddDeck> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(kIsWeb ? 'pick_xml'.tr(cx) : 'pick_xml_or_zip'.tr(cx)),
+                    Text(kIsWeb ? 'pick_xml'.tr(cx) : 'pick_xml_or_zip_or_json'.tr(cx)),
                     const Icon(Icons.folder_copy_rounded),
                   ],
                 ),
