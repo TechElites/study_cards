@@ -2,11 +2,13 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/floating_bar.dart';
 import 'package:study_cards/src/composables/rating_buttons.dart';
 import 'package:study_cards/src/data/database/db_helper.dart';
 import 'package:study_cards/src/data/model/card/study_card.dart';
 import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:study_cards/src/screens/details/card_details.dart';
 
 const _animDuration = Duration(milliseconds: 300);
 const _fasterAnimDuration = Duration(milliseconds: 150);
@@ -225,6 +227,30 @@ class _CardsReviewState extends State<ReviewPage>
                                               alignment: Alignment.center,
                                             ),
                                           ),
+                                          SizedBox(height: 16),
+                                        IconButton(
+                                          icon: Icon(Icons.edit_note),
+                                          iconSize: 32,
+                                          onPressed: () {
+                                            Navigator.push(
+                                              cx,
+                                              MaterialPageRoute(
+                                                builder: (cx) =>
+                                                    CardDetailsPage(
+                                                        card: widget
+                                                            .cards[_index]),
+                                              ),
+                                            ).then((value) {
+                                              if (value != null) {
+                                                if (!cx.mounted) return;
+                                                FloatingBar.show(
+                                                    'card_modify_success'
+                                                        .tr(cx),
+                                                    cx);
+                                              }
+                                            });
+                                          },
+                                        )
                                       ],
                                     ),
                                   ),
