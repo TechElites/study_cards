@@ -1,4 +1,4 @@
-import 'package:study_cards/theme/theme_season.dart';
+import 'package:flash_cards/theme/theme_season.dart';
 import 'package:flutter/material.dart';
 
 final currentMonth = DateTime.now().month;

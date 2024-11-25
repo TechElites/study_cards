@@ -1,11 +1,11 @@
 import 'dart:io';
-import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:study_cards/src/composables/floating_bar.dart';
-import 'package:study_cards/src/logic/language/string_extension.dart';
-import 'package:study_cards/src/composables/media_picker.dart';
+import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:flash_cards/src/composables/media_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:study_cards/src/data/database/db_helper.dart';
-import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/data/database/db_helper.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
 
 /// Which side of the card the image is on

@@ -1,4 +1,4 @@
-package com.example.study_cards
+package com.example.flash_cards
 
 import android.os.Build
 import android.os.Bundle

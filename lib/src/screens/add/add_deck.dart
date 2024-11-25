@@ -1,13 +1,13 @@
-import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:study_cards/src/composables/floating_bar.dart';
-import 'package:study_cards/src/data/remote/supabase_helper.dart';
-import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
+import 'package:flash_cards/src/data/remote/supabase_helper.dart';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:study_cards/src/data/database/db_helper.dart';
-import 'package:study_cards/src/data/model/card/study_card.dart';
-import 'package:study_cards/src/data/model/deck/deck.dart';
+import 'package:flash_cards/src/data/database/db_helper.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flutter/material.dart';
-import 'package:study_cards/src/logic/load/file_reader.dart';
+import 'package:flash_cards/src/logic/load/file_reader.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Creates a page to handle the creation of a new deck

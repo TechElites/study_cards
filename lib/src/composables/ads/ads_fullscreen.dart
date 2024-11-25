@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:study_cards/src/data/repositories/reward_service.dart';
+import 'package:flash_cards/src/data/repositories/reward_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdsFullscreen {

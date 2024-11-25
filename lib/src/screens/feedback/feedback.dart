@@ -1,5 +1,5 @@
-import 'package:study_cards/src/composables/floating_bar.dart';
-import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:flash_cards/src/composables/floating_bar.dart';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';

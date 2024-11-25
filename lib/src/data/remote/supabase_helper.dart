@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:study_cards/src/data/model/card/study_card.dart';
-import 'package:study_cards/src/logic/load/file_reader.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/logic/load/file_reader.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

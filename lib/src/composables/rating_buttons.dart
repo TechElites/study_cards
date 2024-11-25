@@ -1,5 +1,5 @@
-import 'package:study_cards/src/data/model/rating.dart';
-import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:flash_cards/src/data/model/rating.dart';
+import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 
 /// Class to build rating buttons.
