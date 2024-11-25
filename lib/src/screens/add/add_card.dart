@@ -103,25 +103,24 @@ class _AddCardState extends State<AddCard> {
                     alignment: Alignment.center,
                   ),
                 ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  _addCard().then((_) {
-                    setState(() {
-                      _frontController.clear();
-                      _backController.clear();
-                      _selectedFrontImage = null;
-                      _selectedBackImage = null;
-                      focus.requestFocus();
-                    });
-                    if (!cx.mounted) return;
-                    FloatingBar.show('card_add_success'.tr(cx), cx);
-                  });
-                },
-                child: Text('add_card'.tr(cx)),
-              ),
             ],
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _addCard().then((_) {
+              setState(() {
+                _frontController.clear();
+                _backController.clear();
+                _selectedFrontImage = null;
+                _selectedBackImage = null;
+                focus.requestFocus();
+              });
+              if (!cx.mounted) return;
+              FloatingBar.show('card_add_success'.tr(cx), cx);
+            });
+          },
+          child: const Icon(Icons.add),
         ));
   }
 
