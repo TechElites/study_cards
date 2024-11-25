@@ -203,8 +203,12 @@ class ExtensionHandler {
       final Map<String, dynamic> cardMap = {
         'front_text': card.front,
         'back_text': card.back,
-        'front_media': card.frontMedia.isNotEmpty ? [card.frontMedia] : [],
-        'back_media': card.backMedia.isNotEmpty ? [card.backMedia] : []
+        'front_media': card.frontMedia.isNotEmpty
+            ? ['${card.id}_front.${card.frontMedia.split('.').last}']
+            : [],
+        'back_media': card.backMedia.isNotEmpty
+            ? ['${card.id}_back.${card.backMedia.split('.').last}']
+            : []
       };
       cardList.add(cardMap);
     }

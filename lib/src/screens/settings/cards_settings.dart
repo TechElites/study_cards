@@ -157,12 +157,12 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     return await _supabaseHelper.uploadDeck(file);
   }
 
-  /// Exports the deck to an XML file
+  /// Exports the deck to an JSON file
   Future<String> _exportDeck() async {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);
-    final String deckJson = ExtensionHandler.convertToJson(deck.name, cards);
-    final Map<String, String> mediaMap = {}; //path;name
+    final deckJson = ExtensionHandler.convertToJson(deck.name, cards);
+    final Map<String, String> mediaMap = {};
     for (final card in cards) {
       if (card.frontMedia.isNotEmpty) {
         mediaMap[card.frontMedia] =
