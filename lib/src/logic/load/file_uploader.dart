@@ -78,6 +78,7 @@ class FileUploader {
           await outputFile.writeAsBytes(file.content as List<int>);
 
           if (path.extension(filename) == '.xml' ||path.extension(filename) == '.json') {
+            await outputFile.writeAsString(utf8.decode(file.content as List<int>));
             retFile = outputFile;
           }
         } else {

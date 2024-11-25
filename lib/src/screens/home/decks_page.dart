@@ -156,7 +156,8 @@ class _DecksPageState extends State<DecksPage> {
                                   Timer deletionTimer = Timer(
                                       Duration(seconds: deletionTime), () {
                                     completer.complete(true);
-                                    ScaffoldMessenger.of(context)
+                                    if (!cx.mounted) return;
+                                    ScaffoldMessenger.of(cx)
                                         .hideCurrentSnackBar();
                                   });
                                   FloatingBar.showWithAction(
