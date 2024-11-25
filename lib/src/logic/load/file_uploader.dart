@@ -3,11 +3,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:study_cards/src/data/model/card/study_card.dart';
-import 'package:study_cards/src/logic/load/extension_handler.dart';
+import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/logic/load/extension_handler.dart';
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
-import 'package:study_cards/src/logic/permission_helper.dart';
+import 'package:flash_cards/src/logic/permission_helper.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
