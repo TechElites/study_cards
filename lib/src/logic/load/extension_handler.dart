@@ -170,7 +170,7 @@ class ExtensionHandler {
     final deckName = jsonData['deckName'];
     List<StudyCard> parsedData = [];
     parsedData
-        .add(StudyCard(front: deckName, back: jsonData['length'].toString()));
+        .add(StudyCard(front: deckName, back: '0'));
     var appPath = '';
     final Directory? directory;
     if (Platform.isAndroid) {
@@ -196,7 +196,6 @@ class ExtensionHandler {
   // convert a list of StudyCard objects to a json string using the format:
   // {"deckName": "name", "length": 1, "cards": [{"front_text": "","back_text": "","front_media": [],"back_media": []}, ...]}
   static String convertToJson(String deckName, List<StudyCard> cards) {
-    final deckLength = cards.length;
     final List<Map<String, dynamic>> cardList = [];
     for (var i = 0; i < cards.length; i++) {
       final card = cards[i];
@@ -214,7 +213,6 @@ class ExtensionHandler {
     }
     final Map<String, dynamic> deckMap = {
       'deckName': deckName,
-      'length': deckLength,
       'cards': cardList
     };
     return prettifyJsonEncode(deckMap);
