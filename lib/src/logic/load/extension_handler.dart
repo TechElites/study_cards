@@ -170,7 +170,7 @@ class ExtensionHandler {
     final deckName = jsonData['deckName'];
     List<StudyCard> parsedData = [];
     parsedData
-        .add(StudyCard(front: deckName, back: '0'));
+        .add(StudyCard(front: deckName, back: jsonData.length.toString()));
     var appPath = '';
     final Directory? directory;
     if (Platform.isAndroid) {
