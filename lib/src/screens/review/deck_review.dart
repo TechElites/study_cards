@@ -9,6 +9,7 @@ import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_cards/src/screens/details/card_details.dart';
+import 'package:markdown_editor_plus/widgets/markdown_parse.dart';
 
 const _animDuration = Duration(milliseconds: 300);
 const _fasterAnimDuration = Duration(milliseconds: 150);
@@ -175,13 +176,10 @@ class _CardsReviewState extends State<ReviewPage>
                                         : ImageFilter.blur(
                                             sigmaX: 5, sigmaY: 5),
                                     child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           widget.cards[_index].front,
                                           style: const TextStyle(fontSize: 24),
-                                          textAlign: TextAlign.center,
                                         ),
                                         if (widget.cards[_index].frontMedia !=
                                             '')
@@ -207,10 +205,9 @@ class _CardsReviewState extends State<ReviewPage>
                                           indent: 20,
                                           endIndent: 20,
                                         ),
-                                        Text(
-                                          widget.cards[_index].back,
-                                          style: const TextStyle(fontSize: 24),
-                                          textAlign: TextAlign.center,
+                                        MarkdownParse(
+                                          data: widget.cards[_index].back,
+                                          shrinkWrap: true,
                                         ),
                                         if (widget.cards[_index].backMedia !=
                                             '')
@@ -227,7 +224,7 @@ class _CardsReviewState extends State<ReviewPage>
                                               alignment: Alignment.center,
                                             ),
                                           ),
-                                          SizedBox(height: 16),
+                                        SizedBox(height: 16),
                                         IconButton(
                                           icon: Icon(Icons.edit_note),
                                           iconSize: 32,
@@ -285,31 +282,25 @@ class _CardsReviewState extends State<ReviewPage>
                                 ),
                                 child: Center(
                                   child: SingleChildScrollView(
-                                      child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                        Text(
-                                          widget.cards[_index].front,
-                                          style: const TextStyle(fontSize: 24),
-                                          textAlign: TextAlign.center,
+                                      child: Column(children: [
+                                    Text(
+                                      widget.cards[_index].front,
+                                      style: const TextStyle(fontSize: 24),
+                                    ),
+                                    if (widget.cards[_index].frontMedia != '')
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16.0),
+                                        child: Image.file(
+                                          File(widget.cards[_index].frontMedia),
+                                          height: 300.0, // Altezza massima
+                                          width: 300.0, // Larghezza massima
+                                          fit: BoxFit
+                                              .contain, // Ridimensiona mantenendo le proporzioni
+                                          alignment: Alignment.center,
                                         ),
-                                        if (widget.cards[_index].frontMedia !=
-                                            '')
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 16.0),
-                                            child: Image.file(
-                                              File(widget
-                                                  .cards[_index].frontMedia),
-                                              height: 300.0, // Altezza massima
-                                              width: 300.0, // Larghezza massima
-                                              fit: BoxFit
-                                                  .contain, // Ridimensiona mantenendo le proporzioni
-                                              alignment: Alignment.center,
-                                            ),
-                                          ),
-                                      ])),
+                                      ),
+                                  ])),
                                 ),
                               ),
                             ),

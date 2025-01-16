@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flash_cards/src/logic/platform_helper.dart';
 
 /// Import for mobile ads
 import 'package:flash_cards/src/data/repositories/reward_service.dart';
@@ -17,10 +17,11 @@ import 'package:provider/provider.dart';
 void main() async {
   await DatabaseHelper().init();
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb) {
+  if (PlatformHelper.isMobile) {
     await RewardService().isRewarded();
     unawaited(MobileAds.instance.initialize());
-  } else {
+  }
+  if (PlatformHelper.isWeb) {
     // this is needed since it's only a trial version on web
     await DatabaseHelper().clear();
   }

@@ -1,6 +1,8 @@
+import 'package:flash_cards/src/logic/platform_helper.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// DatabaseHelper class is a singleton class that provides methods
 /// to interact with the Hive database.
@@ -16,8 +18,14 @@ class DatabaseHelper {
     await Hive.initFlutter();
     Hive.registerAdapter(HiveDeckAdapter());
     Hive.registerAdapter(HiveStudyCardAdapter());
-    await Hive.openBox<HiveDeck>('decks');
-    await Hive.openBox<HiveStudyCard>('cards');
+    if (PlatformHelper.isDesktop) {
+      final dir = await getApplicationSupportDirectory();
+      await Hive.openBox<HiveDeck>('decks', path: dir.path);
+      await Hive.openBox<HiveStudyCard>('cards', path: dir.path);
+    } else {
+      await Hive.openBox<HiveDeck>('decks');
+      await Hive.openBox<HiveStudyCard>('cards');
+    }
   }
 
   Box<HiveDeck> get decksBox => Hive.box<HiveDeck>('decks');

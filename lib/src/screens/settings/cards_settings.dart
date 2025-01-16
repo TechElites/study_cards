@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flash_cards/src/logic/platform_helper.dart';
 
 /// Imports for ads
 import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
@@ -36,7 +36,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     super.initState();
     final revC = _dbHelper.getReviewCards(widget.deckId);
     final d = _dbHelper.getDeck(widget.deckId);
-    if (!kIsWeb) {
+    if (PlatformHelper.isMobile) {
       _adsFullScreen = AdsFullscreen();
       _adsFullScreen.loadAd();
     }
@@ -111,7 +111,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            if (!kIsWeb) {
+            if (PlatformHelper.isMobile) {
               _adsFullScreen.showAndReloadAd(() {
                 FloatingBar.show('deck_download'.tr(cx), cx);
               }).then((showed) {
@@ -120,6 +120,9 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                 }
               });
             } else {
+              if (cx.mounted) {
+                FloatingBar.show('deck_download'.tr(cx), cx);
+              }
               setState(() {});
             }
           });

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flash_cards/src/composables/home_drawer.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flash_cards/src/logic/platform_helper.dart';
 
 /// Import for mobile ads
 import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
@@ -18,7 +18,6 @@ import 'package:flash_cards/src/screens/add/add_deck.dart';
 import 'package:flash_cards/src/screens/home/cards_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:vibration/vibration.dart';
 
@@ -48,7 +47,7 @@ class _DecksPageState extends State<DecksPage> {
     _allDecks = _dbHelper.getDecks();
     shownDecks = _allDecks;
     _searchController.text = '';
-    if (!kIsWeb) {
+    if (PlatformHelper.isMobile) {
       _adsFullScreen = AdsFullscreen();
       _adsSandman = AdsSandman();
       _adsFullScreen.loadAd();
@@ -64,15 +63,15 @@ class _DecksPageState extends State<DecksPage> {
 
   @override
   Widget build(BuildContext cx) {
-    if (!kIsWeb) _adsSandman.loadAd(() => setState(() {}));
+    if (PlatformHelper.isMobile) _adsSandman.loadAd(() => setState(() {}));
 
     return AdsScaffold(
       appBar: AppBar(
         title: Text('decks'.tr(cx)),
         centerTitle: true,
       ),
-      drawer: HomeDrawer.build(cx, kIsWeb, kIsWeb ? false : _adsSandman.isReady,
-          () {
+      drawer: HomeDrawer.build(
+          cx, PlatformHelper.isMobile ? _adsSandman.isReady : false, () {
         _adsSandman.showAd(() {
           FloatingBar.show('ad_rewarded'.tr(cx), cx);
           setState(() {});
@@ -261,7 +260,7 @@ class _DecksPageState extends State<DecksPage> {
                   ),
                 ).then((value) {
                   if (value != null) {
-                    if (!kIsWeb) {
+                    if (PlatformHelper.isMobile) {
                       _adsFullScreen.showAndReloadAd(() {
                         FloatingBar.show('deck_add_success'.tr(cx), cx);
                         refreshList();
@@ -281,16 +280,7 @@ class _DecksPageState extends State<DecksPage> {
   /// Deletes the folders associated to a deck
   Future<void> _deleteFolder(List<String> list) async {
     var appPath = '';
-    Directory? externalDir;
-    if (Platform.isAndroid) {
-      final hasPermission = await PermissionHelper.requestStoragePermissions();
-      if (!hasPermission) {
-        throw Exception("Missing storage permissions.");
-      }
-      externalDir = await getExternalStorageDirectory();
-    } else {
-      externalDir = await getApplicationSupportDirectory();
-    }
+    Directory? externalDir = await PermissionHelper.getStorageDirectory();
     appPath = externalDir!.path;
     for (var deckName in list) {
       final folder = Directory(path.join(appPath.toString(), deckName));

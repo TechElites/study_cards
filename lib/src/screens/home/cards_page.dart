@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flash_cards/src/logic/platform_helper.dart';
 
 /// Imports for mobile ads
 import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
@@ -48,7 +48,7 @@ class _CardsPageState extends State<CardsPage> {
     _allCards = _dbHelper.getCards(widget.deckId);
     shownCards = _allCards;
     _searchController.text = '';
-    if (!kIsWeb) {
+    if (PlatformHelper.isMobile) {
       _adsFullScreen = AdsFullscreen();
       _adsFullScreen.loadAd();
     }
@@ -339,7 +339,7 @@ class _CardsPageState extends State<CardsPage> {
                                                 shownCards, maxCards)),
                               ),
                             ).then((value) {
-                              if (!kIsWeb) {
+                              if (PlatformHelper.isMobile) {
                                 _adsFullScreen.showAndReloadAd(() {
                                   refreshList();
                                 });

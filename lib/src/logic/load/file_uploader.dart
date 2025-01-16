@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:convert';
 import 'dart:io';
 
@@ -8,7 +7,7 @@ import 'package:flash_cards/src/logic/load/extension_handler.dart';
 import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
 import 'package:flash_cards/src/logic/permission_helper.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flash_cards/src/logic/platform_helper.dart';
 import 'package:path/path.dart' as path;
 
 /// Class to handle uploading files.
@@ -21,44 +20,35 @@ class FileUploader {
     );
 
     if (result != null) {
-      if (!kIsWeb) {
-        if (result.files.isNotEmpty) {
-          File file = File(result.files.single.path!);
-          String fileContent = '';
-          if (file.path.endsWith('.zip')) {
-            fileContent =
-                await _unzipFile(file).then((value) => value!.readAsString());
-          } else {
-            fileContent = await file.readAsString();
+      switch (PlatformHelper.platform) {
+        case PlatformHelper.web:
+          final file = result.files.first;
+          final fileContent = utf8.decode(file.bytes!);
+          return await ExtensionHandler.parseSimpleXml(fileContent);
+        default:
+          if (result.files.isNotEmpty) {
+            File file = File(result.files.single.path!);
+            String fileContent = '';
+            if (file.path.endsWith('.zip')) {
+              fileContent =
+                  await _unzipFile(file).then((value) => value!.readAsString());
+            } else {
+              fileContent = await file.readAsString();
+            }
+            return fileContent.startsWith('{')
+                ? await ExtensionHandler.parseJson(fileContent)
+                : await ExtensionHandler.parseSimpleXml(fileContent);
           }
-          return fileContent.startsWith('{') 
-              ? await ExtensionHandler.parseJson(fileContent)
-              : await ExtensionHandler.parseSimpleXml(fileContent);
-        }
-      } else {
-        final file = result.files.first;
-        final fileContent = utf8.decode(file.bytes!);
-        return await ExtensionHandler.parseSimpleXml(fileContent);
+          break;
       }
     }
-
     return [];
   }
 
   /// Unzips the file and returns the xml or json file.
   static Future<File?> _unzipFile(File zipFile) async {
     try {
-      Directory? externalDir;
-      if (Platform.isAndroid) {
-        final hasPermission =
-            await PermissionHelper.requestStoragePermissions();
-        if (!hasPermission) {
-          throw Exception("Missing storage permissions.");
-        }
-        externalDir = await getExternalStorageDirectory();
-      } else {
-        externalDir = await getApplicationDocumentsDirectory();
-      }
+      Directory? externalDir = await PermissionHelper.getStorageDirectory();
       final bytes = await zipFile.readAsBytes();
       final archive = ZipDecoder().decodeBytes(bytes);
 
@@ -77,8 +67,10 @@ class FileUploader {
           await outputFile.create(recursive: true);
           await outputFile.writeAsBytes(file.content as List<int>);
 
-          if (path.extension(filename) == '.xml' ||path.extension(filename) == '.json') {
-            await outputFile.writeAsString(utf8.decode(file.content as List<int>));
+          if (path.extension(filename) == '.xml' ||
+              path.extension(filename) == '.json') {
+            await outputFile
+                .writeAsString(utf8.decode(file.content as List<int>));
             retFile = outputFile;
           }
         } else {

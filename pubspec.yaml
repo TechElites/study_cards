@@ -57,11 +57,14 @@ dependencies:
   http: ^1.2.1
   url_launcher: ^6.3.0
   flutter_slidable: ^3.1.1
+  markdown_editor_plus: ^0.2.15
 
 flutter_launcher_icons:
   android: true
   ios: true
   web: 
+    generate: true
+  windows:
     generate: true
   image_path: "assets/icon/app_icon.png"
   remove_alpha_ios: true

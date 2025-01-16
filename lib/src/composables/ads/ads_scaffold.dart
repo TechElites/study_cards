@@ -1,7 +1,7 @@
+import 'package:flash_cards/src/logic/platform_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
-/// Imports for ads
+// Imports for ads
 import 'ads_footer.dart';
 
 class AdsScaffold extends StatelessWidget {
@@ -53,7 +53,7 @@ class AdsScaffold extends StatelessWidget {
       persistentFooterButtons: persistentFooterButtons,
       drawer: drawer,
       endDrawer: endDrawer,
-      bottomNavigationBar: kIsWeb ? bottomNavigationBar : AdsFooter(),
+      bottomNavigationBar: PlatformHelper.isMobile ? AdsFooter() : bottomNavigationBar,
       backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       primary: primary ?? true,

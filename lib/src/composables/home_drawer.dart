@@ -1,4 +1,5 @@
 import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:flash_cards/src/logic/platform_helper.dart';
 import 'package:flash_cards/src/screens/feedback/feedback.dart';
 import 'package:flash_cards/src/screens/guide/guide.dart';
 import 'package:flash_cards/theme/theme_provider.dart';
@@ -9,7 +10,7 @@ import 'package:provider/provider.dart';
 
 class HomeDrawer {
   static Widget build(
-      BuildContext cx, bool kIsWeb, bool isSandmanReady, Function adsRewarded) {
+      BuildContext cx, bool isSandmanReady, Function adsRewarded) {
     return Drawer(
         child: ListView(
       padding: EdgeInsets.zero,
@@ -32,7 +33,7 @@ class HomeDrawer {
               ),
               textAlign: TextAlign.center),
         ),
-        if (!kIsWeb && isSandmanReady)
+        if (PlatformHelper.isMobile && isSandmanReady)
           ListTile(
             title: Text('remove_ads'.tr(cx)),
             leading: const Icon(Icons.tv_off),
@@ -78,7 +79,7 @@ class HomeDrawer {
             );
           },
         ),
-        if (kIsWeb)
+        if (PlatformHelper.isWeb)
           ListTile(
               title: Text('download_apk'.tr(cx)),
               leading: const Icon(Icons.android),
@@ -87,7 +88,7 @@ class HomeDrawer {
                     launchUrl(Uri.parse(
                         "https://studycards.altervista.org/studycards.apk"))
                   }),
-        if (kIsWeb)
+        if (PlatformHelper.isWeb)
           ListTile(
             title: Text('download_ipa'.tr(cx)),
             leading: const Icon(Icons.apple),

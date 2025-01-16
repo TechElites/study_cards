@@ -1,10 +1,10 @@
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/logic/load/file_uploader.dart';
+import 'package:flash_cards/src/logic/platform_helper.dart';
 import 'package:flutter/material.dart';
 
 /// Creates a page to handle the creation of a new deck
@@ -80,7 +80,7 @@ class _AddDeckState extends State<AddDeck> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(kIsWeb ? 'pick_xml'.tr(cx) : 'pick_xml_or_zip_or_json'.tr(cx)),
+                  Text(PlatformHelper.isWeb ? 'pick_xml'.tr(cx) : 'pick_xml_or_zip_or_json'.tr(cx)),
                   const Icon(Icons.folder_copy_rounded),
                 ],
               ),
