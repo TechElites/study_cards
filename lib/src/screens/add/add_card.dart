@@ -74,6 +74,12 @@ class _AddCardState extends State<AddCard> {
                   ),
                 ),
               const SizedBox(height: 16.0),
+              Opacity(
+                  opacity: 0.5,
+                  child: Text('tap_below_edit'.tr(cx),
+                      style: TextStyle(
+                        fontSize: 8.0,
+                      ))),
               MarkdownAutoPreview(
                   controller: _backController,
                   hintText: 'answer'.tr(cx),
