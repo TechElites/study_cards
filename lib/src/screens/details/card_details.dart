@@ -128,7 +128,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                   opacity: 0.5,
                   child: Text('tap_below_edit'.tr(cx),
                       style: TextStyle(
-                        fontSize: 8.0,
+                        fontSize: 10.0,
                       ))),
               MarkdownAutoPreview(
                 controller: _backController,

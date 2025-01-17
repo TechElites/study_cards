@@ -30,7 +30,7 @@ final Season winter = Season(
   name: 'Winter',
   light: ThemeSeason(
     primaryColor: Colors.blue,
-    secondaryColor: Colors.white,
+    secondaryColor: Colors.lightBlueAccent,
     backgroundColor: Colors.blue[50]!,
     foregroundColor: Colors.blueGrey[900]!,
   ),
