@@ -46,6 +46,7 @@ class _AddCardState extends State<AddCard> {
                   controller: _frontController,
                   focusNode: focus,
                   maxLines: null,
+                  style: TextStyle(fontSize: 18.0),
                   decoration: InputDecoration(
                       labelText: 'question'.tr(cx),
                       suffixIcon: PlatformHelper.isWeb
@@ -84,6 +85,7 @@ class _AddCardState extends State<AddCard> {
                   controller: _backController,
                   hintText: 'answer'.tr(cx),
                   maxLines: null,
+                  style: TextStyle(fontSize: 18.0),
                   toolbarBackground: Theme.of(cx).colorScheme.surface,
                   expandableBackground: Theme.of(cx).colorScheme.secondary,
                   decoration: InputDecoration(
