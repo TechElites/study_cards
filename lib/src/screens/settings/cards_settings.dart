@@ -1,6 +1,6 @@
 import 'package:flash_cards/src/data/remote/supabase_helper.dart';
 import 'package:flash_cards/src/logic/load/file_downloader.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flash_cards/src/logic/platform_helper.dart';
 
 /// Imports for ads
 import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
@@ -40,7 +40,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     super.initState();
     final revC = _dbHelper.getReviewCards(widget.deckId);
     final d = _dbHelper.getDeck(widget.deckId);
-    if (!kIsWeb) {
+    if (PlatformHelper.isMobile) {
       _adsFullScreen = AdsFullscreen();
       _adsFullScreen.loadAd();
     }
@@ -119,7 +119,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
           label: 'export_deck'.tr(cx),
           onTap: () {
             _exportDeck().then((value) {
-              if (!kIsWeb) {
+              if (PlatformHelper.isMobile) {
                 _adsFullScreen.showAndReloadAd(() {
                   FloatingBar.show('deck_download'.tr(cx), cx);
                 }).then((showed) {
@@ -128,12 +128,15 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                   }
                 });
               } else {
-                setState(() {});
+                if (cx.mounted) {
+                FloatingBar.show('deck_download'.tr(cx), cx);
+              }
+              setState(() {});
               }
             });
           },
         ),
-        if (!kIsWeb)
+        if (PlatformHelper.isMobile)
           SpeedDialChild(
             child: const Icon(Icons.file_upload),
             label: 'upload_deck'.tr(cx),

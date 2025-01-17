@@ -6,8 +6,9 @@ import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flash_cards/src/logic/platform_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:markdown_editor_plus/widgets/markdown_auto_preview.dart';
 
 /// Creates a page to handle the creation of new cards
 class CardDetailsPage extends StatefulWidget {
@@ -63,7 +64,8 @@ class _CardsPageState extends State<CardDetailsPage> {
                 controller: _frontController,
                 decoration: InputDecoration(
                     labelText: 'Front',
-                    suffixIcon: kIsWeb || _selectedFrontImage != null
+                    suffixIcon: PlatformHelper.isWeb ||
+                            _selectedFrontImage != null
                         ? null
                         : InkWell(
                             onTap: () {
@@ -122,11 +124,22 @@ class _CardsPageState extends State<CardDetailsPage> {
                   ),
                 ),
               const SizedBox(height: 16.0),
-              TextField(
+              Opacity(
+                  opacity: 0.5,
+                  child: Text('tap_below_edit'.tr(cx),
+                      style: TextStyle(
+                        fontSize: 10.0,
+                      ))),
+              MarkdownAutoPreview(
                 controller: _backController,
+                hintText: 'answer'.tr(cx),
+                maxLines: null,
+                toolbarBackground: Theme.of(cx).colorScheme.surface,
+                expandableBackground: Theme.of(cx).colorScheme.secondary,
                 decoration: InputDecoration(
                     labelText: 'Back',
-                    suffixIcon: kIsWeb || _selectedBackImage != null
+                    suffixIcon: PlatformHelper.isWeb ||
+                            _selectedBackImage != null
                         ? null
                         : InkWell(
                             onTap: () {
@@ -138,7 +151,6 @@ class _CardsPageState extends State<CardDetailsPage> {
                             },
                             child: const Icon(Icons.add_photo_alternate_rounded,
                                 color: Colors.grey, size: 32.0))),
-                maxLines: null,
               ),
               if (_selectedBackImage != null)
                 Padding(

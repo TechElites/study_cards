@@ -3,10 +3,11 @@ import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/composables/media_picker.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:flash_cards/src/logic/platform_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:markdown_editor_plus/widgets/markdown_auto_preview.dart';
 
 /// Which side of the card the image is on
 enum ImageSide { front, back }
@@ -47,7 +48,7 @@ class _AddCardState extends State<AddCard> {
                   maxLines: null,
                   decoration: InputDecoration(
                       labelText: 'question'.tr(cx),
-                      suffixIcon: kIsWeb
+                      suffixIcon: PlatformHelper.isWeb
                           ? null
                           : InkWell(
                               onTap: () {
@@ -73,12 +74,21 @@ class _AddCardState extends State<AddCard> {
                   ),
                 ),
               const SizedBox(height: 16.0),
-              TextField(
+              Opacity(
+                  opacity: 0.5,
+                  child: Text('tap_below_edit'.tr(cx),
+                      style: TextStyle(
+                        fontSize: 10.0,
+                      ))),
+              MarkdownAutoPreview(
                   controller: _backController,
+                  hintText: 'answer'.tr(cx),
                   maxLines: null,
+                  toolbarBackground: Theme.of(cx).colorScheme.surface,
+                  expandableBackground: Theme.of(cx).colorScheme.secondary,
                   decoration: InputDecoration(
                       labelText: 'answer'.tr(cx),
-                      suffixIcon: kIsWeb
+                      suffixIcon: PlatformHelper.isWeb
                           ? null
                           : InkWell(
                               onTap: () {

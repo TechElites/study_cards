@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flash_cards/src/logic/permission_helper.dart';
 import 'package:flutter_launcher_icons/utils.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/load/file_downloader.dart';
@@ -170,14 +171,9 @@ class ExtensionHandler {
     final deckName = jsonData['deckName'];
     List<StudyCard> parsedData = [];
     parsedData
-        .add(StudyCard(front: deckName, back: '0'));
+        .add(StudyCard(front: deckName, back: jsonData.length.toString()));
     var appPath = '';
-    final Directory? directory;
-    if (Platform.isAndroid) {
-      directory = await getExternalStorageDirectory();
-    } else {
-      directory = await getApplicationDocumentsDirectory();
-    }
+    final Directory? directory = await PermissionHelper.getStorageDirectory();
     appPath = directory!.path;
     for (var card in jsonData['cards']) {
       parsedData.add(StudyCard(
