@@ -62,6 +62,8 @@ class _CardsPageState extends State<CardDetailsPage> {
             children: [
               TextField(
                 controller: _frontController,
+                style: TextStyle(fontSize: 18.0),
+                maxLines: null,
                 decoration: InputDecoration(
                     labelText: 'Front',
                     suffixIcon: PlatformHelper.isWeb ||
@@ -77,7 +79,6 @@ class _CardsPageState extends State<CardDetailsPage> {
                             },
                             child: const Icon(Icons.add_photo_alternate_rounded,
                                 color: Colors.grey, size: 32.0))),
-                maxLines: null,
               ),
               if (_selectedFrontImage != null)
                 Padding(
@@ -134,6 +135,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                 controller: _backController,
                 hintText: 'answer'.tr(cx),
                 maxLines: null,
+                style: TextStyle(fontSize: 18.0),
                 toolbarBackground: Theme.of(cx).colorScheme.surface,
                 expandableBackground: Theme.of(cx).colorScheme.secondary,
                 decoration: InputDecoration(

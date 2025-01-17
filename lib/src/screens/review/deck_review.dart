@@ -9,6 +9,7 @@ import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_cards/src/screens/details/card_details.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:markdown_editor_plus/widgets/markdown_parse.dart';
 
 const _animDuration = Duration(milliseconds: 300);
@@ -208,6 +209,11 @@ class _CardsReviewState extends State<ReviewPage>
                                         MarkdownParse(
                                           data: widget.cards[_index].back,
                                           shrinkWrap: true,
+                                          styleSheet: MarkdownStyleSheet
+                                                  .fromTheme(Theme.of(context))
+                                              .copyWith(
+                                                  textScaler:
+                                                      TextScaler.linear(1.2)),
                                         ),
                                         if (widget.cards[_index].backMedia !=
                                             '')
