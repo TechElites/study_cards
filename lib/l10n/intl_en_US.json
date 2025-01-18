@@ -62,7 +62,7 @@
   "no_timing": "No timing",
   "number_of_cards": "Number of cards",
   "or": "or",
-  "pick_xml": "Pick XML file ",
+  "pick_xml_or_json": "Pick XML or JSON file ",
   "pick_xml_or_zip_or_json": "Pick XML, JSON or ZIP file ",
   "question": "Question",
   "remove_ads": "Remove Ads",

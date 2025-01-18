@@ -24,7 +24,9 @@ class FileUploader {
         case PlatformHelper.web:
           final file = result.files.first;
           final fileContent = utf8.decode(file.bytes!);
-          return await ExtensionHandler.parseSimpleXml(fileContent);
+          return fileContent.startsWith('{')
+                ? await ExtensionHandler.parseJson(fileContent)
+                : await ExtensionHandler.parseSimpleXml(fileContent);
         default:
           if (result.files.isNotEmpty) {
             File file = File(result.files.single.path!);

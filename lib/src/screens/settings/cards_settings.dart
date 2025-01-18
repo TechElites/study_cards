@@ -132,7 +132,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     );
   }
 
-  /// Exports the deck to an XML file
+  /// Exports the deck to an JSON file
   Future<bool> _exportDeck() async {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);

@@ -80,7 +80,7 @@ class _AddDeckState extends State<AddDeck> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(PlatformHelper.isWeb ? 'pick_xml'.tr(cx) : 'pick_xml_or_zip_or_json'.tr(cx)),
+                  Text(PlatformHelper.isWeb ? 'pick_xml_or_json'.tr(cx) : 'pick_xml_or_zip_or_json'.tr(cx)),
                   const Icon(Icons.folder_copy_rounded),
                 ],
               ),
