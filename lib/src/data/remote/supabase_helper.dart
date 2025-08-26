@@ -18,9 +18,9 @@ class SupabaseHelper {
   /// call this method before using any other methods.
   Future<void> init() async {
     final sp = await Supabase.initialize(
-      url: 'https://xwujnixizszhqkawfxie.supabase.co',
+      url: 'https://avvatexriecmkfgmzudc.supabase.co',
       anonKey:
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh3dWpuaXhpenN6aHFrYXdmeGllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE0OTE0NjQsImV4cCI6MjA0NzA2NzQ2NH0.kfr1UQklNFVtoZqRbN3_WsqHcwheULb7Nc9dSnv-FPc',
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2dmF0ZXhyaWVjbWtmZ216dWRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYyMTk0MjksImV4cCI6MjA3MTc5NTQyOX0.zqL0VD26AeebKei8t2Fb9N5iyPn60vR7zxixI0Jt6u8',
     );
     _supabase = sp.client;
   }
