@@ -28,7 +28,7 @@ class HiveStudyCard extends HiveObject {
   late String backMedia;
 }
 
-/// StudyCard class is a model class to rapresent a card.
+/// StudyCard class is a model class to represent a card.
 class StudyCard {
   final int id;
   final int deckId;

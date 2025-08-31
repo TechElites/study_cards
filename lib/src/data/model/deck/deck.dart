@@ -19,7 +19,7 @@ class HiveDeck extends HiveObject {
   late String creation;
 }
 
-/// Deck class is a model class to rapresent a deck
+/// Deck class is a model class to represent a deck
 /// of cards.
 class Deck {
   final int id;
