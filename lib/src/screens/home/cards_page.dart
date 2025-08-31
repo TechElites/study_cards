@@ -133,7 +133,7 @@ class _CardsPageState extends State<CardsPage> {
                     return Container(
                         padding: const EdgeInsets.all(8.0),
                         color: _selector.isInList(card.id)
-                            ? Theme.of(cx).colorScheme.primary.withOpacity(0.1)
+                            ? Theme.of(cx).colorScheme.primary.withValues(alpha: 0.1)
                             : null,
                         child: Slidable(
                             key: Key(card.id.toString()),

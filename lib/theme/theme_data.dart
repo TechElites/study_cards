@@ -52,7 +52,7 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
       activeTrackColor: season.light.primaryColor,
       inactiveTrackColor: season.light.backgroundColor,
       thumbColor: season.light.primaryColor,
-      overlayColor: season.light.primaryColor.withOpacity(0.3),
+      overlayColor: season.light.primaryColor.withValues(alpha: 0.3),
       valueIndicatorColor: season.light.primaryColor,
       valueIndicatorTextStyle: const TextStyle(
         color: Colors.white,
@@ -98,7 +98,7 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
       activeTrackColor: season.dark.primaryColor,
       inactiveTrackColor: season.dark.backgroundColor,
       thumbColor: season.dark.primaryColor,
-      overlayColor: season.dark.primaryColor.withOpacity(0.3),
+      overlayColor: season.dark.primaryColor.withValues(alpha: 0.3),
       valueIndicatorColor: season.dark.primaryColor,
       valueIndicatorTextStyle: const TextStyle(
         color: Colors.white,

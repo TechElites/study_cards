@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
@@ -188,8 +188,8 @@ class _CardsReviewState extends State<ReviewPage>
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 16.0),
-                                            child: Image.file(
-                                              File(widget
+                                            child: Image.memory(
+                                              base64Decode(widget
                                                   .cards[_index].frontMedia),
                                               height: 300.0, // Altezza massima
                                               width: 300.0, // Larghezza massima
@@ -217,8 +217,8 @@ class _CardsReviewState extends State<ReviewPage>
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 16.0),
-                                            child: Image.file(
-                                              File(widget
+                                            child: Image.memory(
+                                              base64Decode(widget
                                                   .cards[_index].backMedia),
                                               height: 300.0, // Altezza massima
                                               width: 300.0, // Larghezza massima
@@ -299,8 +299,8 @@ class _CardsReviewState extends State<ReviewPage>
                                           Padding(
                                             padding: const EdgeInsets.symmetric(
                                                 vertical: 16.0),
-                                            child: Image.file(
-                                              File(widget
+                                            child: Image.memory(
+                                              base64Decode(widget
                                                   .cards[_index].frontMedia),
                                               height: 300.0, // Altezza massima
                                               width: 300.0, // Larghezza massima

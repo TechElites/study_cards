@@ -134,19 +134,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     final Deck deck = _dbHelper.getDeck(widget.deckId);
     final List<StudyCard> cards = _dbHelper.getCards(deck.id);
     final String deckJson = ExtensionHandler.convertToJson(deck.name, cards);
-    final Map<String, String> mediaMap = {}; //path;name
-    for (final card in cards) {
-      if (card.frontMedia.isNotEmpty) {
-        mediaMap[card.frontMedia] =
-            '${card.id}_front.${card.frontMedia.split('.').last}';
-      }
-      if (card.backMedia.isNotEmpty) {
-        mediaMap[card.backMedia] =
-            '${card.id}_back.${card.backMedia.split('.').last}';
-      }
-    }
-    return await ExtensionHandler.saveJSONToFile(
-        deckJson, '${deck.name}.json', mediaMap);
+    return await ExtensionHandler.saveJSONToFile(deckJson, '${deck.name}.json');
   }
 
   Future<void> _updateReviewCards(int cards) async {

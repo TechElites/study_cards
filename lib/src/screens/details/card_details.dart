@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
@@ -6,6 +7,7 @@ import 'package:flash_cards/src/composables/rating_buttons.dart';
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:flash_cards/src/logic/media/image_converter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -26,6 +28,8 @@ class _CardsPageState extends State<CardDetailsPage> {
   String _ratingController = 'None';
   File? _selectedFrontImage;
   File? _selectedBackImage;
+  bool _hasExistingFrontImage = false;
+  bool _hasExistingBackImage = false;
 
   @override
   void initState() {
@@ -33,10 +37,8 @@ class _CardsPageState extends State<CardDetailsPage> {
     _frontController.text = widget.card.front;
     _backController.text = widget.card.back;
     _ratingController = widget.card.rating;
-    _selectedFrontImage =
-        widget.card.frontMedia != '' ? File(widget.card.frontMedia) : null;
-    _selectedBackImage =
-        widget.card.backMedia != '' ? File(widget.card.backMedia) : null;
+    _hasExistingFrontImage = widget.card.frontMedia.isNotEmpty;
+    _hasExistingBackImage = widget.card.backMedia.isNotEmpty;
   }
 
   @override
@@ -77,19 +79,28 @@ class _CardsPageState extends State<CardDetailsPage> {
                                 color: Colors.grey, size: 32.0))),
                 maxLines: null,
               ),
-              if (_selectedFrontImage != null)
+              if (_selectedFrontImage != null || _hasExistingFrontImage)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Column(
                     children: [
-                      Image.file(
-                        File(_selectedFrontImage!.path),
-                        height: 300.0, // Altezza massima
-                        width: 300.0, // Larghezza massima
-                        fit: BoxFit
-                            .contain, // Ridimensiona mantenendo le proporzioni
-                        alignment: Alignment.center,
-                      ),
+                      _selectedFrontImage != null 
+                        ? Image.file(
+                            _selectedFrontImage!,
+                            height: 300.0, // Altezza massima
+                            width: 300.0, // Larghezza massima
+                            fit: BoxFit
+                                .contain, // Ridimensiona mantenendo le proporzioni
+                            alignment: Alignment.center,
+                          )
+                        : Image.memory(
+                            base64Decode(widget.card.frontMedia),
+                            height: 300.0, // Altezza massima
+                            width: 300.0, // Larghezza massima
+                            fit: BoxFit
+                                .contain, // Ridimensiona mantenendo le proporzioni
+                            alignment: Alignment.center,
+                          ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -97,6 +108,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                               onPressed: () {
                                 setState(() {
                                   _selectedFrontImage = null;
+                                  _hasExistingFrontImage = false;
                                 });
                               },
                               icon: const Icon(
@@ -140,19 +152,28 @@ class _CardsPageState extends State<CardDetailsPage> {
                                 color: Colors.grey, size: 32.0))),
                 maxLines: null,
               ),
-              if (_selectedBackImage != null)
+              if (_selectedBackImage != null || _hasExistingBackImage)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Column(
                     children: [
-                      Image.file(
-                        File(_selectedBackImage!.path),
-                        height: 300.0, // Altezza massima
-                        width: 300.0, // Larghezza massima
-                        fit: BoxFit
-                            .contain, // Ridimensiona mantenendo le proporzioni
-                        alignment: Alignment.center,
-                      ),
+                      _selectedBackImage != null 
+                        ? Image.file(
+                            _selectedBackImage!,
+                            height: 300.0, // Altezza massima
+                            width: 300.0, // Larghezza massima
+                            fit: BoxFit
+                                .contain, // Ridimensiona mantenendo le proporzioni
+                            alignment: Alignment.center,
+                          )
+                        : Image.memory(
+                            base64Decode(widget.card.backMedia),
+                            height: 300.0, // Altezza massima
+                            width: 300.0, // Larghezza massima
+                            fit: BoxFit
+                                .contain, // Ridimensiona mantenendo le proporzioni
+                            alignment: Alignment.center,
+                          ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -160,6 +181,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                               onPressed: () {
                                 setState(() {
                                   _selectedBackImage = null;
+                                  _hasExistingBackImage = false;
                                 });
                               },
                               icon: const Icon(
@@ -201,7 +223,34 @@ class _CardsPageState extends State<CardDetailsPage> {
   }
 
   /// Modifies the card in the database
-  Future<void> _modifyCard() {
+  Future<void> _modifyCard() async {
+    String frontMedia = '';
+    String backMedia = '';
+    
+    // Convert front image to Base64 if new image is selected
+    if (_selectedFrontImage != null) {
+      try {
+        frontMedia = await ImageConverter.fileToBase64(_selectedFrontImage!);
+      } catch (e) {
+        throw Exception('Error converting front image to Base64: $e');
+      }
+    } else if (_hasExistingFrontImage) {
+      // Keep existing Base64 if no new image is selected
+      frontMedia = widget.card.frontMedia;
+    }
+    
+    // Convert back image to Base64 if new image is selected
+    if (_selectedBackImage != null) {
+      try {
+        backMedia = await ImageConverter.fileToBase64(_selectedBackImage!);
+      } catch (e) {
+        throw Exception('Error converting back image to Base64: $e');
+      }
+    } else if (_hasExistingBackImage) {
+      // Keep existing Base64 if no new image is selected
+      backMedia = widget.card.backMedia;
+    }
+
     final StudyCard modifiedCard = StudyCard(
         id: widget.card.id,
         deckId: widget.card.deckId,
@@ -209,8 +258,8 @@ class _CardsPageState extends State<CardDetailsPage> {
         back: _backController.text,
         rating: _ratingController,
         lastReviewed: DateTime.now().toIso8601String(),
-        frontMedia: _selectedFrontImage?.path ?? '',
-        backMedia: _selectedBackImage?.path ?? '');
+        frontMedia: frontMedia,
+        backMedia: backMedia);
 
     return _dbHelper.updateCard(modifiedCard);
   }

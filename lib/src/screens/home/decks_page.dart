@@ -94,7 +94,7 @@ class _DecksPageState extends State<DecksPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(Icons.add_circle_outline_outlined,
-                              size: 80, color: Colors.grey.withOpacity(0.5)),
+                              size: 80, color: Colors.grey.withValues(alpha: 0.5)),
                           Text('no_decks'.tr(cx),
                               textAlign: TextAlign.center,
                               style: const TextStyle(fontSize: 20)),
@@ -143,7 +143,7 @@ class _DecksPageState extends State<DecksPage> {
                     return Container(
                         padding: const EdgeInsets.all(8.0),
                         color: _deleter.isInList(deck.id)
-                            ? Theme.of(cx).colorScheme.primary.withOpacity(0.1)
+                            ? Theme.of(cx).colorScheme.primary.withValues(alpha: 0.1)
                             : null,
                         child: Slidable(
                             key: Key(deck.id.toString()),

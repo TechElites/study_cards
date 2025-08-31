@@ -3,6 +3,7 @@ import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
 import 'package:flash_cards/src/composables/floating_bar.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/composables/media_picker.dart';
+import 'package:flash_cards/src/logic/media/image_converter.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
@@ -125,13 +126,34 @@ class _AddCardState extends State<AddCard> {
   }
 
   /// Adds a new card to the database
-  Future<void> _addCard() {
+  Future<void> _addCard() async {
+    String frontMedia = '';
+    String backMedia = '';
+    
+    // Convert front image to Base64 if exists
+    if (_selectedFrontImage != null) {
+      try {
+        frontMedia = await ImageConverter.fileToBase64(_selectedFrontImage!);
+      } catch (e) {
+        throw Exception('Error converting front image to Base64: $e');
+      }
+    }
+    
+    // Convert back image to Base64 if exists
+    if (_selectedBackImage != null) {
+      try {
+        backMedia = await ImageConverter.fileToBase64(_selectedBackImage!);
+      } catch (e) {
+        throw Exception('Error converting back image to Base64: $e');
+      }
+    }
+
     final StudyCard newCard = StudyCard(
       deckId: widget.deckId,
       front: _frontController.text,
       back: _backController.text,
-      frontMedia: _selectedFrontImage?.path ?? '',
-      backMedia: _selectedBackImage?.path ?? '',
+      frontMedia: frontMedia,
+      backMedia: backMedia,
     );
 
     return _dbHelper.insertCard(newCard);
