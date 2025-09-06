@@ -20,7 +20,7 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
       secondary: season.light.secondaryColor,
     ),
     cardTheme: CardThemeData(
-      surfaceTintColor: season.light.backgroundColor,
+      color: season.light.backgroundColor,
     ),
     scaffoldBackgroundColor: Colors.white,
     appBarTheme: AppBarTheme(
@@ -70,7 +70,7 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
       backgroundColor: season.dark.primaryColor,
     ),
     cardTheme: CardThemeData(
-      surfaceTintColor: season.dark.backgroundColor,
+      color: season.dark.backgroundColor,
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.white),

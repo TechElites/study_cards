@@ -216,9 +216,23 @@ class _CardsReviewState extends State<ReviewPage>
                                             child: MarkdownBody(
                                               data: widget.cards[_index].back,
                                               styleSheet: MarkdownStyleSheet(
-                                                p: const TextStyle(
-                                                  fontSize: 24,
+                                                textAlign: WrapAlignment.spaceBetween,
+                                                p: const TextStyle(fontSize: 24),
+                                                h1: const TextStyle(fontSize: 29, fontWeight: FontWeight.bold),
+                                                h2: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                                                h3: const TextStyle(fontSize: 27, fontWeight: FontWeight.bold),
+                                                h4: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                                                h5: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                                                h6: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                                listBullet: const TextStyle(fontSize: 24),
+                                                blockquote: const TextStyle(fontSize: 24, fontStyle: FontStyle.italic),
+                                                code: const TextStyle(fontSize: 20, fontFamily: 'monospace'),
+                                                codeblockDecoration: BoxDecoration(
+                                                  color: Colors.grey[200],
+                                                  borderRadius: BorderRadius.circular(4),
                                                 ),
+                                                strong: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                                                em: const TextStyle(fontSize: 24, fontStyle: FontStyle.italic),
                                               ),
                                             ),
                                           ),
