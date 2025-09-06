@@ -228,7 +228,7 @@ class _DecksPageState extends State<DecksPage> {
                                         name: deck.name);
                                   });
                                   Vibration.hasVibrator().then((value) {
-                                    if (value ?? false) {
+                                    if (value) {
                                       Vibration.vibrate(duration: 10);
                                     }
                                   });

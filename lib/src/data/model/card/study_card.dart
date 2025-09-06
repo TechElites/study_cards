@@ -40,12 +40,12 @@ class StudyCard {
   final String backMedia;
 
   /// Formats the last reviewed date to a more readable format.
-  get lastReviewedFormatted => lastReviewed == 'never'
+  String get lastReviewedFormatted => lastReviewed == 'never'
       ? lastReviewed
       : lastReviewed.replaceFirst('T', ' ').substring(0, 16);
 
   /// Returns the minutes since the card was last reviewed.
-  get minutesSinceReviewed {
+  int get minutesSinceReviewed {
     if (lastReviewed == 'never') return 0;
     final now = DateTime.now();
     final last = DateTime.parse(lastReviewed);

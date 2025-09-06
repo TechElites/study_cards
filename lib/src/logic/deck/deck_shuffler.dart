@@ -8,7 +8,8 @@ class DeckShuffler {
     final List<StudyCard> shuffledCards = [];
 
     for (final card in cards) {
-      if (card.minutesSinceReviewed >= Rating.times[card.rating]) {
+      final ratingTime = Rating.times[card.rating];
+      if (ratingTime != null && card.minutesSinceReviewed >= ratingTime) {
         shuffledCards.add(card);
       }
     }

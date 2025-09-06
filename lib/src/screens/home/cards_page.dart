@@ -249,7 +249,7 @@ class _CardsPageState extends State<CardsPage> {
                                     _selector.toggleItem(card.id);
                                   });
                                   Vibration.hasVibrator().then((value) {
-                                    if (value ?? false) {
+                                    if (value) {
                                       Vibration.vibrate(duration: 10);
                                     }
                                   });

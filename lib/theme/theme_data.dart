@@ -19,12 +19,12 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
       primary: season.light.primaryColor,
       secondary: season.light.secondaryColor,
     ),
-    cardTheme: CardTheme(
-      color: season.light.backgroundColor,
+    cardTheme: CardThemeData(
+      surfaceTintColor: season.light.backgroundColor,
     ),
     scaffoldBackgroundColor: Colors.white,
     appBarTheme: AppBarTheme(
-      color: season.light.primaryColor,
+      backgroundColor: season.light.primaryColor,
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.black),
@@ -36,7 +36,7 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
         foregroundColor: WidgetStateProperty.all(season.light.foregroundColor),
       ),
     ),
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
         titleTextStyle: TextStyle(
       color: Colors.black,
       fontSize: 24,
@@ -67,10 +67,10 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
     ),
     scaffoldBackgroundColor: Colors.grey[800]!,
     appBarTheme: AppBarTheme(
-      color: season.dark.primaryColor,
+      backgroundColor: season.dark.primaryColor,
     ),
-    cardTheme: CardTheme(
-      color: season.dark.backgroundColor,
+    cardTheme: CardThemeData(
+      surfaceTintColor: season.dark.backgroundColor,
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(color: Colors.white),
@@ -82,7 +82,7 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
         foregroundColor: WidgetStateProperty.all(season.dark.foregroundColor),
       ),
     ),
-    dialogTheme: const DialogTheme(
+    dialogTheme: const DialogThemeData(
         titleTextStyle: TextStyle(
       color: Colors.white,
       fontSize: 24,
