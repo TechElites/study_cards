@@ -10,6 +10,7 @@ import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flash_cards/src/logic/media/image_converter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:markdown_editor_plus/markdown_editor_plus.dart';
 
 /// Creates a page to handle the creation of new cards
 class CardDetailsPage extends StatefulWidget {
@@ -145,23 +146,48 @@ class _CardsPageState extends State<CardDetailsPage> {
                   ),
                 ),
               const SizedBox(height: 16.0),
-              TextField(
-                controller: _backController,
-                decoration: InputDecoration(
-                    labelText: 'Back',
-                    suffixIcon: kIsWeb || _selectedBackImage != null
-                        ? null
-                        : InkWell(
-                            onTap: () {
-                              MediaPicker.pickImage(context).then((value) {
-                                setState(() {
-                                  _selectedBackImage = File(value);
+              Theme(
+                data: Theme.of(cx).copyWith(
+                  textTheme: Theme.of(cx).textTheme.copyWith(
+                    bodyLarge: TextStyle(
+                      fontSize: 18, 
+                      color: Theme.of(cx).colorScheme.onSurface
+                    ),
+                    bodyMedium: TextStyle(
+                      fontSize: 16, 
+                      color: Theme.of(cx).colorScheme.onSurface
+                    ),
+                    bodySmall: TextStyle(
+                      fontSize: 14, 
+                      color: Theme.of(cx).colorScheme.onSurface
+                    ),
+                  ),
+                ),
+                child: MarkdownAutoPreview(
+                  controller: _backController,
+                  maxLines: null,
+                  hintText: 'answer'.tr(cx),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Theme.of(cx).colorScheme.onSurface,
+                  ),
+                  toolbarBackground: Theme.of(cx).colorScheme.surface,
+                  expandableBackground: Theme.of(cx).colorScheme.secondary,
+                  decoration: InputDecoration(
+                      labelText: 'Back',
+                      suffixIcon: kIsWeb || _selectedBackImage != null
+                          ? null
+                          : InkWell(
+                              onTap: () {
+                                MediaPicker.pickImage(context).then((value) {
+                                  setState(() {
+                                    _selectedBackImage = File(value);
+                                  });
                                 });
-                              });
-                            },
-                            child: const Icon(Icons.add_photo_alternate_rounded,
-                                color: Colors.grey, size: 32.0))),
-                maxLines: null,
+                              },
+                              child: const Icon(Icons.add_photo_alternate_rounded,
+                                  color: Colors.grey, size: 32.0))),
+                ),
               ),
               if (_selectedBackImage != null || _hasExistingBackImage)
                 Padding(

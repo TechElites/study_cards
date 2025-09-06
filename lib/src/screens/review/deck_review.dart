@@ -9,6 +9,7 @@ import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_cards/src/screens/details/card_details.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 const _animDuration = Duration(milliseconds: 300);
 const _fasterAnimDuration = Duration(milliseconds: 150);
@@ -210,10 +211,16 @@ class _CardsReviewState extends State<ReviewPage>
                                             indent: 20,
                                             endIndent: 20,
                                           ),
-                                          Text(
-                                            widget.cards[_index].back,
-                                            style: const TextStyle(fontSize: 24),
-                                            textAlign: TextAlign.left,
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: MarkdownBody(
+                                              data: widget.cards[_index].back,
+                                              styleSheet: MarkdownStyleSheet(
+                                                p: const TextStyle(
+                                                  fontSize: 24,
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                           if (widget.cards[_index].backMedia != '')
                                             Padding(

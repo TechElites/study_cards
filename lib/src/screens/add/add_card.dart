@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flash_cards/src/data/database/db_helper.dart';
 import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
+import 'package:markdown_editor_plus/markdown_editor_plus.dart';
 
 /// Which side of the card the image is on
 enum ImageSide { front, back }
@@ -90,25 +91,52 @@ class _AddCardState extends State<AddCard> {
                   ),
                 ),
               const SizedBox(height: 16.0),
-              TextField(
+              Theme(
+                data: Theme.of(cx).copyWith(
+                  textTheme: Theme.of(cx).textTheme.copyWith(
+                    bodyLarge: TextStyle(
+                      fontSize: 18, 
+                      color: Theme.of(cx).colorScheme.onSurface
+                    ),
+                    bodyMedium: TextStyle(
+                      fontSize: 16, 
+                      color: Theme.of(cx).colorScheme.onSurface
+                    ),
+                    bodySmall: TextStyle(
+                      fontSize: 14, 
+                      color: Theme.of(cx).colorScheme.onSurface
+                    ),
+                  ),
+                ),
+                child: MarkdownAutoPreview(
                   controller: _backController,
                   maxLines: null,
+                  hintText: 'answer'.tr(cx),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Theme.of(cx).colorScheme.onSurface,
+                  ),
+                  toolbarBackground: Theme.of(cx).colorScheme.surface,
+                  expandableBackground: Theme.of(cx).colorScheme.secondary,
                   decoration: InputDecoration(
-                      labelText: 'answer'.tr(cx),
-                      suffixIcon: kIsWeb
-                          ? null
-                          : InkWell(
-                              onTap: () {
-                                MediaPicker.pickImage(context).then((value) {
-                                  setState(() {
-                                    _selectedBackImage = File(value);
-                                  });
+                    labelText: 'answer'.tr(cx),
+                    suffixIcon: kIsWeb
+                        ? null
+                        : InkWell(
+                            onTap: () {
+                              MediaPicker.pickImage(context).then((value) {
+                                setState(() {
+                                  _selectedBackImage = File(value);
                                 });
-                              },
-                              child: const Icon(
-                                  Icons.add_photo_alternate_rounded,
-                                  color: Colors.grey,
-                                  size: 32.0)))),
+                              });
+                            },
+                            child: const Icon(
+                                Icons.add_photo_alternate_rounded,
+                                color: Colors.grey,
+                                size: 32.0))
+                  ),
+                ),
+              ),
               if (_selectedBackImage != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
