@@ -112,10 +112,6 @@ class _AddCardState extends State<AddCard> {
                   controller: _backController,
                   maxLines: null,
                   hintText: 'answer'.tr(cx),
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Theme.of(cx).colorScheme.onSurface,
-                  ),
                   toolbarBackground: Theme.of(cx).colorScheme.surface,
                   expandableBackground: Theme.of(cx).colorScheme.secondary,
                   decoration: InputDecoration(

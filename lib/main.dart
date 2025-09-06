@@ -1,4 +1,4 @@
-import 'package:flash_cards/src/screens/splash/splash_page.dart';
+// import 'package:flash_cards/src/screens/splash/splash_page.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 /// Import for mobile ads
@@ -55,9 +55,10 @@ class StudyCards extends StatelessWidget {
             Locale('en', 'US'), // Inglese
             Locale('it', 'IT'), // Italiano
           ],
-          initialRoute: '/home',
+          initialRoute: '/',
           routes: {
-            '/': (context) => SplashPage(),
+            '/': (context) => DecksPage(), // Home Page - carica direttamente senza splash
+            // '/': (context) => SplashPage(), // Splash page not used for now
             '/home': (context) => DecksPage(), // Home Page
           },
         );
