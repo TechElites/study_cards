@@ -31,6 +31,22 @@ class _AddCardState extends State<AddCard> {
   File? _selectedBackImage;
 
   @override
+  void initState() {
+    super.initState();
+    // Add listeners to update UI when text changes
+    _frontController.addListener(() => setState(() {}));
+    _backController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _frontController.dispose();
+    _backController.dispose();
+    focus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext cx) {
     return AdsScaffold(
         appBar: AppBar(
@@ -108,7 +124,7 @@ class _AddCardState extends State<AddCard> {
           ),
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
+          onPressed: _isCardEmpty() ? null : () {
             _addCard().then((_) {
               setState(() {
                 _frontController.clear();
@@ -121,8 +137,20 @@ class _AddCardState extends State<AddCard> {
               FloatingBar.show('card_add_success'.tr(cx), cx);
             });
           },
+          backgroundColor: _isCardEmpty() ? Colors.grey : null,
           child: const Icon(Icons.add),
         ));
+  }
+
+  /// Checks if the card is completely empty (no text and no images)
+  bool _isCardEmpty() {
+    final frontText = _frontController.text.trim();
+    final backText = _backController.text.trim();
+    
+    return frontText.isEmpty && 
+           backText.isEmpty && 
+           _selectedFrontImage == null && 
+           _selectedBackImage == null;
   }
 
   /// Adds a new card to the database

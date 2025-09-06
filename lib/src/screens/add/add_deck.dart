@@ -6,6 +6,7 @@ import 'package:flash_cards/src/data/model/card/study_card.dart';
 import 'package:flash_cards/src/data/model/deck/deck.dart';
 import 'package:flash_cards/src/logic/load/file_uploader.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
 
 /// Creates a page to handle the creation of a new deck
 class AddDeck extends StatefulWidget {
@@ -98,9 +99,37 @@ class _AddDeckState extends State<AddDeck> {
                       first = 'deck_name'.tr(cx);
                       second = 'number_of_cards'.tr(cx);
                     }
-                    return ListTile(
-                      title: Text('$first: ${item.front}'),
-                      subtitle: Text('$second: ${item.back}'),
+                    
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 4.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '$first: ${item.front}',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 4.0),
+                            Text('$second: ${item.back}'),
+                            if (index > 0 && (item.frontMedia.isNotEmpty || item.backMedia.isNotEmpty)) ...[
+                              const SizedBox(height: 8.0),
+                              Row(
+                                children: [
+                                  if (item.frontMedia.isNotEmpty) ...[
+                                    _buildImagePreview(item.frontMedia, 'Front'),
+                                    const SizedBox(width: 8.0),
+                                  ],
+                                  if (item.backMedia.isNotEmpty) ...[
+                                    _buildImagePreview(item.backMedia, 'Back'),
+                                  ],
+                                ],
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
                     );
                   }
                   return const SizedBox.shrink();
@@ -140,9 +169,86 @@ class _AddDeckState extends State<AddDeck> {
   Future<int> _addDeck() {
     final Deck newDeck = Deck(
       name: _nameController.text,
-      cards: frontsAndBacks.length - 1,
+      cards: frontsAndBacks.length > 1 ? frontsAndBacks.length - 1 : 0,
       creation: DateTime.now(),
     );
     return _dbHelper.insertDeck(newDeck);
+  }
+
+  /// Builds a small preview widget for image media
+  Widget _buildImagePreview(String mediaData, String label) {
+    if (mediaData.isEmpty) return const SizedBox.shrink();
+    
+    try {
+      final bytes = base64Decode(mediaData);
+      return Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 60,
+              padding: const EdgeInsets.symmetric(horizontal: 6.0, vertical: 2.0),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8.0),
+                  topRight: Radius.circular(8.0),
+                ),
+              ),
+              child: Text(
+                label,
+                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(8.0),
+                bottomRight: Radius.circular(8.0),
+              ),
+              child: Image.memory(
+                bytes,
+                width: 60,
+                height: 60,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 60,
+                    height: 60,
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.broken_image, size: 24),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      return Container(
+        width: 60,
+        height: 76,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 4),
+            const Icon(Icons.broken_image, size: 24),
+          ],
+        ),
+      );
+    }
   }
 }

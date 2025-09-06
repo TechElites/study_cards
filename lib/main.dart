@@ -55,7 +55,7 @@ class StudyCards extends StatelessWidget {
             Locale('en', 'US'), // Inglese
             Locale('it', 'IT'), // Italiano
           ],
-          initialRoute: '/',
+          initialRoute: '/home',
           routes: {
             '/': (context) => SplashPage(),
             '/home': (context) => DecksPage(), // Home Page

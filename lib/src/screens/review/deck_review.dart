@@ -79,32 +79,42 @@ class _CardsReviewState extends State<ReviewPage>
   }
 
   void _toggleReveal() {
-    if (!_reveal) {
+    if (!_reveal && _ready) {
       setState(() {
         _reveal = true;
-        _revealController.forward();
-        _ratingController.forward();
       });
+      _revealController.forward();
+      _ratingController.forward();
     }
   }
 
   void _nextCard() {
+    if (!_ready) return; // Prevent multiple calls
+    
+    setState(() {
+      _ready = false;
+    });
+    
     _index++;
     if (_index >= widget.cards.length) {
       Navigator.pop(context);
-    } else {
-      _nextCardController.forward().then((_) {
-        _ratingController.reverse().then((_) {
-          setState(() {
-            _reveal = false;
-            _ready = false;
+      return;
+    }
+    
+    _nextCardController.forward().then((_) {
+      _ratingController.reverse().then((_) {
+        setState(() {
+          _reveal = false;
+        });
+        _nextCardController.reverse().then((_) {
+          _revealController.reverse().then((_) {
+            setState(() {
+              _ready = true;
+            });
           });
-          _nextCardController.reverse().then((_) => _revealController
-              .reverse()
-              .then((_) => setState(() => _ready = true)));
         });
       });
-    }
+    });
   }
 
   @override
@@ -136,207 +146,188 @@ class _CardsReviewState extends State<ReviewPage>
           )
         ],
       ),
-      body: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: _toggleReveal,
-        child: _index < widget.cards.length
-            ? Column(
-                children: [
-                  Expanded(
-                      child: Stack(
-                    children: [
-                      SlideTransition(
-                        position: _nextCardAnimation,
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                margin: const EdgeInsets.all(16.0),
-                                padding: const EdgeInsets.all(16.0),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(cx).colorScheme.surface,
-                                  border: Border.all(
-                                    color: Theme.of(cx).colorScheme.secondary,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      offset: Offset(-0.5, 0.5),
-                                      color: Colors.black,
-                                      blurRadius: 2,
+      body: _index < widget.cards.length
+          ? Column(
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: _ready ? _toggleReveal : null,
+                    child: Stack(
+                      children: [
+                        SlideTransition(
+                          position: _nextCardAnimation,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.all(16.0),
+                                  padding: const EdgeInsets.all(16.0),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(cx).colorScheme.surface,
+                                    border: Border.all(
+                                      color: Theme.of(cx).colorScheme.secondary,
+                                      width: 2.0,
                                     ),
-                                  ],
-                                ),
-                                child: SingleChildScrollView(
-                                  child: ImageFiltered(
-                                    imageFilter: _ready
-                                        ? ImageFilter.blur(sigmaX: 0, sigmaY: 0)
-                                        : ImageFilter.blur(
-                                            sigmaX: 5, sigmaY: 5),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          widget.cards[_index].front,
-                                          style: const TextStyle(fontSize: 24),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        if (widget.cards[_index].frontMedia !=
-                                            '')
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 16.0),
-                                            child: Image.memory(
-                                              base64Decode(widget
-                                                  .cards[_index].frontMedia),
-                                              height: 300.0, // Altezza massima
-                                              width: 300.0, // Larghezza massima
-                                              fit: BoxFit
-                                                  .contain, // Ridimensiona mantenendo le proporzioni
-                                              alignment: Alignment.center,
-                                            ),
-                                          ),
-                                        Divider(
-                                          color: Theme.of(cx)
-                                              .colorScheme
-                                              .secondary,
-                                          height: 20,
-                                          thickness: 1,
-                                          indent: 20,
-                                          endIndent: 20,
-                                        ),
-                                        Text(
-                                          widget.cards[_index].back,
-                                          style: const TextStyle(fontSize: 24),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        if (widget.cards[_index].backMedia !=
-                                            '')
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 16.0),
-                                            child: Image.memory(
-                                              base64Decode(widget
-                                                  .cards[_index].backMedia),
-                                              height: 300.0, // Altezza massima
-                                              width: 300.0, // Larghezza massima
-                                              fit: BoxFit
-                                                  .contain, // Ridimensiona mantenendo le proporzioni
-                                              alignment: Alignment.center,
-                                            ),
-                                          ),
-                                          SizedBox(height: 16),
-                                        IconButton(
-                                          icon: Icon(Icons.edit_note),
-                                          iconSize: 32,
-                                          onPressed: () {
-                                            Navigator.push(
-                                              cx,
-                                              MaterialPageRoute(
-                                                builder: (cx) =>
-                                                    CardDetailsPage(
-                                                        card: widget
-                                                            .cards[_index]),
-                                              ),
-                                            ).then((value) {
-                                              if (value != null) {
-                                                if (!cx.mounted) return;
-                                                FloatingBar.show(
-                                                    'card_modify_success'
-                                                        .tr(cx),
-                                                    cx);
-                                              }
-                                            });
-                                          },
-                                        )
-                                      ],
-                                    ),
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        offset: Offset(-0.5, 0.5),
+                                        color: Colors.black,
+                                        blurRadius: 2,
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                      SlideTransition(
-                        position: _revealAnimation,
-                        child: Column(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                margin: const EdgeInsets.all(16.0),
-                                padding: const EdgeInsets.all(16.0),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(cx).scaffoldBackgroundColor,
-                                  border: Border.all(
-                                    color: Theme.of(cx).colorScheme.secondary,
-                                    width: 2.0,
-                                  ),
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      offset: Offset(-0.5, 0.5),
-                                      color: Colors.black,
-                                      blurRadius: 2,
-                                    ),
-                                  ],
-                                ),
-                                child: Center(
                                   child: SingleChildScrollView(
+                                    physics: _ready ? const AlwaysScrollableScrollPhysics() : const NeverScrollableScrollPhysics(),
+                                    child: ImageFiltered(
+                                      imageFilter: _ready
+                                          ? ImageFilter.blur(sigmaX: 0, sigmaY: 0)
+                                          : ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                                       child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                        Text(
-                                          widget.cards[_index].front,
-                                          style: const TextStyle(fontSize: 24),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        if (widget.cards[_index].frontMedia !=
-                                            '')
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 16.0),
-                                            child: Image.memory(
-                                              base64Decode(widget
-                                                  .cards[_index].frontMedia),
-                                              height: 300.0, // Altezza massima
-                                              width: 300.0, // Larghezza massima
-                                              fit: BoxFit
-                                                  .contain, // Ridimensiona mantenendo le proporzioni
-                                              alignment: Alignment.center,
-                                            ),
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            widget.cards[_index].front,
+                                            style: const TextStyle(fontSize: 24),
+                                            textAlign: TextAlign.justify,
                                           ),
-                                      ])),
+                                          if (widget.cards[_index].frontMedia != '')
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                              child: Image.memory(
+                                                base64Decode(widget.cards[_index].frontMedia),
+                                                height: 300.0,
+                                                width: 300.0,
+                                                fit: BoxFit.contain,
+                                                alignment: Alignment.center,
+                                              ),
+                                            ),
+                                          Divider(
+                                            color: Theme.of(cx).colorScheme.secondary,
+                                            height: 20,
+                                            thickness: 1,
+                                            indent: 20,
+                                            endIndent: 20,
+                                          ),
+                                          Text(
+                                            widget.cards[_index].back,
+                                            style: const TextStyle(fontSize: 24),
+                                            textAlign: TextAlign.left,
+                                          ),
+                                          if (widget.cards[_index].backMedia != '')
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                              child: Image.memory(
+                                                base64Decode(widget.cards[_index].backMedia),
+                                                height: 300.0,
+                                                width: 300.0,
+                                                fit: BoxFit.contain,
+                                                alignment: Alignment.center,
+                                              ),
+                                            ),
+                                          const SizedBox(height: 16),
+                                          IconButton(
+                                            icon: const Icon(Icons.edit_note),
+                                            iconSize: 32,
+                                            onPressed: () {
+                                              Navigator.push(
+                                                cx,
+                                                MaterialPageRoute(
+                                                  builder: (cx) => CardDetailsPage(card: widget.cards[_index]),
+                                                ),
+                                              ).then((value) {
+                                                if (value != null) {
+                                                  if (!cx.mounted) return;
+                                                  FloatingBar.show('card_modify_success'.tr(cx), cx);
+                                                }
+                                              });
+                                            },
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        SlideTransition(
+                          position: _revealAnimation,
+                          child: Column(
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.all(16.0),
+                                  padding: const EdgeInsets.all(16.0),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(cx).scaffoldBackgroundColor,
+                                    border: Border.all(
+                                      color: Theme.of(cx).colorScheme.secondary,
+                                      width: 2.0,
+                                    ),
+                                    borderRadius: BorderRadius.circular(16.0),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        offset: Offset(-0.5, 0.5),
+                                        color: Colors.black,
+                                        blurRadius: 2,
+                                      ),
+                                    ],
+                                  ),
+                                  child: Center(
+                                    child: SingleChildScrollView(
+                                      physics: const AlwaysScrollableScrollPhysics(),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            widget.cards[_index].front,
+                                            style: const TextStyle(fontSize: 24),
+                                            textAlign: TextAlign.justify,
+                                          ),
+                                          if (widget.cards[_index].frontMedia != '')
+                                            Padding(
+                                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                              child: Image.memory(
+                                                base64Decode(widget.cards[_index].frontMedia),
+                                                height: 300.0,
+                                                width: 300.0,
+                                                fit: BoxFit.contain,
+                                                alignment: Alignment.center,
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  )),
-                  Container(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: _reveal
-                        ? SlideTransition(
-                            position: _ratingAnimation,
-                            child: RatingButtons.build(cx, (rating) {
-                              _dbHelper.updateCardsRating(
-                                  [widget.cards[_index].id], rating);
-                              _nextCard();
-                            }))
-                        : Text(
-                            _ready ? 'tap_reveal_answer'.tr(cx) : "",
-                            style: const TextStyle(fontSize: 16),
+                            ],
                           ),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              )
-            : Center(child: Text('no_cards_review'.tr(cx))),
-      ),
+                ),
+                Container(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: _reveal
+                      ? SlideTransition(
+                          position: _ratingAnimation,
+                          child: RatingButtons.build(cx, (rating) {
+                            _dbHelper.updateCardsRating([widget.cards[_index].id], rating);
+                            _nextCard();
+                          }))
+                      : Text(
+                          _ready ? 'tap_reveal_answer'.tr(cx) : "",
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                ),
+              ],
+            )
+          : Center(child: Text('no_cards_review'.tr(cx))),
     );
   }
 }

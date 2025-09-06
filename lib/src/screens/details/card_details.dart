@@ -39,6 +39,17 @@ class _CardsPageState extends State<CardDetailsPage> {
     _ratingController = widget.card.rating;
     _hasExistingFrontImage = widget.card.frontMedia.isNotEmpty;
     _hasExistingBackImage = widget.card.backMedia.isNotEmpty;
+    
+    // Add listeners to update UI when text changes
+    _frontController.addListener(() => setState(() {}));
+    _backController.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _frontController.dispose();
+    _backController.dispose();
+    super.dispose();
   }
 
   @override
@@ -211,15 +222,29 @@ class _CardsPageState extends State<CardDetailsPage> {
         ))
       ]),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: _isCardEmpty() ? null : () {
           _modifyCard().then((id) {
             if (!cx.mounted) return;
             Navigator.pop(cx, true);
           });
         },
+        backgroundColor: _isCardEmpty() ? Colors.grey : null,
         child: const Icon(Icons.check),
       ),
     );
+  }
+
+  /// Checks if the card is completely empty (no text and no images)
+  bool _isCardEmpty() {
+    final frontText = _frontController.text.trim();
+    final backText = _backController.text.trim();
+    
+    return frontText.isEmpty && 
+           backText.isEmpty && 
+           _selectedFrontImage == null && 
+           _selectedBackImage == null &&
+           !_hasExistingFrontImage &&
+           !_hasExistingBackImage;
   }
 
   /// Modifies the card in the database
