@@ -1,14 +1,14 @@
 import 'dart:io';
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/floating_bar.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flash_cards/src/composables/media_picker.dart';
-import 'package:flash_cards/src/logic/media/image_converter.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/floating_bar.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/composables/media_picker.dart';
+import 'package:study_cards/src/logic/media/image_converter.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_editor_plus/markdown_editor_plus.dart';
+import 'package:study_cards/src/logic/utils/platform_helper.dart';
 
 /// Which side of the card the image is on
 enum ImageSide { front, back }
@@ -65,7 +65,7 @@ class _AddCardState extends State<AddCard> {
                   maxLines: null,
                   decoration: InputDecoration(
                       labelText: 'question'.tr(cx),
-                      suffixIcon: kIsWeb
+                      suffixIcon: PlatformHelper.isWeb
                           ? null
                           : InkWell(
                               onTap: () {
@@ -116,7 +116,7 @@ class _AddCardState extends State<AddCard> {
                   expandableBackground: Theme.of(cx).colorScheme.secondary,
                   decoration: InputDecoration(
                     labelText: 'answer'.tr(cx),
-                    suffixIcon: kIsWeb
+                    suffixIcon: PlatformHelper.isWeb
                         ? null
                         : InkWell(
                             onTap: () {

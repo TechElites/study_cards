@@ -1,6 +1,6 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:flash_cards/src/data/model/deck/deck.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/data/model/deck/deck.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
 
 /// DatabaseHelper class is a singleton class that provides methods
 /// to interact with the Hive database.

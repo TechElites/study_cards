@@ -1,16 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/media_picker.dart';
-import 'package:flash_cards/src/composables/rating_buttons.dart';
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flash_cards/src/logic/media/image_converter.dart';
-import 'package:flutter/foundation.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/media_picker.dart';
+import 'package:study_cards/src/composables/rating_buttons.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/logic/media/image_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:markdown_editor_plus/markdown_editor_plus.dart';
+import 'package:study_cards/src/logic/utils/platform_helper.dart';
 
 /// Creates a page to handle the creation of new cards
 class CardDetailsPage extends StatefulWidget {
@@ -77,7 +77,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                 controller: _frontController,
                 decoration: InputDecoration(
                     labelText: 'Front',
-                    suffixIcon: kIsWeb || _selectedFrontImage != null
+                    suffixIcon: PlatformHelper.isWeb || _selectedFrontImage != null
                         ? null
                         : InkWell(
                             onTap: () {
@@ -171,7 +171,7 @@ class _CardsPageState extends State<CardDetailsPage> {
                   expandableBackground: Theme.of(cx).colorScheme.secondary,
                   decoration: InputDecoration(
                       labelText: 'Back',
-                      suffixIcon: kIsWeb || _selectedBackImage != null
+                      suffixIcon: PlatformHelper.isWeb || _selectedBackImage != null
                           ? null
                           : InkWell(
                               onTap: () {

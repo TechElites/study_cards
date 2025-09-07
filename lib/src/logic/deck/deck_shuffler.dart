@@ -1,5 +1,5 @@
-import 'package:flash_cards/src/data/model/rating.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/data/model/rating.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
 
 /// Class to shuffle the deck of cards.
 class DeckShuffler {

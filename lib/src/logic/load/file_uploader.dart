@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/load/extension_handler.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/load/extension_handler.dart';
+import 'package:study_cards/src/logic/utils/platform_helper.dart';
 
 /// Class to handle uploading files.
 class FileUploader {
@@ -16,20 +16,20 @@ class FileUploader {
     );
 
     if (result != null) {
-      if (!kIsWeb) {
+      if (PlatformHelper.isWeb) {
+        final file = result.files.first;
+        final fileContent = utf8.decode(file.bytes!);
+        return fileContent.startsWith('{')
+            ? await ExtensionHandler.parseJson(fileContent)
+            : await ExtensionHandler.parseXml(fileContent);
+      } else {
         if (result.files.isNotEmpty) {
           File file = File(result.files.single.path!);
           String fileContent = await file.readAsString();
-          return fileContent.startsWith('{') 
+          return fileContent.startsWith('{')
               ? await ExtensionHandler.parseJson(fileContent)
               : await ExtensionHandler.parseXml(fileContent);
         }
-      } else {
-        final file = result.files.first;
-        final fileContent = utf8.decode(file.bytes!);
-        return fileContent.startsWith('{') 
-            ? await ExtensionHandler.parseJson(fileContent)
-            : await ExtensionHandler.parseXml(fileContent);
       }
     }
 

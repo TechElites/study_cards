@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flash_cards/src/data/model/deck/deck.dart';
+import 'package:study_cards/src/data/model/deck/deck.dart';
 
 void main() {
   group('Deck Model Tests', () {

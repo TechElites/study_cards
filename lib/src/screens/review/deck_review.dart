@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:ui';
 
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/floating_bar.dart';
-import 'package:flash_cards/src/composables/rating_buttons.dart';
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/floating_bar.dart';
+import 'package:study_cards/src/composables/rating_buttons.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flash_cards/src/screens/details/card_details.dart';
+import 'package:study_cards/src/screens/details/card_details.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 const _animDuration = Duration(milliseconds: 300);

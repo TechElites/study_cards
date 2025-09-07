@@ -1,10 +1,9 @@
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/data/model/deck/deck.dart';
-import 'package:flash_cards/src/logic/load/file_uploader.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/data/model/deck/deck.dart';
+import 'package:study_cards/src/logic/load/file_uploader.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
@@ -81,7 +80,7 @@ class _AddDeckState extends State<AddDeck> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(kIsWeb ? 'pick_xml_or_json'.tr(cx) : 'pick_xml_or_json'.tr(cx)),
+                  Text('pick_xml_or_json'.tr(cx)),
                   const Icon(Icons.folder_copy_rounded),
                 ],
               ),

@@ -1,22 +1,21 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
+// Imports for mobile ads
+import 'package:study_cards/src/composables/ads/ads_fullscreen.dart';
 
-/// Imports for mobile ads
-import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
-
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/floating_bar.dart';
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/data/model/rating.dart';
-import 'package:flash_cards/src/logic/deck/deck_shuffler.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flash_cards/src/logic/deck/list_selector.dart';
-import 'package:flash_cards/src/screens/add/add_card.dart';
-import 'package:flash_cards/src/screens/details/card_details.dart';
-import 'package:flash_cards/src/screens/review/deck_review.dart';
-import 'package:flash_cards/src/screens/settings/cards_settings.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/floating_bar.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/data/model/rating.dart';
+import 'package:study_cards/src/logic/deck/deck_shuffler.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/logic/deck/list_selector.dart';
+import 'package:study_cards/src/logic/utils/platform_helper.dart';
+import 'package:study_cards/src/screens/add/add_card.dart';
+import 'package:study_cards/src/screens/details/card_details.dart';
+import 'package:study_cards/src/screens/review/deck_review.dart';
+import 'package:study_cards/src/screens/settings/cards_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -48,7 +47,7 @@ class _CardsPageState extends State<CardsPage> {
     _allCards = _dbHelper.getCards(widget.deckId);
     shownCards = _allCards;
     _searchController.text = '';
-    if (!kIsWeb) {
+    if (PlatformHelper.isMobile) {
       _adsFullScreen = AdsFullscreen();
       _adsFullScreen.loadAd();
     }
@@ -339,7 +338,7 @@ class _CardsPageState extends State<CardsPage> {
                                                 shownCards, maxCards)),
                               ),
                             ).then((value) {
-                              if (!kIsWeb) {
+                              if (PlatformHelper.isMobile) {
                                 _adsFullScreen.showAndReloadAd(() {
                                   refreshList();
                                 });

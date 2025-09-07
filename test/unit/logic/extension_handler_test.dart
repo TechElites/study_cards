@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flash_cards/src/logic/load/extension_handler.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/load/extension_handler.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
 import 'dart:convert';
 
 void main() {

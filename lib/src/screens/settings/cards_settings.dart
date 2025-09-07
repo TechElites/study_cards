@@ -1,16 +1,15 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+// Imports for ads
+import 'package:study_cards/src/composables/ads/ads_fullscreen.dart';
 
-/// Imports for ads
-import 'package:flash_cards/src/composables/ads/ads_fullscreen.dart';
-
-import 'package:flash_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:flash_cards/src/composables/floating_bar.dart';
-import 'package:flash_cards/src/data/database/db_helper.dart';
-import 'package:flash_cards/src/data/model/deck/deck.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/floating_bar.dart';
+import 'package:study_cards/src/data/database/db_helper.dart';
+import 'package:study_cards/src/data/model/deck/deck.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flash_cards/src/logic/load/extension_handler.dart';
+import 'package:study_cards/src/logic/load/extension_handler.dart';
+import 'package:study_cards/src/logic/utils/platform_helper.dart';
 
 /// Creates a page to handle the settings of a deck
 class CardsSettingsPage extends StatefulWidget {
@@ -36,7 +35,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
     super.initState();
     final revC = _dbHelper.getReviewCards(widget.deckId);
     final d = _dbHelper.getDeck(widget.deckId);
-    if (!kIsWeb) {
+    if (PlatformHelper.isMobile) {
       _adsFullScreen = AdsFullscreen();
       _adsFullScreen.loadAd();
     }
@@ -111,7 +110,7 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           _exportDeck().then((value) {
-            if (!kIsWeb) {
+            if (PlatformHelper.isMobile) {
               _adsFullScreen.showAndReloadAd(() {
                 FloatingBar.show('deck_download'.tr(cx), cx);
               }).then((showed) {

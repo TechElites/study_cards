@@ -1,6 +1,6 @@
 {
-    "name": "flash_cards",
-    "short_name": "flash_cards",
+    "name": "study_cards",
+    "short_name": "study_cards",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

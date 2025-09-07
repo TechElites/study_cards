@@ -5,18 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "flash_cards",
+            "name": "study_cards",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "flash_cards (profile mode)",
+            "name": "study_cards (profile mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
         },
         {
-            "name": "flash_cards (release mode)",
+            "name": "study_cards (release mode)",
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"

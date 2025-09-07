@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:study_cards/src/logic/utils/platform_helper.dart';
 
 /// How long does the reward last
 const _rewardTime = 5;
@@ -32,7 +32,7 @@ class RewardService {
 
   /// Returns true if the user has been rewarded
   Future<bool> isRewarded() async {
-    if (!kIsWeb) {
+    if (PlatformHelper.isMobile) {
       final prefs = await SharedPreferences.getInstance();
       final isRewarded = prefs.getBool(_rewardKey) ?? false;
       if (isRewarded) {

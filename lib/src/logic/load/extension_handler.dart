@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_launcher_icons/utils.dart';
-import 'package:flash_cards/src/data/model/card/study_card.dart';
-import 'package:flash_cards/src/logic/load/file_downloader.dart';
+import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/load/file_downloader.dart';
 import 'package:xml/xml.dart' as xml;
 
 /// Handles the XML and JSON data.

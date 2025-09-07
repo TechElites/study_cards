@@ -1,7 +1,7 @@
-import 'package:flash_cards/src/logic/language/string_extension.dart';
-import 'package:flash_cards/src/screens/feedback/feedback.dart';
-import 'package:flash_cards/src/screens/guide/guide.dart';
-import 'package:flash_cards/theme/theme_provider.dart';
+import 'package:study_cards/src/logic/language/string_extension.dart';
+import 'package:study_cards/src/screens/feedback/feedback.dart';
+import 'package:study_cards/src/screens/guide/guide.dart';
+import 'package:study_cards/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 class HomeDrawer {
   static Widget build(
-      BuildContext cx, bool kIsWeb, bool isSandmanReady, Function adsRewarded) {
+      BuildContext cx, bool showAds, bool isSandmanReady, Function adsRewarded) {
     return Drawer(
         child: ListView(
       padding: EdgeInsets.zero,
@@ -32,7 +32,7 @@ class HomeDrawer {
               ),
               textAlign: TextAlign.center),
         ),
-        if (!kIsWeb && isSandmanReady)
+        if (!showAds && isSandmanReady)
           ListTile(
             title: Text('remove_ads'.tr(cx)),
             leading: const Icon(Icons.tv_off),
@@ -78,7 +78,7 @@ class HomeDrawer {
             );
           },
         ),
-        if (kIsWeb)
+        if (showAds)
           ListTile(
               title: Text('download_apk'.tr(cx)),
               leading: const Icon(Icons.android),
@@ -87,7 +87,7 @@ class HomeDrawer {
                     launchUrl(Uri.parse(
                         "https://studycards.altervista.org/studycards.apk"))
                   }),
-        if (kIsWeb)
+        if (showAds)
           ListTile(
             title: Text('download_ipa'.tr(cx)),
             leading: const Icon(Icons.apple),
