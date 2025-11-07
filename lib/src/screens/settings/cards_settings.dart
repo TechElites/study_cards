@@ -119,7 +119,9 @@ class _CardsSettingsPageState extends State<CardsSettingsPage> {
                 }
               });
             } else {
-              setState(() {});
+              if (cx.mounted) {
+                FloatingBar.show('deck_download'.tr(cx), cx);
+              }
             }
           });
         },

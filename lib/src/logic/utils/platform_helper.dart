@@ -10,26 +10,28 @@ class PlatformHelper {
   static PlatformType get platform {
     if (kIsWeb) {
       return PlatformType.web;
-    } else if (io.Platform.isAndroid) {
-      return PlatformType.android;
-    } else if (io.Platform.isIOS) {
-      return PlatformType.ios;
-    } else if (io.Platform.isWindows) {
-      return PlatformType.windows;
-    } else if (io.Platform.isMacOS) {
-      return PlatformType.macos;
-    } else if (io.Platform.isLinux) {
-      return PlatformType.linux;
-    } else if (io.Platform.isFuchsia) {
-      return PlatformType.fuchsia;
     } else {
-      return PlatformType.unknown;
+      if (io.Platform.isAndroid) {
+        return PlatformType.android;
+      } else if (io.Platform.isIOS) {
+        return PlatformType.ios;
+      } else if (io.Platform.isWindows) {
+        return PlatformType.windows;
+      } else if (io.Platform.isMacOS) {
+        return PlatformType.macos;
+      } else if (io.Platform.isLinux) {
+        return PlatformType.linux;
+      } else if (io.Platform.isFuchsia) {
+        return PlatformType.fuchsia;
+      } else {
+        return PlatformType.unknown;
+      }
     }
   }
 
-  static bool get isAndroid => io.Platform.isAndroid;
-  static bool get isIOS => io.Platform.isIOS;
-  static bool get isMobile => io.Platform.isAndroid || io.Platform.isIOS;
-  static bool get isDesktop => io.Platform.isWindows || io.Platform.isMacOS || io.Platform.isLinux;
+  static bool get isAndroid => kIsWeb ? false : io.Platform.isAndroid;
+  static bool get isIOS => kIsWeb ? false : io.Platform.isIOS;
+  static bool get isMobile => kIsWeb ? false : (io.Platform.isAndroid || io.Platform.isIOS);
+  static bool get isDesktop => kIsWeb ? false : (io.Platform.isWindows || io.Platform.isMacOS || io.Platform.isLinux);
   static bool get isWeb => kIsWeb;
 }
