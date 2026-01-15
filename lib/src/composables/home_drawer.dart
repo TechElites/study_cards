@@ -8,8 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class HomeDrawer {
-  static Widget build(
-      BuildContext cx, bool showAds, bool isSandmanReady, Function adsRewarded) {
+  static Widget build(BuildContext cx, bool showAds, bool isSandmanReady,
+      Function adsRewarded) {
     return Drawer(
         child: ListView(
       padding: EdgeInsets.zero,
@@ -95,6 +95,16 @@ class HomeDrawer {
               _countDownload('ios'),
               launchUrl(
                   Uri.parse("https://studycards.altervista.org/studycards.ipa"))
+            },
+          ),
+        if (showAds)
+          ListTile(
+            title: Text('download_windows'.tr(cx)),
+            leading: const Icon(Icons.window),
+            onTap: () => {
+              _countDownload('windows'),
+              launchUrl(
+                  Uri.parse("https://studycards.altervista.org/studycards.zip"))
             },
           )
       ],

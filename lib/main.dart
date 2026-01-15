@@ -1,5 +1,3 @@
-// import 'package:study_cards/src/screens/splash/splash_page.dart';
-
 // Import for mobile ads
 import 'package:study_cards/src/data/repositories/reward_service.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -57,8 +55,7 @@ class StudyCards extends StatelessWidget {
           ],
           initialRoute: '/',
           routes: {
-            '/': (context) => DecksPage(), // Home Page - carica direttamente senza splash
-            // '/': (context) => SplashPage(), // Splash page not used for now
+            '/': (context) => DecksPage(), // Home Page
             '/home': (context) => DecksPage(), // Home Page
           },
         );
