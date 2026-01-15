@@ -32,7 +32,7 @@ class HomeDrawer {
               ),
               textAlign: TextAlign.center),
         ),
-        if (!showAds && isSandmanReady)
+        if (showAds && isSandmanReady)
           ListTile(
             title: Text('remove_ads'.tr(cx)),
             leading: const Icon(Icons.tv_off),
@@ -78,7 +78,7 @@ class HomeDrawer {
             );
           },
         ),
-        if (showAds)
+        if (!showAds)
           ListTile(
               title: Text('download_apk'.tr(cx)),
               leading: const Icon(Icons.android),
@@ -87,7 +87,7 @@ class HomeDrawer {
                     launchUrl(Uri.parse(
                         "https://studycards.altervista.org/studycards.apk"))
                   }),
-        if (showAds)
+        if (!showAds)
           ListTile(
             title: Text('download_ipa'.tr(cx)),
             leading: const Icon(Icons.apple),
@@ -97,7 +97,7 @@ class HomeDrawer {
                   Uri.parse("https://studycards.altervista.org/studycards.ipa"))
             },
           ),
-        if (showAds)
+        if (!showAds)
           ListTile(
             title: Text('download_windows'.tr(cx)),
             leading: const Icon(Icons.window),
