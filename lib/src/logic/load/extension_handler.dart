@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_launcher_icons/utils.dart';
 import 'package:study_cards/src/data/model/card/study_card.dart';
 import 'package:study_cards/src/logic/load/file_downloader.dart';
+import 'package:study_cards/src/logic/media/image_converter.dart';
 import 'package:xml/xml.dart' as xml;
 
 /// Handles the XML and JSON data.
@@ -85,6 +87,7 @@ class ExtensionHandler {
   }
 
   /// Parse the json string and return a list of StudyCard objects
+  /// Supports both current format (single media string) and legacy format (media array)
   static Future<List<StudyCard>> parseJson(String jsonString) async {
     final jsonData = jsonDecode(jsonString);
     final deckName = jsonData['deckName'];
@@ -93,11 +96,38 @@ class ExtensionHandler {
         .add(StudyCard(front: deckName, back: jsonData['cards'].length.toString()));
     
     for (var card in jsonData['cards']) {
+      String frontMedia = '';
+      String backMedia = '';
+
+      // Handle front_media - support both array (legacy) and string (current)
+      if (card['front_media'] != null) {
+        if (card['front_media'] is List) {
+          // Legacy format: array of image filenames
+          // In non-ZIP files, these would be paths, but we'll just ignore them
+          // since the images aren't embedded
+          frontMedia = '';
+        } else if (card['front_media'] is String) {
+          // Current format: base64 string
+          frontMedia = card['front_media'];
+        }
+      }
+
+      // Handle back_media - support both array (legacy) and string (current)
+      if (card['back_media'] != null) {
+        if (card['back_media'] is List) {
+          // Legacy format: array of image filenames
+          backMedia = '';
+        } else if (card['back_media'] is String) {
+          // Current format: base64 string
+          backMedia = card['back_media'];
+        }
+      }
+
       parsedData.add(StudyCard(
           front: card['front_text'],
           back: card['back_text'],
-          frontMedia: card['front_media'] ?? '',
-          backMedia: card['back_media'] ?? ''));
+          frontMedia: frontMedia,
+          backMedia: backMedia));
     }
     return parsedData;
   }
@@ -136,5 +166,122 @@ class ExtensionHandler {
   /// Saves the JSON string to a file.
   static Future<bool> saveJSONToFile(String jsonString, String fileName) async {
     return FileDownloader.saveFileOnDevice(fileName, jsonString, {});
+  }
+
+  /// Parse legacy JSON format (from ZIP files) with image arrays
+  static Future<List<StudyCard>> parseLegacyJson(
+      String jsonString, String basePath, Map<String, File> imageFiles) async {
+    final jsonData = jsonDecode(jsonString);
+    final deckName = jsonData['deckName'];
+    List<StudyCard> parsedData = [];
+
+    // Get the number of cards from 'length' field or cards array length
+    final cardsLength = jsonData['length'] ?? jsonData['cards'].length;
+    parsedData.add(StudyCard(front: deckName, back: cardsLength.toString()));
+
+    for (var card in jsonData['cards']) {
+      String frontMedia = '';
+      String backMedia = '';
+
+      // Handle front_media - can be array (legacy) or string (current)
+      if (card['front_media'] != null) {
+        if (card['front_media'] is List && (card['front_media'] as List).isNotEmpty) {
+          // Legacy format: array of image filenames
+          final imageName = (card['front_media'] as List).first;
+          if (imageFiles.containsKey(imageName)) {
+            // Convert image file to base64
+            frontMedia = await ImageConverter.fileToBase64(imageFiles[imageName]!);
+          }
+        } else if (card['front_media'] is String) {
+          // Current format: already a base64 string or empty
+          frontMedia = card['front_media'];
+        }
+      }
+
+      // Handle back_media - can be array (legacy) or string (current)
+      if (card['back_media'] != null) {
+        if (card['back_media'] is List && (card['back_media'] as List).isNotEmpty) {
+          // Legacy format: array of image filenames
+          final imageName = (card['back_media'] as List).first;
+          if (imageFiles.containsKey(imageName)) {
+            // Convert image file to base64
+            backMedia = await ImageConverter.fileToBase64(imageFiles[imageName]!);
+          }
+        } else if (card['back_media'] is String) {
+          // Current format: already a base64 string or empty
+          backMedia = card['back_media'];
+        }
+      }
+
+      parsedData.add(StudyCard(
+          front: card['front_text'],
+          back: card['back_text'],
+          frontMedia: frontMedia,
+          backMedia: backMedia));
+    }
+    return parsedData;
+  }
+
+  /// Parse legacy XML format (from ZIP files) with external image files
+  static Future<List<StudyCard>> parseLegacyXml(
+      String xmlString, String basePath, Map<String, File> imageFiles) async {
+    xmlString = xmlString.replaceAll('\n', '');
+    xmlString = xmlString.replaceAll('  ', '');
+    final document = xml.XmlDocument.parse(xmlString);
+    final cards = document.findAllElements('card');
+
+    List<StudyCard> parsedData = [];
+
+    final deckName =
+        document.findAllElements('deck').first.attributes.first.value;
+    parsedData.add(StudyCard(front: deckName, back: cards.length.toString()));
+
+    for (var card in cards) {
+      final front = card
+          .findElements('rich-text')
+          .firstWhere((element) => element.getAttribute('name') == 'Front')
+          .innerXml
+          .replaceAll('<br/>', '\n');
+      
+      final back = card
+          .findElements('rich-text')
+          .firstWhere((element) => element.getAttribute('name') == 'Back')
+          .innerXml
+          .replaceAll('<br/>', '\n');
+
+      String frontMedia = '';
+      String backMedia = '';
+
+      // Try to find front media element
+      var frontMediaElement = card.findElements('media').firstWhere(
+          (element) =>
+              element.getAttribute('type') == 'image' &&
+              element.getAttribute('name') == 'Front',
+          orElse: () => xml.XmlElement(xml.XmlName('media'), [], []));
+      
+      var frontMediaSrc = frontMediaElement.getAttribute('src');
+      if (frontMediaSrc != null && imageFiles.containsKey(frontMediaSrc)) {
+        frontMedia = await ImageConverter.fileToBase64(imageFiles[frontMediaSrc]!);
+      }
+
+      // Try to find back media element
+      var backMediaElement = card.findElements('media').firstWhere(
+          (element) =>
+              element.getAttribute('type') == 'image' &&
+              element.getAttribute('name') == 'Back',
+          orElse: () => xml.XmlElement(xml.XmlName('media'), [], []));
+      
+      var backMediaSrc = backMediaElement.getAttribute('src');
+      if (backMediaSrc != null && imageFiles.containsKey(backMediaSrc)) {
+        backMedia = await ImageConverter.fileToBase64(imageFiles[backMediaSrc]!);
+      }
+
+      parsedData.add(StudyCard(
+          front: front,
+          back: back,
+          frontMedia: frontMedia,
+          backMedia: backMedia));
+    }
+    return parsedData;
   }
 }
