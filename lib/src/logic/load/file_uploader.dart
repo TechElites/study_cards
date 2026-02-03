@@ -8,7 +8,6 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:study_cards/src/data/model/card/study_card.dart';
 import 'package:study_cards/src/logic/load/extension_handler.dart';
-import 'package:study_cards/src/logic/media/image_converter.dart';
 import 'package:study_cards/src/logic/permission_helper.dart';
 import 'package:study_cards/src/logic/utils/platform_helper.dart';
 
