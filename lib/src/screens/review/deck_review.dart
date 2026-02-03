@@ -217,7 +217,7 @@ class _CardsReviewState extends State<ReviewPage>
                                           ),
                                           const SizedBox(height: 8),
                                           Align(
-                                            alignment: Alignment.centerLeft,
+                                            alignment: Alignment.topLeft,
                                             child: MarkdownBody(
                                               data: widget.cards[_index].back,
                                               styleSheet: MarkdownStyleSheet(
