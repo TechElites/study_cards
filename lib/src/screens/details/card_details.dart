@@ -9,7 +9,7 @@ import 'package:study_cards/src/data/model/card/study_card.dart';
 import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:study_cards/src/logic/media/image_converter.dart';
 import 'package:flutter/material.dart';
-import 'package:markdown_editor_plus/markdown_editor_plus.dart';
+import 'package:study_cards/src/composables/markdown_editor.dart';
 import 'package:study_cards/src/logic/utils/platform_helper.dart';
 
 /// Creates a page to handle the creation of new cards
@@ -40,10 +40,6 @@ class _CardsPageState extends State<CardDetailsPage> {
     _ratingController = widget.card.rating;
     _hasExistingFrontImage = widget.card.frontMedia.isNotEmpty;
     _hasExistingBackImage = widget.card.backMedia.isNotEmpty;
-    
-    // Add listeners to update UI when text changes
-    _frontController.addListener(() => setState(() {}));
-    _backController.addListener(() => setState(() {}));
   }
 
   @override
@@ -146,44 +142,24 @@ class _CardsPageState extends State<CardDetailsPage> {
                   ),
                 ),
               const SizedBox(height: 16.0),
-              Theme(
-                data: Theme.of(cx).copyWith(
-                  textTheme: Theme.of(cx).textTheme.copyWith(
-                    bodyLarge: TextStyle(
-                      fontSize: 18, 
-                      color: Theme.of(cx).colorScheme.onSurface
-                    ),
-                    bodyMedium: TextStyle(
-                      fontSize: 16, 
-                      color: Theme.of(cx).colorScheme.onSurface
-                    ),
-                    bodySmall: TextStyle(
-                      fontSize: 14, 
-                      color: Theme.of(cx).colorScheme.onSurface
-                    ),
-                  ),
-                ),
-                child: MarkdownAutoPreview(
-                  controller: _backController,
-                  maxLines: null,
-                  hintText: 'answer'.tr(cx),
-                  toolbarBackground: Theme.of(cx).colorScheme.surface,
-                  expandableBackground: Theme.of(cx).colorScheme.secondary,
-                  decoration: InputDecoration(
-                      labelText: 'Back',
-                      suffixIcon: PlatformHelper.isWeb || _selectedBackImage != null
-                          ? null
-                          : InkWell(
-                              onTap: () {
-                                MediaPicker.pickImage(context).then((value) {
-                                  setState(() {
-                                    _selectedBackImage = File(value);
-                                  });
-                                });
-                              },
-                              child: const Icon(Icons.add_photo_alternate_rounded,
-                                  color: Colors.grey, size: 32.0))),
-                ),
+              MarkdownEditorField(
+                controller: _backController,
+                labelText: 'Back',
+                enableHardLineBreak: true,
+                suffixIcon: PlatformHelper.isWeb || _selectedBackImage != null
+                    ? null
+                    : InkWell(
+                        onTap: () {
+                          MediaPicker.pickImage(context).then((value) {
+                            setState(() {
+                              _selectedBackImage = File(value);
+                            });
+                          });
+                        },
+                        child: const Icon(
+                            Icons.add_photo_alternate_rounded,
+                            color: Colors.grey,
+                            size: 32.0)),
               ),
               if (_selectedBackImage != null || _hasExistingBackImage)
                 Padding(
