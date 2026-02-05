@@ -297,7 +297,7 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
                   _ToolbarButton(
                     icon: Icons.keyboard_tab,
                     tooltip: 'Tab',
-                    onPressed: () => _insertText('\t'),
+                    onPressed: () => _insertText('    '),
                   ),
                 ],
               ),
