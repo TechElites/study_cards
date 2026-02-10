@@ -38,6 +38,7 @@ class _CardsPageState extends State<CardsPage> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocus = FocusNode();
   final List<String> _filteredRatings = ['all'];
+  DateTime? _selectedDate;
   final ListSelector _selector = ListSelector();
   late AdsFullscreen _adsFullScreen;
 
@@ -202,7 +203,36 @@ class _CardsPageState extends State<CardsPage> {
                               elevation: _selector.isInList(card.id) ? 5 : 1,
                               margin: const EdgeInsets.all(8.0),
                               child: ListTile(
-                                title: Text(card.front),
+                                title: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 4,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(card.front),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            card.lastReviewedFormatted,
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.grey[600],
+                                            ),
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                                 selected: _selector.isInList(card.id),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -374,17 +404,43 @@ class _CardsPageState extends State<CardsPage> {
                         const SizedBox(height: 16),
                         Column(
                           children: [
-                            for (var rating in ['all', 'no_timing']
+                            for (var rating in ['all', 'no_timing', 'by_date']
                                 .followedBy(Rating.ratings))
                               CheckboxListTile(
                                 value: _filteredRatings.contains(rating),
-                                title: Text(rating.tr(cx)),
+                                title: Row(
+                                  children: [
+                                    Text(rating.tr(cx)),
+                                    if (rating == 'by_date' && _selectedDate != null)
+                                      Text(
+                                        ' (${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year})',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                  ],
+                                ),
                                 checkColor: Theme.of(cx).colorScheme.primary,
                                 fillColor: WidgetStateProperty.all(
                                     Theme.of(cx).scaffoldBackgroundColor),
-                                onChanged: (bool? selected) {
+                                onChanged: (bool? selected) async {
+                                  String r = rating;
+                                  if (r == 'by_date' && !_filteredRatings.contains(r)) {
+                                    final DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: _selectedDate ?? DateTime.now(),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime.now(),
+                                    );
+                                    if (pickedDate == null) {
+                                      return;
+                                    }
+                                    _selectedDate = pickedDate;
+                                  } else if (r == 'by_date' && _filteredRatings.contains(r)) {
+                                    _selectedDate = null;
+                                  }
                                   setState(() {
-                                    String r = rating;
                                     if (_filteredRatings.contains(r)) {
                                       _filteredRatings.remove(r);
                                     } else {
@@ -397,16 +453,33 @@ class _CardsPageState extends State<CardsPage> {
                                       case 'all':
                                         _filteredRatings.clear();
                                         _filteredRatings.add('all');
+                                        _selectedDate = null;
                                         shownCards = _allCards;
                                         break;
                                       case 'no_timing':
+                                      case 'by_date':
                                         break;
                                       default:
                                         _filteredRatings.remove('all');
-                                        shownCards = _allCards
-                                            .where((card) => _filteredRatings
-                                                .contains(card.rating))
-                                            .toList();
+                                        shownCards = _allCards.where((card) {
+                                          bool matchesRating = _filteredRatings
+                                              .where((r) => r != 'no_timing' && r != 'by_date')
+                                              .contains(card.rating);
+                                          if (_filteredRatings.where((r) => r != 'no_timing' && r != 'by_date').isEmpty) {
+                                            matchesRating = true;
+                                          }
+                                          bool matchesDate = true;
+                                          if (_filteredRatings.contains('by_date') && _selectedDate != null) {
+                                            if (card.lastReviewed != 'never') {
+                                              final cardDate = DateTime.parse(card.lastReviewed);
+                                              matchesDate = cardDate.isAfter(_selectedDate!) || 
+                                                           cardDate.isAtSameMomentAs(_selectedDate!);;
+                                            } else {
+                                              matchesDate = false;
+                                            }
+                                          }
+                                          return matchesRating && matchesDate;
+                                        }).toList();
                                         break;
                                     }
                                     modalSetState(() {});

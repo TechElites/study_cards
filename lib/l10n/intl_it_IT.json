@@ -62,6 +62,7 @@
   "no_decks": "Per iniziare prova a premere il pulsante + in basso a destra.\nO controlla la guida per ulteriori informazioni",
   "none": "Nessuno",
   "no_timing": "Nessun timing",
+  "by_date": "Per data",
   "number_of_cards": "Numero di carte",
   "or": "oppure",
   "pick_xml_or_json": "Scegli un file XML, ZIP o JSON",

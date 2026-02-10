@@ -61,6 +61,7 @@
   "no_decks": "To get started try pressing the + button on the bottom right.\nOr check the guide for more information",
   "none": "None",
   "no_timing": "No timing",
+  "by_date": "By date",
   "number_of_cards": "Number of cards",
   "or": "or",
   "pick_xml_or_json": "Pick XML, ZIP or JSON file",
