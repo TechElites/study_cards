@@ -46,6 +46,7 @@ class _DecksPageState extends State<DecksPage> {
   void initState() {
     super.initState();
     _allDecks = _dbHelper.getDecks();
+    _allDecks.sort((a, b) => b.creation.compareTo(a.creation));
     shownDecks = _allDecks;
     _searchController.text = '';
     if (PlatformHelper.isMobile) {
@@ -58,6 +59,7 @@ class _DecksPageState extends State<DecksPage> {
   void refreshList() {
     setState(() {
       _allDecks = _dbHelper.getDecks();
+      _allDecks.sort((a, b) => b.creation.compareTo(a.creation));
       shownDecks = _allDecks;
     });
   }

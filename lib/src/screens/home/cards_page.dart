@@ -46,6 +46,7 @@ class _CardsPageState extends State<CardsPage> {
   void initState() {
     super.initState();
     _allCards = _dbHelper.getCards(widget.deckId);
+    _allCards.sort((a, b) => b.id.compareTo(a.id));
     shownCards = _allCards;
     _searchController.text = '';
     if (PlatformHelper.isMobile) {
@@ -57,6 +58,7 @@ class _CardsPageState extends State<CardsPage> {
   void refreshList() {
     setState(() {
       _allCards = _dbHelper.getCards(widget.deckId);
+      _allCards.sort((a, b) => b.id.compareTo(a.id));
       shownCards = _allCards;
     });
   }
@@ -206,42 +208,27 @@ class _CardsPageState extends State<CardsPage> {
                               elevation: _selector.isInList(card.id) ? 5 : 1,
                               margin: const EdgeInsets.all(8.0),
                               child: ListTile(
-                                title: Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 4,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(card.front),
-                                        ],
-                                      ),
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.end,
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          if (card.lastReviewed != 'never') ..._buildDateDisplay(card.lastReviewed) else Text(
-                                            'never'.tr(cx),
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: Colors.grey[600],
-                                            ),
-                                            textAlign: TextAlign.right,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                title: Text(card.front),
                                 selected: _selector.isInList(card.id),
                                 subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    const SizedBox(height: 4),
+                                    if (card.lastReviewed != 'never')
+                                      Row(
+                                        children: [
+                                          ..._buildDateDisplay(card.lastReviewed),
+                                        ],
+                                      )
+                                    else
+                                      Text(
+                                        'never'.tr(cx),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    const SizedBox(height: 4),
                                     Container(
                                       height: 6,
                                       decoration: BoxDecoration(
@@ -402,20 +389,18 @@ class _CardsPageState extends State<CardsPage> {
     final time = '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
     return [
       Text(
-        date,
+        '$date ',
         style: TextStyle(
-          fontSize: 7,
+          fontSize: 10,
           color: Colors.grey[600],
         ),
-        textAlign: TextAlign.right,
       ),
       Text(
         time,
         style: TextStyle(
-          fontSize: 7,
+          fontSize: 10,
           color: Colors.grey[600],
         ),
-        textAlign: TextAlign.right,
       ),
     ];
   }
