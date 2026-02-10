@@ -132,7 +132,6 @@ jobs:
           while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
             RESPONSE=$(curl -s -H "x-auth-token: ${{ secrets.CODEMAGIC_API_TOKEN }}" \
               "https://api.codemagic.io/builds/$BUILD_ID")
-            echo "API Response: $RESPONSE"
             STATUS=$(echo "$RESPONSE" | jq -r '.build.status // .status // "null"')
             echo "Build status: $STATUS (Attempt $((ATTEMPT + 1))/$MAX_ATTEMPTS)"
             if [ "$STATUS" = "finished" ]; then
@@ -162,7 +161,7 @@ jobs:
           # Get artifact URL
           ARTIFACTS=$(curl -s -H "x-auth-token: ${{ secrets.CODEMAGIC_API_TOKEN }}" \
             "https://api.codemagic.io/builds/$BUILD_ID")
-          ZIP_URL=$(echo "$ARTIFACTS" | jq -r '.artefacts[] | select(.name | endswith(".app.zip")) | .url')
+          ZIP_URL=$(echo "$ARTIFACTS" | jq -r '.build.artefacts[] | select(.name | endswith(".app.zip")) | .url')
           echo "Downloading Runner.app.zip from: $ZIP_URL"
           curl -o Runner.app.zip "$ZIP_URL"
           
