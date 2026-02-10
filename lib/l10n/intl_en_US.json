@@ -73,6 +73,7 @@
   "review_cards_update": "Review cards updated",
   "search": "Search",
   "select_all": "Select All",
+  "select_none": "Deselect All",
   "select_rating": "Select rating",
   "select_source": "Select Source",
   "send_feedback": "Send Feedback",

@@ -42,4 +42,10 @@ class ListSelector {
     isSelecting = false;
     return list;
   }
+
+  /// Clears the list without resetting the deletion mode.
+  void clearList() {
+    _list.clear();
+    isSelecting = false;
+  }
 }

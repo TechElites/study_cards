@@ -329,7 +329,16 @@ class _CardsPageState extends State<CardsPage> {
                       },
                       label: 'select_all'.tr(cx),
                       child: const Icon(Icons.select_all),
-                    )
+                    ),
+                    SpeedDialChild(
+                      onTap: () {
+                        setState(() {
+                          _selector.clearList();
+                        });
+                      },
+                      label: 'select_none'.tr(cx),
+                      child: const Icon(Icons.deselect),
+                    ),
                   ]
                 : [
                     SpeedDialChild(
