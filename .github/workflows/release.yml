@@ -162,9 +162,20 @@ jobs:
           # Get artifact URL
           ARTIFACTS=$(curl -s -H "x-auth-token: ${{ secrets.CODEMAGIC_API_TOKEN }}" \
             "https://api.codemagic.io/builds/$BUILD_ID")
-          IPA_URL=$(echo "$ARTIFACTS" | jq -r '.artifacts[] | select(.name | endswith(".ipa")) | .url')
-          echo "Downloading IPA from: $IPA_URL"
-          curl -o study_cards.ipa "$IPA_URL"
+          ZIP_URL=$(echo "$ARTIFACTS" | jq -r '.artefacts[] | select(.name | endswith(".app.zip")) | .url')
+          echo "Downloading Runner.app.zip from: $ZIP_URL"
+          curl -o Runner.app.zip "$ZIP_URL"
+          
+          # Extract Runner.app
+          unzip Runner.app.zip
+          
+          # Create Payload folder and move Runner.app into it
+          mkdir Payload
+          mv Runner.app Payload/
+          
+          # Compress Payload folder and rename to .ipa
+          zip -r study_cards.zip Payload
+          mv study_cards.zip study_cards.ipa
       - name: Upload iOS Build
         uses: actions/upload-artifact@v4
         with:
