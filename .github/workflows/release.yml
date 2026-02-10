@@ -198,7 +198,7 @@ jobs:
           draft: false
           prerelease: false
           body: |
-            ## Study Cards v${{ steps.get_version.outputs.VERSION }}
+            ## Study Cards v${{ steps.get_version.outputs.VERSION }} is out! 🚀
             
             ### Downloads
             - 🌐 [Web App](https://${{ github.repository_owner }}.github.io/study_cards/)
