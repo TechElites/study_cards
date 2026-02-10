@@ -63,7 +63,7 @@ void main() {
     test('should calculate minutes since reviewed correctly', () {
       final now = DateTime.now();
       final oneHourAgo = now.subtract(const Duration(hours: 1));
-      
+
       final card = StudyCard(
         front: 'Test Front',
         back: 'Test Back',
@@ -107,7 +107,7 @@ void main() {
         ..frontMedia = 'front_data'
         ..backMedia = 'back_data';
 
-      // Simulate direct creation without using fromHiveStudyCard 
+      // Simulate direct creation without using fromHiveStudyCard
       // which requires a valid key
       final card = StudyCard(
         id: hiveCard.key ?? -1,
@@ -141,16 +141,108 @@ void main() {
 
     test('should handle different rating values', () {
       final ratings = ['none', 'easy', 'medium', 'hard', 'fail'];
-      
+
       for (String rating in ratings) {
         final card = StudyCard(
           front: 'Test Front',
           back: 'Test Back',
           rating: rating,
         );
-        
+
         expect(card.rating, equals(rating));
       }
+    });
+
+    test('should handle legacy array format with empty array in frontMedia',
+        () {
+      final hiveCard = HiveStudyCard()
+        ..deckId = 1
+        ..front = 'Test Front'
+        ..back = 'Test Back'
+        ..rating = 'none'
+        ..lastReviewed = 'never'
+        ..frontMedia = '[]'
+        ..backMedia = '';
+
+      final card = StudyCard.fromHiveStudyCard(hiveCard);
+
+      expect(card.frontMedia, equals(''));
+      expect(card.backMedia, equals(''));
+    });
+
+    test('should handle legacy array format with filename in frontMedia', () {
+      final hiveCard = HiveStudyCard()
+        ..deckId = 1
+        ..front = 'Test Front'
+        ..back = 'Test Back'
+        ..rating = 'none'
+        ..lastReviewed = 'never'
+        ..frontMedia = '["image.png"]'
+        ..backMedia = '["back.jpg"]';
+
+      final card = StudyCard.fromHiveStudyCard(hiveCard);
+
+      // Filenames should be ignored (not base64 data)
+      expect(card.frontMedia, equals(''));
+      expect(card.backMedia, equals(''));
+    });
+
+    test('should handle legacy array format with base64 data', () {
+      // Base64 encoded "test" (longer than 50 chars for this test)
+      final longBase64 =
+          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+      final hiveCard = HiveStudyCard()
+        ..deckId = 1
+        ..front = 'Test Front'
+        ..back = 'Test Back'
+        ..rating = 'none'
+        ..lastReviewed = 'never'
+        ..frontMedia = '["$longBase64"]'
+        ..backMedia = '';
+
+      final card = StudyCard.fromHiveStudyCard(hiveCard);
+
+      // Base64 data should be extracted from array
+      expect(card.frontMedia, equals(longBase64));
+      expect(card.backMedia, equals(''));
+    });
+
+    test('should handle current format with base64 string', () {
+      final base64Data =
+          'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+      final hiveCard = HiveStudyCard()
+        ..deckId = 1
+        ..front = 'Test Front'
+        ..back = 'Test Back'
+        ..rating = 'none'
+        ..lastReviewed = 'never'
+        ..frontMedia = base64Data
+        ..backMedia = '';
+
+      final card = StudyCard.fromHiveStudyCard(hiveCard);
+
+      // Current format should be preserved
+      expect(card.frontMedia, equals(base64Data));
+      expect(card.backMedia, equals(''));
+    });
+
+    test('should handle malformed JSON in media field', () {
+      final hiveCard = HiveStudyCard()
+        ..deckId = 1
+        ..front = 'Test Front'
+        ..back = 'Test Back'
+        ..rating = 'none'
+        ..lastReviewed = 'never'
+        ..frontMedia = '[invalid json'
+        ..backMedia = '';
+
+      final card = StudyCard.fromHiveStudyCard(hiveCard);
+
+      // Malformed JSON should result in empty string
+      expect(card.frontMedia, equals(''));
+      expect(card.backMedia, equals(''));
     });
   });
 }

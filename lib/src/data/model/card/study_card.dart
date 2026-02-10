@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:hive/hive.dart';
 
 part 'study_card.g.dart';
 
-/// HiveStudyCard class is a Hive type adapter class that 
+/// HiveStudyCard class is a Hive type adapter class that
 /// can be saved in the database.
 @HiveType(typeId: 1)
 class HiveStudyCard extends HiveObject {
@@ -78,14 +80,49 @@ class StudyCard {
   /// Converts the HiveStudyCard object to a StudyCard object.
   factory StudyCard.fromHiveStudyCard(HiveStudyCard hiveCard) {
     return StudyCard(
-      id: hiveCard.key,
+      id: hiveCard.key ?? -1,
       deckId: hiveCard.deckId,
       front: hiveCard.front,
       back: hiveCard.back,
       rating: hiveCard.rating,
       lastReviewed: hiveCard.lastReviewed,
-      frontMedia: hiveCard.frontMedia,
-      backMedia: hiveCard.backMedia,
+      frontMedia: _parseLegacyMedia(hiveCard.frontMedia),
+      backMedia: _parseLegacyMedia(hiveCard.backMedia),
     );
+  }
+
+  /// Parses media string to handle legacy array format
+  /// Legacy format: '[\"image.png\"]' or '[]' or '[\"base64data\"]'
+  /// Current format: base64 string or ''
+  static String _parseLegacyMedia(String media) {
+    if (media.isEmpty) return '';
+
+    // Check if it's a JSON array (legacy format)
+    if (media.startsWith('[')) {
+      try {
+        final decoded = jsonDecode(media);
+        if (decoded is List && decoded.isNotEmpty) {
+          // Take the first element from the array
+          final firstElement = decoded.first.toString();
+
+          // Check if it looks like base64 data (longer strings, not just filenames)
+          // Base64 strings are typically much longer than filenames
+          if (firstElement.length > 50) {
+            return firstElement;
+          }
+
+          // If it's a short string (likely a filename), we can't use it
+          // since we don't have the actual image data
+          return '';
+        }
+        return '';
+      } catch (e) {
+        // If JSON parsing fails, assume it's a malformed string
+        return '';
+      }
+    }
+
+    // Current format: base64 string
+    return media;
   }
 }
