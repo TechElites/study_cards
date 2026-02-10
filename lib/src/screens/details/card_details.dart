@@ -249,8 +249,6 @@ class _CardsPageState extends State<CardDetailsPage> {
   Future<void> _modifyCard() async {
     String frontMedia = '';
     String backMedia = '';
-    
-    // Convert front image to Base64 if new image is selected
     if (_selectedFrontImage != null) {
       try {
         frontMedia = await ImageConverter.fileToBase64(_selectedFrontImage!);
@@ -258,11 +256,8 @@ class _CardsPageState extends State<CardDetailsPage> {
         throw Exception('Error converting front image to Base64: $e');
       }
     } else if (_hasExistingFrontImage) {
-      // Keep existing Base64 if no new image is selected
       frontMedia = widget.card.frontMedia;
     }
-    
-    // Convert back image to Base64 if new image is selected
     if (_selectedBackImage != null) {
       try {
         backMedia = await ImageConverter.fileToBase64(_selectedBackImage!);
@@ -270,7 +265,6 @@ class _CardsPageState extends State<CardDetailsPage> {
         throw Exception('Error converting back image to Base64: $e');
       }
     } else if (_hasExistingBackImage) {
-      // Keep existing Base64 if no new image is selected
       backMedia = widget.card.backMedia;
     }
 
@@ -283,7 +277,6 @@ class _CardsPageState extends State<CardDetailsPage> {
         lastReviewed: widget.card.rating != _ratingController ? DateTime.now().toIso8601String() : widget.card.lastReviewed,
         frontMedia: frontMedia,
         backMedia: backMedia);
-
     return _dbHelper.updateCard(modifiedCard);
   }
 }

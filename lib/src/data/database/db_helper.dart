@@ -18,6 +18,71 @@ class DatabaseHelper {
     Hive.registerAdapter(HiveStudyCardAdapter());
     await Hive.openBox<HiveDeck>('decks');
     await Hive.openBox<HiveStudyCard>('cards');
+    await _validateAndFixData();
+  }
+
+  /// Validates and fixes non-conforming data in the database
+  Future<void> _validateAndFixData() async {
+    final cardsToDelete = <int>[];
+    for (var card in cardsBox.values) {
+      bool needsUpdate = false;
+      if (card.front.isEmpty) {
+        card.front = '';
+        needsUpdate = true;
+      }
+      if (card.back.isEmpty) {
+        card.back = '';
+        needsUpdate = true;
+      }
+      const validRatings = ['None', 'Again', 'Hard', 'Good', 'Easy'];
+      if (!validRatings.contains(card.rating)) {
+        card.rating = 'None';
+        needsUpdate = true;
+      }
+      if (card.lastReviewed.isEmpty) {
+        card.lastReviewed = 'never';
+        needsUpdate = true;
+      }
+      if (card.frontMedia.isNotEmpty && !card.frontMedia.startsWith('data:image/')) {
+        card.frontMedia = '';
+        needsUpdate = true;
+      }
+      if (card.backMedia.isNotEmpty && !card.backMedia.startsWith('data:image/')) {
+        card.backMedia = '';
+        needsUpdate = true;
+      }
+      final deckExists = decksBox.values.any((deck) => deck.key == card.deckId);
+      if (!deckExists) {
+        cardsToDelete.add(card.key as int);
+        continue;
+      }
+      if (needsUpdate) {
+        await card.save();
+      }
+    }
+    for (var cardId in cardsToDelete) {
+      final card = cardsBox.values.firstWhere((c) => c.key == cardId);
+      await card.delete();
+    }
+    for (var deck in decksBox.values) {
+      bool needsUpdate = false;
+      if (deck.name.isEmpty) {
+        deck.name = 'Unnamed Deck';
+        needsUpdate = true;
+      }
+      final actualCardCount = cardsBox.values.where((c) => c.deckId == deck.key).length;
+      if (deck.cards != actualCardCount) {
+        deck.cards = actualCardCount;
+        needsUpdate = true;
+      }
+      if (deck.reviewCards <= 0) {
+        deck.reviewCards = 10;
+        needsUpdate = true;
+      }
+      if (needsUpdate) {
+        await deck.save();
+      }
+    }
   }
 
   Box<HiveDeck> get decksBox => Hive.box<HiveDeck>('decks');

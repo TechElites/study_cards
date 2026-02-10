@@ -396,12 +396,10 @@ class _CardsPageState extends State<CardsPage> {
                   ]));
   }
 
-  /// Builds the date display showing date and time on separate lines
   List<Widget> _buildDateDisplay(String lastReviewed) {
     final dateTime = DateTime.parse(lastReviewed);
     final date = '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}';
     final time = '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-    
     return [
       Text(
         date,

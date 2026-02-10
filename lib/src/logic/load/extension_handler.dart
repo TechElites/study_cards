@@ -15,13 +15,10 @@ class ExtensionHandler {
     xmlString = xmlString.replaceAll('  ', '');
     final document = xml.XmlDocument.parse(xmlString);
     final cards = document.findAllElements('card');
-
     List<StudyCard> parsedData = [];
-
     final deckName =
         document.findAllElements('deck').first.attributes.first.value;
     parsedData.add(StudyCard(front: deckName, back: cards.length.toString()));
-
     for (var card in cards) {
       final front = card
           .findElements('rich-text')
@@ -94,35 +91,23 @@ class ExtensionHandler {
     List<StudyCard> parsedData = [];
     parsedData
         .add(StudyCard(front: deckName, back: jsonData['cards'].length.toString()));
-    
     for (var card in jsonData['cards']) {
       String frontMedia = '';
       String backMedia = '';
-
-      // Handle front_media - support both array (legacy) and string (current)
       if (card['front_media'] != null) {
         if (card['front_media'] is List) {
-          // Legacy format: array of image filenames
-          // In non-ZIP files, these would be paths, but we'll just ignore them
-          // since the images aren't embedded
           frontMedia = '';
         } else if (card['front_media'] is String) {
-          // Current format: base64 string
           frontMedia = card['front_media'];
         }
       }
-
-      // Handle back_media - support both array (legacy) and string (current)
       if (card['back_media'] != null) {
         if (card['back_media'] is List) {
-          // Legacy format: array of image filenames
           backMedia = '';
         } else if (card['back_media'] is String) {
-          // Current format: base64 string
           backMedia = card['back_media'];
         }
       }
-
       parsedData.add(StudyCard(
           front: card['front_text'],
           back: card['back_text'],
@@ -174,45 +159,31 @@ class ExtensionHandler {
     final jsonData = jsonDecode(jsonString);
     final deckName = jsonData['deckName'];
     List<StudyCard> parsedData = [];
-
-    // Get the number of cards from 'length' field or cards array length
     final cardsLength = jsonData['length'] ?? jsonData['cards'].length;
     parsedData.add(StudyCard(front: deckName, back: cardsLength.toString()));
-
     for (var card in jsonData['cards']) {
       String frontMedia = '';
       String backMedia = '';
-
-      // Handle front_media - can be array (legacy) or string (current)
       if (card['front_media'] != null) {
         if (card['front_media'] is List && (card['front_media'] as List).isNotEmpty) {
-          // Legacy format: array of image filenames
           final imageName = (card['front_media'] as List).first;
           if (imageFiles.containsKey(imageName)) {
-            // Convert image file to base64
             frontMedia = await ImageConverter.fileToBase64(imageFiles[imageName]!);
           }
         } else if (card['front_media'] is String) {
-          // Current format: already a base64 string or empty
           frontMedia = card['front_media'];
         }
       }
-
-      // Handle back_media - can be array (legacy) or string (current)
       if (card['back_media'] != null) {
         if (card['back_media'] is List && (card['back_media'] as List).isNotEmpty) {
-          // Legacy format: array of image filenames
           final imageName = (card['back_media'] as List).first;
           if (imageFiles.containsKey(imageName)) {
-            // Convert image file to base64
             backMedia = await ImageConverter.fileToBase64(imageFiles[imageName]!);
           }
         } else if (card['back_media'] is String) {
-          // Current format: already a base64 string or empty
           backMedia = card['back_media'];
         }
       }
-
       parsedData.add(StudyCard(
           front: card['front_text'],
           back: card['back_text'],
@@ -229,42 +200,32 @@ class ExtensionHandler {
     xmlString = xmlString.replaceAll('  ', '');
     final document = xml.XmlDocument.parse(xmlString);
     final cards = document.findAllElements('card');
-
     List<StudyCard> parsedData = [];
-
     final deckName =
         document.findAllElements('deck').first.attributes.first.value;
     parsedData.add(StudyCard(front: deckName, back: cards.length.toString()));
-
     for (var card in cards) {
       final front = card
           .findElements('rich-text')
           .firstWhere((element) => element.getAttribute('name') == 'Front')
           .innerXml
           .replaceAll('<br/>', '\n');
-      
       final back = card
           .findElements('rich-text')
           .firstWhere((element) => element.getAttribute('name') == 'Back')
           .innerXml
           .replaceAll('<br/>', '\n');
-
       String frontMedia = '';
       String backMedia = '';
-
-      // Try to find front media element
       var frontMediaElement = card.findElements('media').firstWhere(
           (element) =>
               element.getAttribute('type') == 'image' &&
               element.getAttribute('name') == 'Front',
           orElse: () => xml.XmlElement(xml.XmlName('media'), [], []));
-      
       var frontMediaSrc = frontMediaElement.getAttribute('src');
       if (frontMediaSrc != null && imageFiles.containsKey(frontMediaSrc)) {
         frontMedia = await ImageConverter.fileToBase64(imageFiles[frontMediaSrc]!);
       }
-
-      // Try to find back media element
       var backMediaElement = card.findElements('media').firstWhere(
           (element) =>
               element.getAttribute('type') == 'image' &&
@@ -275,7 +236,6 @@ class ExtensionHandler {
       if (backMediaSrc != null && imageFiles.containsKey(backMediaSrc)) {
         backMedia = await ImageConverter.fileToBase64(imageFiles[backMediaSrc]!);
       }
-
       parsedData.add(StudyCard(
           front: front,
           back: back,

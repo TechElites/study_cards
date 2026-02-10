@@ -80,7 +80,7 @@ class _AddDeckState extends State<AddDeck> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('pick_xml_or_json'.tr(cx)),
+                  Text('pick_file_extension'.tr(cx)),
                   const Icon(Icons.folder_copy_rounded),
                 ],
               ),
@@ -98,7 +98,6 @@ class _AddDeckState extends State<AddDeck> {
                       first = 'deck_name'.tr(cx);
                       second = 'number_of_cards'.tr(cx);
                     }
-                    
                     return Card(
                       margin: const EdgeInsets.symmetric(vertical: 4.0),
                       child: Padding(

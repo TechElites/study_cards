@@ -65,7 +65,7 @@
   "by_date": "Per data",
   "number_of_cards": "Numero di carte",
   "or": "oppure",
-  "pick_xml_or_json": "Scegli un file XML, ZIP o JSON",
+  "pick_file_extension": "Scegli un file XML, ZIP o JSON ",
   "question": "Domanda",
   "remove_ads": "Rimuovi pubblicità",
   "reset": "Reset",
