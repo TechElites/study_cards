@@ -225,8 +225,8 @@ class _CardsPageState extends State<CardsPage> {
                                             CrossAxisAlignment.end,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text(
-                                            card.lastReviewedFormatted,
+                                          if (card.lastReviewed != 'never') ..._buildDateDisplay(card.lastReviewed) else Text(
+                                            'never'.tr(cx),
                                             style: TextStyle(
                                               fontSize: 10,
                                               color: Colors.grey[600],
@@ -396,6 +396,32 @@ class _CardsPageState extends State<CardsPage> {
                   ]));
   }
 
+  /// Builds the date display showing date and time on separate lines
+  List<Widget> _buildDateDisplay(String lastReviewed) {
+    final dateTime = DateTime.parse(lastReviewed);
+    final date = '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}';
+    final time = '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    
+    return [
+      Text(
+        date,
+        style: TextStyle(
+          fontSize: 7,
+          color: Colors.grey[600],
+        ),
+        textAlign: TextAlign.right,
+      ),
+      Text(
+        time,
+        style: TextStyle(
+          fontSize: 7,
+          color: Colors.grey[600],
+        ),
+        textAlign: TextAlign.right,
+      ),
+    ];
+  }
+
   /// Opens a dialog to filter the cards by rating
   void _openRatingFilter(BuildContext cx) {
     showModalBottomSheet(
@@ -461,58 +487,69 @@ class _CardsPageState extends State<CardsPage> {
                                     _selectedDate = null;
                                   }
                                   setState(() {
-                                    if (_filteredRatings.contains(r)) {
-                                      _filteredRatings.remove(r);
+                                    // Handle the special 'all' case
+                                    if (r == 'all') {
+                                      _filteredRatings.clear();
+                                      _filteredRatings.add('all');
+                                      _selectedDate = null;
+                                      shownCards = _allCards;
                                     } else {
-                                      _filteredRatings.add(r);
-                                    }
-                                    if (_filteredRatings.isEmpty) {
-                                      r = 'all';
-                                    }
-                                    switch (r) {
-                                      case 'all':
-                                        _filteredRatings.clear();
+                                      // Remove 'all' when selecting other filters
+                                      _filteredRatings.remove('all');
+                                      
+                                      // Toggle the selected filter
+                                      if (_filteredRatings.contains(r)) {
+                                        _filteredRatings.remove(r);
+                                      } else {
+                                        _filteredRatings.add(r);
+                                      }
+                                      
+                                      // If no filters left, revert to 'all'
+                                      if (_filteredRatings.isEmpty) {
                                         _filteredRatings.add('all');
                                         _selectedDate = null;
                                         shownCards = _allCards;
-                                        break;
-                                      case 'no_timing':
-                                      case 'by_date':
-                                        break;
-                                      default:
-                                        _filteredRatings.remove('all');
-                                        shownCards = _allCards.where((card) {
-                                          bool matchesRating = _filteredRatings
-                                              .where((r) =>
-                                                  r != 'no_timing' &&
-                                                  r != 'by_date')
-                                              .contains(card.rating);
-                                          if (_filteredRatings
-                                              .where((r) =>
-                                                  r != 'no_timing' &&
-                                                  r != 'by_date')
-                                              .isEmpty) {
-                                            matchesRating = true;
+                                      } else {
+                                        // Apply the filters
+                                      shownCards = _allCards.where((card) {
+                                        bool matchesRating = _filteredRatings
+                                            .where((r) =>
+                                                r != 'no_timing' &&
+                                                r != 'by_date')
+                                            .contains(card.rating);
+                                        if (_filteredRatings
+                                            .where((r) =>
+                                                r != 'no_timing' &&
+                                                r != 'by_date')
+                                            .isEmpty) {
+                                          matchesRating = true;
+                                        }
+                                        bool matchesDate = true;
+                                        if (_filteredRatings
+                                                .contains('by_date') &&
+                                            _selectedDate != null) {
+                                          if (card.lastReviewed != 'never') {
+                                            final cardDate = DateTime.parse(
+                                                card.lastReviewed);
+                                            final cardDateOnly = DateTime(
+                                                cardDate.year,
+                                                cardDate.month,
+                                                cardDate.day);
+                                            final selectedDateOnly = DateTime(
+                                                _selectedDate!.year,
+                                                _selectedDate!.month,
+                                                _selectedDate!.day);
+                                            matchesDate = cardDateOnly
+                                                    .isBefore(selectedDateOnly) ||
+                                                cardDateOnly.isAtSameMomentAs(
+                                                    selectedDateOnly);
+                                          } else {
+                                            matchesDate = false;
                                           }
-                                          bool matchesDate = true;
-                                          if (_filteredRatings
-                                                  .contains('by_date') &&
-                                              _selectedDate != null) {
-                                            if (card.lastReviewed != 'never') {
-                                              final cardDate = DateTime.parse(
-                                                  card.lastReviewed);
-                                              matchesDate = cardDate.isAfter(
-                                                      _selectedDate!) ||
-                                                  cardDate.isAtSameMomentAs(
-                                                      _selectedDate!);
-                                              ;
-                                            } else {
-                                              matchesDate = false;
-                                            }
-                                          }
-                                          return matchesRating && matchesDate;
-                                        }).toList();
-                                        break;
+                                        }
+                                        return matchesRating && matchesDate;
+                                      }).toList();
+                                      }
                                     }
                                     modalSetState(() {});
                                   });
