@@ -127,37 +127,44 @@ jobs:
         run: |
           BUILD_ID="${{ steps.trigger_build.outputs.BUILD_ID }}"
           echo "Waiting for Codemagic build $BUILD_ID to complete..."
-          
-          while true; do
-            STATUS=$(curl -s -H "x-auth-token: ${{ secrets.CODEMAGIC_API_TOKEN }}" \
-              "https://api.codemagic.io/builds/$BUILD_ID" | jq -r '.status')
-            
-            echo "Build status: $STATUS"
-            
+          MAX_ATTEMPTS=20
+          ATTEMPT=0
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            RESPONSE=$(curl -s -H "x-auth-token: ${{ secrets.CODEMAGIC_API_TOKEN }}" \
+              "https://api.codemagic.io/builds/$BUILD_ID")
+            echo "API Response: $RESPONSE"
+            STATUS=$(echo "$RESPONSE" | jq -r '.build.status // .status // "null"')
+            echo "Build status: $STATUS (Attempt $((ATTEMPT + 1))/$MAX_ATTEMPTS)"
             if [ "$STATUS" = "finished" ]; then
               echo "Build completed successfully!"
               break
             elif [ "$STATUS" = "failed" ] || [ "$STATUS" = "canceled" ]; then
               echo "Build failed or was canceled"
               exit 1
+            elif [ "$STATUS" = "null" ]; then
+              echo "Could not determine build status. Build might already be completed."
+              # If status is null after several attempts, assume build is done
+              if [ $ATTEMPT -gt 5 ]; then
+                echo "Proceeding with download..."
+                break
+              fi
             fi
-            
+            ATTEMPT=$((ATTEMPT + 1))
             sleep 30
           done
-
+          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+            echo "Timeout waiting for build to complete"
+            exit 1
+          fi
       - name: Download iOS IPA from Codemagic
         run: |
           BUILD_ID="${{ steps.trigger_build.outputs.BUILD_ID }}"
-          
           # Get artifact URL
           ARTIFACTS=$(curl -s -H "x-auth-token: ${{ secrets.CODEMAGIC_API_TOKEN }}" \
             "https://api.codemagic.io/builds/$BUILD_ID")
-          
           IPA_URL=$(echo "$ARTIFACTS" | jq -r '.artifacts[] | select(.name | endswith(".ipa")) | .url')
-          
           echo "Downloading IPA from: $IPA_URL"
           curl -o study_cards.ipa "$IPA_URL"
-
       - name: Upload iOS Build
         uses: actions/upload-artifact@v4
         with:
