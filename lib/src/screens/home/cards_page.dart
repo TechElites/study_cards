@@ -133,7 +133,10 @@ class _CardsPageState extends State<CardsPage> {
                     return Container(
                         padding: const EdgeInsets.all(8.0),
                         color: _selector.isInList(card.id)
-                            ? Theme.of(cx).colorScheme.primary.withValues(alpha: 0.1)
+                            ? Theme.of(cx)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.1)
                             : null,
                         child: Slidable(
                             key: Key(card.id.toString()),
@@ -208,7 +211,8 @@ class _CardsPageState extends State<CardsPage> {
                                     Expanded(
                                       flex: 4,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(card.front),
                                         ],
@@ -217,7 +221,8 @@ class _CardsPageState extends State<CardsPage> {
                                     Expanded(
                                       flex: 1,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.end,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.end,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
@@ -368,6 +373,7 @@ class _CardsPageState extends State<CardsPage> {
                                                 shownCards, maxCards)),
                               ),
                             ).then((value) {
+                              _searchController.clear();
                               if (PlatformHelper.isMobile) {
                                 _adsFullScreen.showAndReloadAd(() {
                                   refreshList();
@@ -411,7 +417,8 @@ class _CardsPageState extends State<CardsPage> {
                                 title: Row(
                                   children: [
                                     Text(rating.tr(cx)),
-                                    if (rating == 'by_date' && _selectedDate != null)
+                                    if (rating == 'by_date' &&
+                                        _selectedDate != null)
                                       Text(
                                         ' (${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year})',
                                         style: TextStyle(
@@ -426,10 +433,13 @@ class _CardsPageState extends State<CardsPage> {
                                     Theme.of(cx).scaffoldBackgroundColor),
                                 onChanged: (bool? selected) async {
                                   String r = rating;
-                                  if (r == 'by_date' && !_filteredRatings.contains(r)) {
-                                    final DateTime? pickedDate = await showDatePicker(
+                                  if (r == 'by_date' &&
+                                      !_filteredRatings.contains(r)) {
+                                    final DateTime? pickedDate =
+                                        await showDatePicker(
                                       context: context,
-                                      initialDate: _selectedDate ?? DateTime.now(),
+                                      initialDate:
+                                          _selectedDate ?? DateTime.now(),
                                       firstDate: DateTime(2000),
                                       lastDate: DateTime.now(),
                                     );
@@ -437,7 +447,8 @@ class _CardsPageState extends State<CardsPage> {
                                       return;
                                     }
                                     _selectedDate = pickedDate;
-                                  } else if (r == 'by_date' && _filteredRatings.contains(r)) {
+                                  } else if (r == 'by_date' &&
+                                      _filteredRatings.contains(r)) {
                                     _selectedDate = null;
                                   }
                                   setState(() {
@@ -463,17 +474,29 @@ class _CardsPageState extends State<CardsPage> {
                                         _filteredRatings.remove('all');
                                         shownCards = _allCards.where((card) {
                                           bool matchesRating = _filteredRatings
-                                              .where((r) => r != 'no_timing' && r != 'by_date')
+                                              .where((r) =>
+                                                  r != 'no_timing' &&
+                                                  r != 'by_date')
                                               .contains(card.rating);
-                                          if (_filteredRatings.where((r) => r != 'no_timing' && r != 'by_date').isEmpty) {
+                                          if (_filteredRatings
+                                              .where((r) =>
+                                                  r != 'no_timing' &&
+                                                  r != 'by_date')
+                                              .isEmpty) {
                                             matchesRating = true;
                                           }
                                           bool matchesDate = true;
-                                          if (_filteredRatings.contains('by_date') && _selectedDate != null) {
+                                          if (_filteredRatings
+                                                  .contains('by_date') &&
+                                              _selectedDate != null) {
                                             if (card.lastReviewed != 'never') {
-                                              final cardDate = DateTime.parse(card.lastReviewed);
-                                              matchesDate = cardDate.isAfter(_selectedDate!) || 
-                                                           cardDate.isAtSameMomentAs(_selectedDate!);;
+                                              final cardDate = DateTime.parse(
+                                                  card.lastReviewed);
+                                              matchesDate = cardDate.isAfter(
+                                                      _selectedDate!) ||
+                                                  cardDate.isAtSameMomentAs(
+                                                      _selectedDate!);
+                                              ;
                                             } else {
                                               matchesDate = false;
                                             }

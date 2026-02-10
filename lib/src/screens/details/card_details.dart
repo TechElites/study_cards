@@ -280,7 +280,7 @@ class _CardsPageState extends State<CardDetailsPage> {
         front: _frontController.text,
         back: _backController.text,
         rating: _ratingController,
-        lastReviewed: DateTime.now().toIso8601String(),
+        lastReviewed: widget.card.rating != _ratingController ? DateTime.now().toIso8601String() : widget.card.lastReviewed,
         frontMedia: frontMedia,
         backMedia: backMedia);
 
