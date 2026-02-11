@@ -150,7 +150,7 @@ jobs:
         run: |
           BUILD_ID="${{ steps.trigger_build.outputs.BUILD_ID }}"
           echo "Waiting for Codemagic build $BUILD_ID to complete..."
-          MAX_ATTEMPTS=20
+          MAX_ATTEMPTS=50
           ATTEMPT=0
           while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
             RESPONSE=$(curl -s -H "x-auth-token: ${{ secrets.CODEMAGIC_API_TOKEN }}" \
