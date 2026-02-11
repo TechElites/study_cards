@@ -1,6 +1,7 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:study_cards/src/data/model/deck/deck.dart';
 import 'package:study_cards/src/data/model/card/study_card.dart';
+import 'package:study_cards/src/logic/media/image_converter.dart';
 
 /// DatabaseHelper class is a singleton class that provides methods
 /// to interact with the Hive database.
@@ -43,11 +44,11 @@ class DatabaseHelper {
         card.lastReviewed = 'never';
         needsUpdate = true;
       }
-      if (card.frontMedia.isNotEmpty && !card.frontMedia.startsWith('data:image/')) {
+      if (card.frontMedia.isNotEmpty && !ImageConverter.isValidBase64Image(card.frontMedia)) {
         card.frontMedia = '';
         needsUpdate = true;
       }
-      if (card.backMedia.isNotEmpty && !card.backMedia.startsWith('data:image/')) {
+      if (card.backMedia.isNotEmpty && !ImageConverter.isValidBase64Image(card.backMedia)) {
         card.backMedia = '';
         needsUpdate = true;
       }
