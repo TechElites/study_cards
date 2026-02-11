@@ -48,6 +48,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -82,6 +85,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -200,6 +206,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -282,3 +291,4 @@ jobs:
           publish_dir: ./web-build
           publish_branch: gh-pages
           force_orphan: true
+          enable_jekyll: false

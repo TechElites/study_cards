@@ -34,9 +34,9 @@ class DatabaseHelper {
         card.back = '';
         needsUpdate = true;
       }
-      const validRatings = ['None', 'Again', 'Hard', 'Good', 'Easy'];
+      const validRatings = ['none', 'fail', 'hard', 'good', 'easy'];
       if (!validRatings.contains(card.rating)) {
-        card.rating = 'None';
+        card.rating = 'none';
         needsUpdate = true;
       }
       if (card.lastReviewed.isEmpty) {
