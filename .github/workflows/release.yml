@@ -26,14 +26,26 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
           channel: 'stable'
 
-      - name: Clean previous builds
-        run: flutter clean
+      - name: Remove old build artifacts from web folder
+        run: |
+          rm -f web/main.dart.js
+          rm -f web/main.dart.js.map
+          rm -f web/flutter_service_worker.js
+          rm -f web/flutter_bootstrap.js
+          rm -f web/version.json
+
+      - name: Clean all caches and previous builds
+        run: |
+          flutter clean
+          rm -rf .dart_tool
+          rm -rf build
+          flutter pub cache repair
 
       - name: Get dependencies
-        run: flutter pub get
+        run: flutter pub get --no-precompile
 
       - name: Build Web
-        run: flutter build web --release --base-href="/study_cards/"
+        run: flutter build web --release --base-href="/study_cards/" --no-tree-shake-icons
 
       - name: Upload Web Build
         uses: actions/upload-artifact@v4
