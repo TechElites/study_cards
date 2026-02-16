@@ -33,6 +33,9 @@ jobs:
           rm -f web/flutter_service_worker.js
           rm -f web/flutter_bootstrap.js
           rm -f web/version.json
+          rm -rf web/assets
+          rm -rf web/canvaskit
+          rm -f web/.last_build_id
 
       - name: Clean all caches and previous builds
         run: |
