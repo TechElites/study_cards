@@ -2,7 +2,7 @@ name: study_cards
 description: "A fun way to study!"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.6
 
 environment:
-  sdk: '>=3.3.4 <4.0.0'
+  sdk: ">=3.3.4 <4.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -58,8 +58,9 @@ dependencies:
   flutter_slidable: ^4.0.1
   flutter_native_splash: ^2.4.3
   markdown_editor_plus: ^0.2.15
-  flutter_markdown: ^0.7.7+1
+  flutter_markdown_plus: ^1.0.7
   archive: ^3.6.1
+  flex_color_picker: ^3.6.0
 
 dev_dependencies:
   flutter_test:
@@ -79,7 +80,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -87,8 +87,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-  - lib/l10n/
-  - assets/icon/
+    - lib/l10n/
+    - assets/icon/
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 
@@ -189,7 +189,7 @@ flutter_native_splash:
     # App icon with an icon background: This should be 960×960 pixels, and fit within a circle
     # 640 pixels in diameter.
     # App icon without an icon background: This should be 1152×1152 pixels, and fit within a circle
-    # 768 pixels in diameter.  To fit a 1152x1152 image within a circle with a 768 diameter, simply 
+    # 768 pixels in diameter.  To fit a 1152x1152 image within a circle with a 768 diameter, simply
     # ensure that the most important design elements of your image are placed within a circular area
     # with a 768 diameter at the center of the 1152x1152 canvas.
     image: assets/icon/app_icon.png

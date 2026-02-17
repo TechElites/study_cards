@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
+import 'package:study_cards/src/composables/colored_markdown.dart';
 import 'package:study_cards/src/composables/floating_bar.dart';
 import 'package:study_cards/src/composables/rating_buttons.dart';
 import 'package:study_cards/src/data/database/db_helper.dart';
@@ -9,7 +10,7 @@ import 'package:study_cards/src/data/model/card/study_card.dart';
 import 'package:study_cards/src/logic/language/string_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:study_cards/src/screens/details/card_details.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
 const _animDuration = Duration(milliseconds: 300);
 const _fasterAnimDuration = Duration(milliseconds: 150);
@@ -91,17 +92,17 @@ class _CardsReviewState extends State<ReviewPage>
 
   void _nextCard() {
     if (!_ready) return; // Prevent multiple calls
-    
+
     setState(() {
       _ready = false;
     });
-    
+
     _index++;
     if (_index >= widget.cards.length) {
       Navigator.pop(context);
       return;
     }
-    
+
     _nextCardController.forward().then((_) {
       _ratingController.reverse().then((_) {
         setState(() {
@@ -180,13 +181,18 @@ class _CardsReviewState extends State<ReviewPage>
                                     ],
                                   ),
                                   child: SingleChildScrollView(
-                                    physics: _ready ? const AlwaysScrollableScrollPhysics() : const NeverScrollableScrollPhysics(),
+                                    physics: _ready
+                                        ? const AlwaysScrollableScrollPhysics()
+                                        : const NeverScrollableScrollPhysics(),
                                     child: ImageFiltered(
                                       imageFilter: _ready
-                                          ? ImageFilter.blur(sigmaX: 0, sigmaY: 0)
-                                          : ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                                          ? ImageFilter.blur(
+                                              sigmaX: 0, sigmaY: 0)
+                                          : ImageFilter.blur(
+                                              sigmaX: 5, sigmaY: 5),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             widget.cards[_index].front,
@@ -196,11 +202,15 @@ class _CardsReviewState extends State<ReviewPage>
                                             ),
                                             textAlign: TextAlign.center,
                                           ),
-                                          if (widget.cards[_index].frontMedia != '')
+                                          if (widget.cards[_index].frontMedia !=
+                                              '')
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 16.0),
                                               child: Image.memory(
-                                                base64Decode(widget.cards[_index].frontMedia),
+                                                base64Decode(widget
+                                                    .cards[_index].frontMedia),
                                                 height: 300.0,
                                                 width: 300.0,
                                                 fit: BoxFit.contain,
@@ -209,7 +219,9 @@ class _CardsReviewState extends State<ReviewPage>
                                             ),
                                           const SizedBox(height: 16),
                                           Divider(
-                                            color: Theme.of(cx).colorScheme.secondary,
+                                            color: Theme.of(cx)
+                                                .colorScheme
+                                                .secondary,
                                             height: 20,
                                             thickness: 1,
                                             indent: 20,
@@ -218,34 +230,71 @@ class _CardsReviewState extends State<ReviewPage>
                                           const SizedBox(height: 8),
                                           Align(
                                             alignment: Alignment.topLeft,
-                                            child: MarkdownBody(
+                                            child: ColoredMarkdownBody(
                                               data: widget.cards[_index].back,
                                               styleSheet: MarkdownStyleSheet(
                                                 textAlign: WrapAlignment.start,
-                                                p: const TextStyle(fontSize: 20),
-                                                h1: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                                                h2: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                                                h3: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                                                h4: const TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
-                                                h5: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                                                h6: const TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
-                                                listBullet: const TextStyle(fontSize: 20),
-                                                blockquote: const TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
-                                                code: const TextStyle(fontSize: 18, fontFamily: 'monospace'),
-                                                codeblockDecoration: BoxDecoration(
+                                                p: const TextStyle(
+                                                    fontSize: 20),
+                                                h1: const TextStyle(
+                                                    fontSize: 26,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                h2: const TextStyle(
+                                                    fontSize: 25,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                h3: const TextStyle(
+                                                    fontSize: 24,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                h4: const TextStyle(
+                                                    fontSize: 23,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                h5: const TextStyle(
+                                                    fontSize: 22,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                h6: const TextStyle(
+                                                    fontSize: 21,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                listBullet: const TextStyle(
+                                                    fontSize: 20),
+                                                blockquote: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontStyle:
+                                                        FontStyle.italic),
+                                                code: const TextStyle(
+                                                    fontSize: 18,
+                                                    fontFamily: 'monospace'),
+                                                codeblockDecoration:
+                                                    BoxDecoration(
                                                   color: Colors.grey[200],
-                                                  borderRadius: BorderRadius.circular(4),
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
                                                 ),
-                                                strong: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                                                em: const TextStyle(fontSize: 20, fontStyle: FontStyle.italic),
+                                                strong: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                                em: const TextStyle(
+                                                    fontSize: 20,
+                                                    fontStyle:
+                                                        FontStyle.italic),
                                               ),
                                             ),
                                           ),
-                                          if (widget.cards[_index].backMedia != '')
+                                          if (widget.cards[_index].backMedia !=
+                                              '')
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 16.0),
                                               child: Image.memory(
-                                                base64Decode(widget.cards[_index].backMedia),
+                                                base64Decode(widget
+                                                    .cards[_index].backMedia),
                                                 height: 300.0,
                                                 width: 300.0,
                                                 fit: BoxFit.contain,
@@ -260,12 +309,18 @@ class _CardsReviewState extends State<ReviewPage>
                                               Navigator.push(
                                                 cx,
                                                 MaterialPageRoute(
-                                                  builder: (cx) => CardDetailsPage(card: widget.cards[_index]),
+                                                  builder: (cx) =>
+                                                      CardDetailsPage(
+                                                          card: widget
+                                                              .cards[_index]),
                                                 ),
                                               ).then((value) {
                                                 if (value != null) {
                                                   if (!cx.mounted) return;
-                                                  FloatingBar.show('card_modify_success'.tr(cx), cx);
+                                                  FloatingBar.show(
+                                                      'card_modify_success'
+                                                          .tr(cx),
+                                                      cx);
                                                 }
                                               });
                                             },
@@ -304,9 +359,11 @@ class _CardsReviewState extends State<ReviewPage>
                                   ),
                                   child: Center(
                                     child: SingleChildScrollView(
-                                      physics: const AlwaysScrollableScrollPhysics(),
+                                      physics:
+                                          const AlwaysScrollableScrollPhysics(),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: [
                                           Text(
                                             widget.cards[_index].front,
@@ -316,11 +373,15 @@ class _CardsReviewState extends State<ReviewPage>
                                             ),
                                             textAlign: TextAlign.center,
                                           ),
-                                          if (widget.cards[_index].frontMedia != '')
+                                          if (widget.cards[_index].frontMedia !=
+                                              '')
                                             Padding(
-                                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 16.0),
                                               child: Image.memory(
-                                                base64Decode(widget.cards[_index].frontMedia),
+                                                base64Decode(widget
+                                                    .cards[_index].frontMedia),
                                                 height: 300.0,
                                                 width: 300.0,
                                                 fit: BoxFit.contain,
@@ -346,7 +407,8 @@ class _CardsReviewState extends State<ReviewPage>
                       ? SlideTransition(
                           position: _ratingAnimation,
                           child: RatingButtons.build(cx, (rating) {
-                            _dbHelper.updateCardsRating([widget.cards[_index].id], rating);
+                            _dbHelper.updateCardsRating(
+                                [widget.cards[_index].id], rating);
                             _nextCard();
                           }))
                       : Text(

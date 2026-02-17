@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
+import 'package:study_cards/src/composables/colored_markdown.dart';
+import 'package:flex_color_picker/flex_color_picker.dart';
 
 /// Custom Markdown Editor with real-time preview
 class MarkdownEditorField extends StatefulWidget {
@@ -45,32 +47,33 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
 
   void _onTextChanged() {
     if (_isUndoing) return;
-    
+
     final currentText = widget.controller.text;
-    
+
     // Save to history only if:
     // 1. A space or newline was just added
     // 2. Text is now empty (delete all)
     final textDiff = currentText.length - _lastSavedText.length;
     final shouldSave = currentText.isEmpty ||
-        (textDiff > 0 && (currentText.endsWith(' ') || currentText.endsWith('\n')));
-    
+        (textDiff > 0 &&
+            (currentText.endsWith(' ') || currentText.endsWith('\n')));
+
     if (shouldSave && _lastSavedText != currentText) {
       // Remove any history after current index
       if (_historyIndex < _history.length - 1) {
         _history.removeRange(_historyIndex + 1, _history.length);
       }
-      
+
       _history.add(currentText);
       _lastSavedText = currentText;
       _historyIndex = _history.length - 1;
-      
+
       // Limit history to 50 entries
       if (_history.length > 50) {
         _history.removeAt(0);
         _historyIndex--;
       }
-      
+
       setState(() {});
     }
   }
@@ -108,13 +111,13 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
   void _insertLinePrefix(String prefix) {
     final currentText = widget.controller.text;
     final selection = widget.controller.selection;
-    
+
     if (selection.start == selection.end) {
       // No selection - add prefix at start of current line
       final lines = currentText.split('\n');
       int currentPos = 0;
       int lineIndex = 0;
-      
+
       for (int i = 0; i < lines.length; i++) {
         if (currentPos + lines[i].length >= selection.start) {
           lineIndex = i;
@@ -122,10 +125,10 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
         }
         currentPos += lines[i].length + 1; // +1 for newline
       }
-      
+
       lines[lineIndex] = '$prefix${lines[lineIndex]}';
       final newText = lines.join('\n');
-      
+
       widget.controller.value = widget.controller.value.copyWith(
         text: newText,
         selection: TextSelection.collapsed(
@@ -134,17 +137,18 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
       );
     } else {
       // Selection exists - add prefix to each selected line
-      final selectedText = currentText.substring(selection.start, selection.end);
+      final selectedText =
+          currentText.substring(selection.start, selection.end);
       final lines = selectedText.split('\n');
       final modifiedLines = lines.map((line) => '$prefix$line').toList();
       final newSelectedText = modifiedLines.join('\n');
-      
+
       final newText = currentText.replaceRange(
         selection.start,
         selection.end,
         newSelectedText,
       );
-      
+
       widget.controller.value = widget.controller.value.copyWith(
         text: newText,
         selection: TextSelection.collapsed(
@@ -169,6 +173,53 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
         offset: selection.start + before.length + selectedText.length,
       ),
     );
+  }
+
+  Future<void> _showColorPicker() async {
+    Color pickerColor = Colors.blue;
+
+    final bool result = await ColorPicker(
+      color: pickerColor,
+      onColorChanged: (Color color) => pickerColor = color,
+      width: 40,
+      height: 40,
+      borderRadius: 8,
+      spacing: 5,
+      runSpacing: 5,
+      wheelDiameter: 200,
+      heading: Text(
+        'Select color',
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      subheading: Text(
+        'Select color shade',
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+      wheelSubheading: Text(
+        'Selected color and its shades',
+        style: Theme.of(context).textTheme.titleSmall,
+      ),
+      showMaterialName: true,
+      showColorName: true,
+      showColorCode: true,
+      pickersEnabled: const <ColorPickerType, bool>{
+        ColorPickerType.both: false,
+        ColorPickerType.primary: true,
+        ColorPickerType.accent: true,
+        ColorPickerType.wheel: true,
+      },
+      enableShadesSelection: false,
+    ).showPickerDialog(
+      context,
+      constraints:
+          const BoxConstraints(minHeight: 460, minWidth: 300, maxWidth: 320),
+    );
+
+    if (result) {
+      final colorHex =
+          '#${pickerColor.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
+      _wrapText('<colored-text color:$colorHex>', '</colored-text>');
+    }
   }
 
   String _processMarkdown(String text) {
@@ -205,7 +256,7 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
               width: double.infinity,
               padding: const EdgeInsets.only(top: 24.0, left: 2.0),
               constraints: const BoxConstraints(minHeight: 100),
-              child: MarkdownBody(
+              child: ColoredMarkdownBody(
                 data: _processMarkdown(widget.controller.text),
                 styleSheet: MarkdownStyleSheet(
                   textAlign: WrapAlignment.start,
@@ -299,6 +350,11 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
                     tooltip: 'Tab',
                     onPressed: () => _insertText('    '),
                   ),
+                  _ToolbarButton(
+                    icon: Icons.color_lens,
+                    tooltip: 'Color Text',
+                    onPressed: _showColorPicker,
+                  ),
                 ],
               ),
             ),
@@ -337,8 +393,11 @@ class _ToolbarButton extends StatelessWidget {
             child: Icon(
               icon,
               size: 20,
-              color: onPressed == null 
-                  ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3)
+              color: onPressed == null
+                  ? Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.3)
                   : Theme.of(context).colorScheme.onSurface,
             ),
           ),
