@@ -36,11 +36,42 @@ final ThemeData customLightTheme = ThemeData.light().copyWith(
         foregroundColor: WidgetStateProperty.all(season.light.foregroundColor),
       ),
     ),
-    dialogTheme: const DialogThemeData(
-        titleTextStyle: TextStyle(
-      color: Colors.black,
-      fontSize: 24,
-    )),
+    dialogTheme: DialogThemeData(
+      backgroundColor: Colors.white,
+      titleTextStyle: const TextStyle(
+        color: Colors.black,
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+      contentTextStyle: const TextStyle(
+        color: Colors.black87,
+        fontSize: 16,
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: season.light.primaryColor,
+      ),
+    ),
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: Colors.white,
+      headerBackgroundColor: season.light.primaryColor,
+      headerForegroundColor: Colors.white,
+      dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return Colors.white;
+        }
+        return Colors.black;
+      }),
+      dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return season.light.primaryColor;
+        }
+        return null;
+      }),
+      todayForegroundColor: WidgetStateProperty.all(season.light.primaryColor),
+      todayBorder: BorderSide(color: season.light.primaryColor, width: 1),
+    ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: season.light.primaryColor,
       contentTextStyle: const TextStyle(color: Colors.white),
@@ -82,11 +113,42 @@ final ThemeData customDarkTheme = ThemeData.dark().copyWith(
         foregroundColor: WidgetStateProperty.all(season.dark.foregroundColor),
       ),
     ),
-    dialogTheme: const DialogThemeData(
-        titleTextStyle: TextStyle(
-      color: Colors.white,
-      fontSize: 24,
-    )),
+    dialogTheme: DialogThemeData(
+      backgroundColor: Colors.grey[850],
+      titleTextStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
+      contentTextStyle: const TextStyle(
+        color: Colors.white70,
+        fontSize: 16,
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: season.dark.foregroundColor,
+      ),
+    ),
+    datePickerTheme: DatePickerThemeData(
+      backgroundColor: Colors.grey[850],
+      headerBackgroundColor: season.dark.primaryColor,
+      headerForegroundColor: Colors.white,
+      dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return Colors.white;
+        }
+        return Colors.white70;
+      }),
+      dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return season.dark.primaryColor;
+        }
+        return null;
+      }),
+      todayForegroundColor: WidgetStateProperty.all(season.dark.foregroundColor),
+      todayBorder: BorderSide(color: season.dark.foregroundColor, width: 1),
+    ),
     snackBarTheme: SnackBarThemeData(
       backgroundColor: season.dark.primaryColor,
       contentTextStyle: const TextStyle(color: Colors.black),

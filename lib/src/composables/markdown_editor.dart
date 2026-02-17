@@ -176,8 +176,8 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
   }
 
   Future<void> _showColorPicker() async {
-    Color pickerColor = Colors.blue;
-
+    Color pickerColor = Theme.of(context).colorScheme.primary;
+    
     final bool result = await ColorPicker(
       color: pickerColor,
       onColorChanged: (Color color) => pickerColor = color,
@@ -187,18 +187,6 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
       spacing: 5,
       runSpacing: 5,
       wheelDiameter: 200,
-      heading: Text(
-        'Select color',
-        style: Theme.of(context).textTheme.titleMedium,
-      ),
-      subheading: Text(
-        'Select color shade',
-        style: Theme.of(context).textTheme.titleSmall,
-      ),
-      wheelSubheading: Text(
-        'Selected color and its shades',
-        style: Theme.of(context).textTheme.titleSmall,
-      ),
       showMaterialName: true,
       showColorName: true,
       showColorCode: true,
@@ -209,15 +197,17 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
         ColorPickerType.wheel: true,
       },
       enableShadesSelection: false,
+      selectedPickerTypeColor: Theme.of(context).colorScheme.primary,
     ).showPickerDialog(
       context,
-      constraints:
-          const BoxConstraints(minHeight: 460, minWidth: 300, maxWidth: 320),
+      constraints: const BoxConstraints(minHeight: 460, minWidth: 300, maxWidth: 320),
+      actionsPadding: const EdgeInsets.all(16),
+      backgroundColor: Theme.of(context).dialogTheme.backgroundColor,
+      elevation: 2,
     );
 
     if (result) {
-      final colorHex =
-          '#${pickerColor.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
+      final colorHex = '#${pickerColor.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
       _wrapText('<colored-text color:$colorHex>', '</colored-text>');
     }
   }
