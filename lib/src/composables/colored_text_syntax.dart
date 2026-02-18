@@ -65,7 +65,6 @@ class ColoredTextBuilder extends MarkdownElementBuilder {
 
     return Builder(
       builder: (context) {
-        final parentStyle = DefaultTextStyle.of(context).style;
         final effectiveStyle = baseStyle.copyWith(
           fontSize: 18,
           color: color,
