@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:study_cards/src/composables/ads/ads_scaffold.dart';
-import 'package:study_cards/src/composables/colored_markdown.dart';
+import 'package:study_cards/src/composables/colored_text_syntax.dart';
 import 'package:study_cards/src/composables/floating_bar.dart';
 import 'package:study_cards/src/composables/rating_buttons.dart';
 import 'package:study_cards/src/data/database/db_helper.dart';
@@ -230,8 +230,10 @@ class _CardsReviewState extends State<ReviewPage>
                                           const SizedBox(height: 8),
                                           Align(
                                             alignment: Alignment.topLeft,
-                                            child: ColoredMarkdownBody(
-                                              data: widget.cards[_index].back,
+                                            child: MarkdownBody(
+                                              data: processMarkdownLineBreaks(widget.cards[_index].back),
+                                              inlineSyntaxes: [ColoredTextSyntax()],
+                                              builders: {'colored-text': ColoredTextBuilder()},
                                               styleSheet: MarkdownStyleSheet(
                                                 textAlign: WrapAlignment.start,
                                                 p: const TextStyle(

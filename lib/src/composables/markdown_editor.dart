@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
-import 'package:study_cards/src/composables/colored_markdown.dart';
+import 'package:study_cards/src/composables/colored_text_syntax.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
 
 /// Custom Markdown Editor with real-time preview
@@ -214,10 +214,7 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
 
   String _processMarkdown(String text) {
     if (!widget.enableHardLineBreak) return text;
-    return text.replaceAllMapped(
-      RegExp(r'([^\n])\n([^\n])'),
-      (match) => '${match.group(1)}  \n${match.group(2)}',
-    );
+    return processMarkdownLineBreaks(text);
   }
 
   @override
@@ -246,8 +243,10 @@ class _MarkdownEditorFieldState extends State<MarkdownEditorField> {
               width: double.infinity,
               padding: const EdgeInsets.only(top: 24.0, left: 2.0),
               constraints: const BoxConstraints(minHeight: 100),
-              child: ColoredMarkdownBody(
+              child: MarkdownBody(
                 data: _processMarkdown(widget.controller.text),
+                inlineSyntaxes: [ColoredTextSyntax()],
+                builders: {'colored-text': ColoredTextBuilder()},
                 styleSheet: MarkdownStyleSheet(
                   textAlign: WrapAlignment.start,
                   p: const TextStyle(fontSize: 16),
