@@ -357,16 +357,16 @@ class _CardsPageState extends State<CardsPage> {
                           } else {
                             final maxCards =
                                 _dbHelper.getReviewCards(widget.deckId);
+                            final hasFilters = _hasActiveFilters();
                             Navigator.push(
                               cx,
                               MaterialPageRoute(
                                 builder: (context) => ReviewPage(
-                                    cards:
-                                        _filteredRatings.contains("no_timing")
-                                            ? DeckShuffler.shuffleCards(
-                                                shownCards, maxCards)
-                                            : DeckShuffler.shuffleTimedCards(
-                                                shownCards, maxCards)),
+                                    cards: hasFilters
+                                        ? DeckShuffler.shuffleCards(
+                                            shownCards, maxCards)
+                                        : DeckShuffler.shuffleTimedCardsAnki(
+                                            shownCards, maxCards)),
                               ),
                             ).then((value) {
                               _searchController.clear();
@@ -403,6 +403,10 @@ class _CardsPageState extends State<CardsPage> {
         ),
       ),
     ];
+  }
+
+  bool _hasActiveFilters() {
+    return !_filteredRatings.contains('all') || _selectedDate != null;
   }
 
   /// Opens a dialog to filter the cards by rating
